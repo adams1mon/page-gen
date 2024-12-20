@@ -3,19 +3,19 @@
 import { ReactNode, useEffect, useState } from "react";
 
 interface DndProviderProps {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 export function DndProvider({ children }: DndProviderProps) {
-  const [mounted, setMounted] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
-  if (!mounted) {
-    return null;
-  }
+    if (!mounted) {
+        return null;
+    }
 
-  return <>{children}</>;
+    return <>{children}</>;
 }

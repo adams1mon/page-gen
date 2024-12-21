@@ -18,7 +18,8 @@ export default function Home() {
       type,
       props: defaultProps[type as keyof typeof defaultProps]
     };
-    setComponents([...components, newComponent]);
+    setComponents(prevComponents => [...prevComponents, newComponent]);
+    console.log("dropped", type);
   };
 
   const handleComponentUpdate = (updatedComponent: ComponentConfig) => {
@@ -27,6 +28,7 @@ export default function Home() {
     ));
   };
 
+  // TODO: columnar drag and drop
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex min-h-screen">

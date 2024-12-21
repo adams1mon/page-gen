@@ -20,6 +20,7 @@ const components: ComponentItem[] = [
 ];
 
 const DraggableComponent = ({ type, icon, title }: ComponentItem) => {
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "portfolio-component",
     item: { type },

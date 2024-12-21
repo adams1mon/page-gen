@@ -2,7 +2,6 @@
 
 import { useDrop } from "react-dnd";
 import { cn } from "@/lib/utils";
-import { PortfolioComponent } from "./portfolio-components";
 
 interface DropZoneProps {
   onDrop: (type: string) => void;

@@ -2,60 +2,163 @@
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { ComponentPalette } from "@/components/portfolio/ComponentPalette";
-import { DropZone } from "@/components/portfolio/DropZone";
-import { ComponentConfig } from "@/components/portfolio/portfolio-components";
+import { ComponentConfig } from "@/components/portfolio/types";
 import { PortfolioComponent } from "@/components/portfolio/PortfolioComponent";
-import { defaultProps } from "@/components/portfolio/portfolio-components/defaults";
-import { useState } from "react";
+import { ComponentDivider } from "@/components/portfolio/ComponentDivider";
+import { defaultProps } from "@/components/portfolio/defaults";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { GenerateSiteButton } from "@/components/GenerateSiteButton";
+import Link from "next/link";
+import { BookOpen } from "lucide-react";
+import { generateHtml } from "@/lib/site-generator/generate-html";
+import {
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { SiteConfig } from "@/lib/site-generator/types";
 
 export default function Home() {
-  const [components, setComponents] = useState<ComponentConfig[]>([]);
+    const [components, setComponents] = useState<ComponentConfig[]>([]);
+    const [previewHtml, setPreviewHtml] = useState<string>("");
+    const [siteConfig, setSiteConfig] = useState<SiteConfig>({
+        title: 'My Portfolio',
+        description: 'Welcome to my portfolio website',
+        components
+    });
 
-  const handleDrop = (type: string) => {
-    const newComponent: ComponentConfig = {
-      id: `${type}-${Date.now()}`,
-      type,
-      props: defaultProps[type as keyof typeof defaultProps]
+    // Update site config and preview whenever components change
+    useEffect(() => {
+        const newSiteConfig = {
+            ...siteConfig,
+            components,
+        };
+        setSiteConfig(newSiteConfig);
+
+        const html = generateHtml(newSiteConfig);
+        setPreviewHtml(html);
+    }, [components]);
+
+    const handleDrop = (type: string, index?: number) => {
+        const newComponent: ComponentConfig = {
+            id: `${type}-${Date.now()}`,
+            type,
+            props: defaultProps[type as keyof typeof defaultProps]
+        };
+
+        setComponents(prevComponents => {
+            const newComponents = [...prevComponents];
+            if (typeof index === 'number') {
+                newComponents.splice(index, 0, newComponent);
+                return newComponents;
+            }
+            return [...prevComponents, newComponent];
+        });
     };
-    setComponents(prevComponents => [...prevComponents, newComponent]);
-    console.log("dropped", type);
-  };
 
-  const handleComponentUpdate = (updatedComponent: ComponentConfig) => {
-    setComponents(components.map(component =>
-      component.id === updatedComponent.id ? updatedComponent : component
-    ));
-  };
+    const handleComponentUpdate = (updatedComponent: ComponentConfig) => {
+        setComponents(components.map(component =>
+            component.id === updatedComponent.id ? updatedComponent : component
+        ));
+    };
 
-  // TODO: columnar drag and drop
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="flex min-h-screen">
-        <ComponentPalette />
-        <main className="flex-1 p-8">
-          <h1 className="text-2xl font-bold mb-6">Portfolio Builder</h1>
-          <DropZone onDrop={handleDrop} className="mb-8">
-            {components.length === 0 ? (
-              <div className="flex items-center justify-center h-full min-h-[400px]">
-                <p className="text-muted-foreground">
-                  Drag and drop components here to build your portfolio
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {components.map((component) => (
-                  <PortfolioComponent
-                    key={component.id}
-                    component={component}
-                    onUpdate={handleComponentUpdate}
-                  />
-                ))}
-              </div>
-            )}
-          </DropZone>
-        </main>
-      </div>
-    </DndProvider>
-  );
+    const moveComponent = (dragIndex: number, hoverIndex: number) => {
+        setComponents(prevComponents => {
+            const newComponents = [...prevComponents];
+            const draggedComponent = newComponents[dragIndex];
+            newComponents.splice(dragIndex, 1);
+            newComponents.splice(hoverIndex, 0, draggedComponent);
+            return newComponents;
+        });
+    };
+
+    const deleteComponent = (id: string) => {
+        setComponents(prevComponents =>
+            prevComponents.filter(component => component.id !== id)
+        );
+    };
+
+    return (
+        <DndProvider backend={HTML5Backend}>
+            <div className="h-screen flex flex-col">
+                {/* Header */}
+                <div className="border-b bg-background">
+                    <div className="flex justify-between items-center p-4">
+                        <h1 className="text-2xl font-bold">Portfolio Builder</h1>
+                        <div className="flex items-center gap-4">
+                            <Link href="/catalog">
+                                <Button variant="outline" className="gap-2">
+                                    <BookOpen className="w-4 h-4" />
+                                    Component Catalog
+                                </Button>
+                            </Link>
+                            <GenerateSiteButton siteConfig={siteConfig} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <ResizablePanelGroup
+                    direction="horizontal"
+                    className="flex-1"
+                >
+                    {/* Editor Panel */}
+                    <ResizablePanel defaultSize={50} minSize={10}>
+                        <div className="h-full overflow-y-auto">
+                            <div className="p-8">
+                                <div className="space-y-4">
+                                    {components.length === 0 ? (
+                                        <div className="flex items-center justify-center h-full min-h-[400px]">
+                                            <ComponentDivider onInsert={(type) => handleDrop(type, 0)} />
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {components.map((component, index) => (
+                                                <div key={component.id}>
+                                                    <ComponentDivider
+                                                        onInsert={(type) => handleDrop(type, index)}
+                                                    />
+                                                    <PortfolioComponent
+                                                        index={index}
+                                                        component={component}
+                                                        onUpdate={handleComponentUpdate}
+                                                        moveComponent={moveComponent}
+                                                        onDrop={handleDrop}
+                                                        onDelete={deleteComponent}
+                                                    />
+                                                    {index === components.length - 1 && (
+                                                        <ComponentDivider
+                                                            onInsert={(type) => handleDrop(type, index + 1)}
+                                                        />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </ResizablePanel>
+
+                    {/* Resize Handle */}
+                    <ResizableHandle withHandle />
+
+                    {/* Preview Panel */}
+                    <ResizablePanel defaultSize={50} minSize={10}>
+                        <div className="h-full bg-gray-50">
+                            
+                            {/* TODO: use a shadow DOM element here */}
+                            <iframe
+                                srcDoc={previewHtml}
+                                className="w-full h-full border-0"
+                                title={siteConfig.title}
+                                sandbox="allow-same-origin"
+                            />
+                        </div>
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </div>
+        </DndProvider>
+    );
 }

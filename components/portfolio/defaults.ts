@@ -1,6 +1,25 @@
-"use client";
-
 import { HeaderProps, HeroProps, AboutProps, ProjectsProps, FooterProps, MarkdownProps } from "./types";
+import { Header } from "./Header";
+import { Hero } from "./Hero";
+import { About } from "./About";
+import { Markdown } from "./Markdown";
+import { Projects } from "./Projects";
+import { Footer } from "./Footer";
+
+const componentMap: Record<string, React.ComponentType<any>> = {
+  header: Header,
+  hero: Hero,
+  about: About,
+  markdown: Markdown,
+  projects: Projects,
+  footer: Footer,
+};
+
+export function getReactElementByType(type: string) {
+    const item = componentMap[type];
+    if (!item) throw Error(`${item} is not a valid item`);
+    return item;
+}
 
 export const defaultProps: {
   header: HeaderProps;

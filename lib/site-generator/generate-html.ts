@@ -2,8 +2,15 @@ import { ABOUT_TYPE } from "../components/About";
 import { ComponentConfig, PropType } from "../components/Component";
 import { HEADER_TYPE } from "../components/Header";
 import { toHtml as headerHtml} from "../components/Header";
+import { HERO_TYPE, toHtml as heroHtml} from "../components/Hero";
 import { toHtml as aboutHtml} from "../components/About";
+import { PROJECTS_TYPE, toHtml as projectsHtml} from "../components/Projects";
+import { MARKDOWN_TYPE, toHtml as markdownHtml} from "../components/Markdown";
+import { FOOTER_TYPE, toHtml as footerHtml} from "../components/Footer";
 
+
+// TODO: create a container which can handle the generation of HTML 
+// and the functions can be registered on the object at start time.
 
 
 export interface SiteConfig {
@@ -14,7 +21,11 @@ export interface SiteConfig {
 
 const generateHtmlMap: {[k: string]: (props: any) => string}  = {
     [HEADER_TYPE]: headerHtml,
+    [HERO_TYPE]: heroHtml,
     [ABOUT_TYPE]: aboutHtml,
+    [PROJECTS_TYPE]: projectsHtml,
+    [MARKDOWN_TYPE]: markdownHtml,
+    [FOOTER_TYPE]: footerHtml,
 };
 
 function getComponentHtml(type: string, props: PropType) {

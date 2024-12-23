@@ -74,6 +74,7 @@ export default function Home() {
         );
     };
 
+
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="h-screen flex flex-col">

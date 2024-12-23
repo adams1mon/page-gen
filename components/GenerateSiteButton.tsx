@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { generateHtml } from "@/lib/site-generator/generate-html";
-import { SiteConfig } from "@/lib/site-generator/types";
+import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
 import { Download } from "lucide-react";
 import { useState } from "react";
 

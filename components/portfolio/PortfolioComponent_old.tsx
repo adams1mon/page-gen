@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { ComponentConfig } from "./types";
 import { GripVertical, Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { getReactElementByType } from "./defaults";
-import { ComponentConfig } from "@/lib/components/Component";
 
 interface PortfolioComponentProps {
-    component: ComponentConfig; 
+    component: ComponentConfig;
     index: number;
-    onUpdate: (component: ComponentConfig) => void;
+    onUpdate: (updatedComponent: ComponentConfig) => void;
     moveComponent: (dragIndex: number, hoverIndex: number) => void;
     onDrop: (type: string, index: number) => void;
     onDelete: (id: string) => void;

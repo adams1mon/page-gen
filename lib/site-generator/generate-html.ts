@@ -1,33 +1,118 @@
-import { ComponentConfig } from "@/components/portfolio/types";
-import { SiteConfig } from "./types";
+import { ABOUT_TYPE } from "../components/About";
+import { ComponentConfig, PropType } from "../components/Component";
+import { HEADER_TYPE } from "../components/Header";
+import { toHtml as headerHtml} from "../components/Header";
+import { toHtml as aboutHtml} from "../components/About";
+
+
+
+export interface SiteConfig {
+    title: string;
+    description: string;
+    components: ComponentConfig[];
+}
+
+const generateHtmlMap: {[k: string]: (props: any) => string}  = {
+    [HEADER_TYPE]: headerHtml,
+    [ABOUT_TYPE]: aboutHtml,
+};
+
+function getComponentHtml(type: string, props: PropType) {
+    const comp = generateHtmlMap[type];
+    if (!comp) throw new Error(`${comp} doesn't have a toHtml function registered`);
+    return comp(props)
+}
 
 export function generateHtml(config: SiteConfig) {
-    const renderedComponents = config.components.map(component =>
-        renderComponent(component)
-    ).join('\n');
 
-    const tailwindcss = `
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script type=text/javascript>alert("this is running") </script>
-    `;
+        const renderedComponents = config.components
+            .map(c => getComponentHtml(c.type, c.props))
+            .join('\n');
 
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta description="${config.description}">
-    <title>${config.title}</title>
-    ${tailwindcss}
-    <style>
-      ${generateStyles()}
-    </style>
-</head>
-<body>
-    ${renderedComponents}
-</body>
-</html>`;
+        const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;
+
+        return `<!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta description="${config.description}">
+                <title>${config.title}</title>
+                ${tailwindcss}
+                <style>
+                  ${generateStyles()}
+                </style>
+            </head>
+            <body>
+                ${renderedComponents}
+            </body>
+        </html>`;
 }
+
+// TODO: add an example to the components
+//class Site {
+//    config: SiteConfig = {
+//        title: 'My Portfolio',
+//        description: 'Welcome to my portfolio website',
+//        components: [],
+//    }
+//
+//    toHtml(): string {
+//
+//        const renderedComponents = this.config.components
+//            .map(c => c.toHtml())
+//            .join('\n');
+//
+//        const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;
+//
+//        return `<!DOCTYPE html>
+//        <html lang="en">
+//            <head>
+//                <meta charset="UTF-8">
+//                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//                <meta description="${this.config.description}">
+//                <title>${this.config.title}</title>
+//                ${tailwindcss}
+//                <style>
+//                  ${generateStyles()}
+//                </style>
+//            </head>
+//            <body>
+//                ${renderedComponents}
+//            </body>
+//        </html>`;
+//    }
+//};
+
+
+
+//export function generateHtml(config: SiteConfig) {
+//    const renderedComponents = config.components.map(component =>
+//        renderComponent(component)
+//    ).join('\n');
+//
+//    const tailwindcss = `
+//        <script src="https://cdn.tailwindcss.com"></script>
+//            <script type=text/javascript>alert("this is running") </script>
+//    `;
+//
+//    return `<!DOCTYPE html>
+//<html lang="en">
+//<head>
+//    <meta charset="UTF-8">
+//    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//    <meta description="${config.description}">
+//    <title>${config.title}</title>
+//    ${tailwindcss}
+//    <style>
+//      ${generateStyles()}
+//    </style>
+//</head>
+//<body>
+//    ${renderedComponents}
+//</body>
+//</html>`;
+//}
 
 function renderComponent(component: ComponentConfig): string {
     switch (component.type) {

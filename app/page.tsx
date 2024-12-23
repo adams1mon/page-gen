@@ -2,22 +2,20 @@
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { ComponentConfig } from "@/components/portfolio/types";
 import { PortfolioComponent } from "@/components/portfolio/PortfolioComponent";
 import { ComponentDivider } from "@/components/portfolio/ComponentDivider";
-import { defaultProps } from "@/components/portfolio/defaults";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { GenerateSiteButton } from "@/components/GenerateSiteButton";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-import { generateHtml } from "@/lib/site-generator/generate-html";
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { SiteConfig } from "@/lib/site-generator/types";
+import { ComponentConfig, createComponentConfig } from "@/lib/components/Component";
+import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
 
 export default function Home() {
     const [components, setComponents] = useState<ComponentConfig[]>([]);
@@ -35,17 +33,12 @@ export default function Home() {
             components,
         };
         setSiteConfig(newSiteConfig);
-
         const html = generateHtml(newSiteConfig);
         setPreviewHtml(html);
     }, [components]);
 
     const handleDrop = (type: string, index?: number) => {
-        const newComponent: ComponentConfig = {
-            id: `${type}-${Date.now()}`,
-            type,
-            props: defaultProps[type as keyof typeof defaultProps]
-        };
+        const newComponent = createComponentConfig(type);
 
         setComponents(prevComponents => {
             const newComponents = [...prevComponents];
@@ -58,6 +51,8 @@ export default function Home() {
     };
 
     const handleComponentUpdate = (updatedComponent: ComponentConfig) => {
+        console.log(updatedComponent);
+        
         setComponents(components.map(component =>
             component.id === updatedComponent.id ? updatedComponent : component
         ));

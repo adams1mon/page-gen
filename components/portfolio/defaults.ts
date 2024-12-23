@@ -1,18 +1,20 @@
-import { HeaderProps, HeroProps, AboutProps, ProjectsProps, FooterProps, MarkdownProps } from "./types";
+import { HeroProps, AboutProps, ProjectsProps, FooterProps, MarkdownProps } from "./types";
 import { Header } from "./Header";
 import { Hero } from "./Hero";
 import { About } from "./About";
 import { Markdown } from "./Markdown";
 import { Projects } from "./Projects";
 import { Footer } from "./Footer";
+import { HEADER_TYPE, HeaderProps } from "@/lib/components/Header";
+import { ABOUT_TYPE } from "@/lib/components/About";
 
 const componentMap: Record<string, React.ComponentType<any>> = {
-  header: Header,
-  hero: Hero,
-  about: About,
-  markdown: Markdown,
-  projects: Projects,
-  footer: Footer,
+    [HEADER_TYPE]: Header,
+  //hero: Hero,
+  [ABOUT_TYPE]: About,
+  //markdown: Markdown,
+  //projects: Projects,
+  //footer: Footer,
 };
 
 export function getReactElementByType(type: string) {

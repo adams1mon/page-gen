@@ -1,16 +1,5 @@
-import { ABOUT_TYPE } from "../components/About";
-import { ComponentConfig, PropType } from "../components/Component";
-import { HEADER_TYPE } from "../components/Header";
-import { toHtml as headerHtml} from "../components/Header";
-import { HERO_TYPE, toHtml as heroHtml} from "../components/Hero";
-import { toHtml as aboutHtml} from "../components/About";
-import { PROJECTS_TYPE, toHtml as projectsHtml} from "../components/Projects";
-import { MARKDOWN_TYPE, toHtml as markdownHtml} from "../components/Markdown";
-import { FOOTER_TYPE, toHtml as footerHtml} from "../components/Footer";
-
-
-// TODO: create a container which can handle the generation of HTML 
-// and the functions can be registered on the object at start time.
+import { ComponentConfig } from "../components/Component";
+import { ComponentContainer } from "../components/ComponentContainer";
 
 
 export interface SiteConfig {
@@ -19,25 +8,10 @@ export interface SiteConfig {
     components: ComponentConfig[];
 }
 
-const generateHtmlMap: {[k: string]: (props: any) => string}  = {
-    [HEADER_TYPE]: headerHtml,
-    [HERO_TYPE]: heroHtml,
-    [ABOUT_TYPE]: aboutHtml,
-    [PROJECTS_TYPE]: projectsHtml,
-    [MARKDOWN_TYPE]: markdownHtml,
-    [FOOTER_TYPE]: footerHtml,
-};
-
-function getComponentHtml(type: string, props: PropType) {
-    const comp = generateHtmlMap[type];
-    if (!comp) throw new Error(`${comp} doesn't have a toHtml function registered`);
-    return comp(props)
-}
-
 export function generateHtml(config: SiteConfig) {
-
+    
         const renderedComponents = config.components
-            .map(c => getComponentHtml(c.type, c.props))
+            .map(c => ComponentContainer.toHtml(c.type, c.props))
             .join('\n');
 
         const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;
@@ -58,187 +32,6 @@ export function generateHtml(config: SiteConfig) {
                 ${renderedComponents}
             </body>
         </html>`;
-}
-
-// TODO: add an example to the components
-//class Site {
-//    config: SiteConfig = {
-//        title: 'My Portfolio',
-//        description: 'Welcome to my portfolio website',
-//        components: [],
-//    }
-//
-//    toHtml(): string {
-//
-//        const renderedComponents = this.config.components
-//            .map(c => c.toHtml())
-//            .join('\n');
-//
-//        const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;
-//
-//        return `<!DOCTYPE html>
-//        <html lang="en">
-//            <head>
-//                <meta charset="UTF-8">
-//                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//                <meta description="${this.config.description}">
-//                <title>${this.config.title}</title>
-//                ${tailwindcss}
-//                <style>
-//                  ${generateStyles()}
-//                </style>
-//            </head>
-//            <body>
-//                ${renderedComponents}
-//            </body>
-//        </html>`;
-//    }
-//};
-
-
-
-//export function generateHtml(config: SiteConfig) {
-//    const renderedComponents = config.components.map(component =>
-//        renderComponent(component)
-//    ).join('\n');
-//
-//    const tailwindcss = `
-//        <script src="https://cdn.tailwindcss.com"></script>
-//            <script type=text/javascript>alert("this is running") </script>
-//    `;
-//
-//    return `<!DOCTYPE html>
-//<html lang="en">
-//<head>
-//    <meta charset="UTF-8">
-//    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//    <meta description="${config.description}">
-//    <title>${config.title}</title>
-//    ${tailwindcss}
-//    <style>
-//      ${generateStyles()}
-//    </style>
-//</head>
-//<body>
-//    ${renderedComponents}
-//</body>
-//</html>`;
-//}
-
-function renderComponent(component: ComponentConfig): string {
-    switch (component.type) {
-        case 'header':
-            return `
-        <header class="w-full py-6 px-8 bg-background border-t">
-          <div class="max-w-5xl mx-auto">
-            <div class="flex justify-between items-center">
-              <h1 class="text-2xl font-bold">${component.props.title}</h1>
-              <nav class="space-x-6">
-                ${component.props.links.map(link =>
-                `<a href="${link.url}" class="text-muted-foreground hover:text-foreground">
-                    ${link.text}
-                  </a>`
-            ).join('')}
-              </nav>
-            </div>
-          </div>
-        </header>`;
-
-        case 'hero':
-            return `
-        <section class="w-full min-h-[500px] relative flex items-center">
-          ${component.props.backgroundType === 'video'
-                    ? `<video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
-                <source src="${component.props.backgroundUrl}" type="video/mp4">
-              </video>`
-                    : `<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('${component.props.backgroundUrl}')"></div>`
-                }
-          <div class="relative z-10 max-w-5xl mx-auto px-8 py-20">
-            <div class="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
-              <h1 class="text-5xl font-bold mb-6">${component.props.title}</h1>
-              <p class="text-xl text-muted-foreground max-w-2xl">${component.props.subtitle}</p>
-            </div>
-          </div>
-        </section>`;
-
-        case 'about':
-            return `
-        <section class="w-full py-20 bg-background">
-          <div class="max-w-5xl mx-auto px-8">
-            <h2 class="text-3xl font-bold mb-8">${component.props.title}</h2>
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-              <div class="aspect-square rounded-lg bg-cover bg-center" style="background-image: url('${component.props.imageUrl}')"></div>
-              <div class="space-y-4">
-                ${component.props.description.map(paragraph =>
-                `<p class="text-lg text-muted-foreground">${paragraph}</p>`
-            ).join('')}
-              </div>
-            </div>
-          </div>
-        </section>`;
-
-        case 'projects':
-            return `
-        <section class="w-full py-20 bg-accent">
-          <div class="max-w-5xl mx-auto px-8">
-            <h2 class="text-3xl font-bold mb-12">${component.props.title}</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              ${component.props.projects.map(project => `
-                <div class="bg-background rounded-lg overflow-hidden">
-                  <div class="aspect-video bg-cover bg-center" style="background-image: url('${project.imageUrl}')"></div>
-                  <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-2">${project.title}</h3>
-                    <p class="text-muted-foreground">${project.description}</p>
-                    ${project.link ? `
-                      <a href="${project.link}" class="text-primary hover:underline mt-4 inline-block">
-                        Learn More →
-                      </a>
-                    ` : ''}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </section>`;
-
-        case 'markdown':
-            // Note: For production, you'd want to use a markdown parser here
-            return `
-        <section class="w-full py-12 bg-background">
-          <div class="max-w-5xl mx-auto px-8">
-            <h2 class="text-2xl font-bold mb-6">${component.props.title}</h2>
-            <div class="prose">
-              ${component.props.content}
-            </div>
-          </div>
-        </section>`;
-
-        case 'footer':
-            return `
-        <footer class="w-full py-12 bg-background border-t">
-          <div class="max-w-5xl mx-auto px-8">
-            <div class="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 class="text-lg font-semibold mb-4">Contact</h3>
-                <p class="text-muted-foreground">${component.props.email}</p>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold mb-4">Social</h3>
-                <div class="space-y-2">
-                  ${component.props.socialLinks.map(link =>
-                `<a href="${link.url}" class="block text-muted-foreground hover:text-foreground">
-                      ${link.text}
-                    </a>`
-            ).join('')}
-                </div>
-              </div>
-            </div>
-          </div>
-        </footer>`;
-
-        default:
-            return '';
-    }
 }
 
 function generateStyles() {

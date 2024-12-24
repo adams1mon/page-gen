@@ -1,3 +1,5 @@
+import { ComponentConfig } from "./Component";
+import { ComponentContainer } from "./ComponentContainer";
 import { Link } from "./common";
 
 export const FOOTER_TYPE = "footer";
@@ -7,7 +9,7 @@ export interface FooterProps {
     socialLinks: Link[];
 }
 
-export const defaultFooterProps: FooterProps = {
+const defaultFooterProps: FooterProps = {
     email: "email@example.com",
     socialLinks: [
         { text: "GitHub", url: "https://github.com" },
@@ -16,7 +18,7 @@ export const defaultFooterProps: FooterProps = {
     ]
 };
 
-export function toHtml(props: FooterProps) {
+function toHtml(props: FooterProps) {
     return `
         <footer class="w-full py-12 bg-background border-t">
           <div class="max-w-5xl mx-auto px-8">
@@ -40,3 +42,12 @@ export function toHtml(props: FooterProps) {
         </footer>`;
 };
 
+function createConfig(): ComponentConfig {
+    return {
+        id: `${FOOTER_TYPE}-${Date.now()}`,
+        type: FOOTER_TYPE,
+        props: defaultFooterProps,
+    }
+}
+
+ComponentContainer.register(FOOTER_TYPE, createConfig, toHtml);

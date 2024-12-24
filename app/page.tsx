@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/resizable";
 import { ComponentConfig, createComponentConfig } from "@/lib/components/Component";
 import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
+import { ComponentContainer } from "@/lib/components/ComponentContainer";
 
 export default function Home() {
     const [components, setComponents] = useState<ComponentConfig[]>([]);
@@ -38,7 +39,8 @@ export default function Home() {
     }, [components]);
 
     const handleDrop = (type: string, index?: number) => {
-        const newComponent = createComponentConfig(type);
+        //const newComponent = createComponentConfig(type);
+        const newComponent = ComponentContainer.createComponentConfig(type);
 
         setComponents(prevComponents => {
             const newComponents = [...prevComponents];

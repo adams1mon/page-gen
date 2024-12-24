@@ -1,4 +1,6 @@
 import { Link } from "./common";
+import { ComponentConfig } from "./Component";
+import { ComponentContainer } from "./ComponentContainer";
 
 
 export const HEADER_TYPE = "header";
@@ -8,7 +10,7 @@ export interface HeaderProps {
     links: Link[];
 }
 
-export const defaultHeaderProps = {
+const defaultHeaderProps = {
     title: "Your Name",
     links: [
         { text: "About", url: "#about" },
@@ -17,7 +19,7 @@ export const defaultHeaderProps = {
     ]
 };
 
-export function toHtml(props: HeaderProps) {
+function toHtml(props: HeaderProps) {
     return `
         <header class="w-full py-6 px-8 bg-background border-t">
           <div class="max-w-5xl mx-auto">
@@ -34,3 +36,14 @@ export function toHtml(props: HeaderProps) {
           </div>
         </header>`;
 };
+
+function createConfig(): ComponentConfig {
+    return {
+        id: `${HEADER_TYPE}-${Date.now()}`,
+        type: HEADER_TYPE,
+        props: defaultHeaderProps,
+    }
+}
+
+ComponentContainer.register(HEADER_TYPE, createConfig, toHtml);
+

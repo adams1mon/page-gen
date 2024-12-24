@@ -1,3 +1,5 @@
+import { ComponentConfig } from "./Component";
+import { ComponentContainer } from "./ComponentContainer";
 
 export const PROJECTS_TYPE = "projects";
 
@@ -13,7 +15,7 @@ export interface ProjectsProps {
     projects: Project[];
 }
 
-export const defaultProjectProps: ProjectsProps = {
+const defaultProjectProps: ProjectsProps = {
     title: "My Projects",
     projects: [
         {
@@ -34,7 +36,7 @@ export const defaultProjectProps: ProjectsProps = {
     ]
 };
 
-export function toHtml(props: ProjectsProps) {
+function toHtml(props: ProjectsProps) {
     return `
         <section class="w-full py-20 bg-accent">
           <div class="max-w-5xl mx-auto px-8">
@@ -58,4 +60,14 @@ export function toHtml(props: ProjectsProps) {
           </div>
         </section>`;
 };
+
+function createConfig(): ComponentConfig {
+    return {
+        id: `${PROJECTS_TYPE}-${Date.now()}`,
+        type: PROJECTS_TYPE,
+        props: defaultProjectProps,
+    }
+}
+
+ComponentContainer.register(PROJECTS_TYPE, createConfig, toHtml);
 

@@ -1,3 +1,5 @@
+import { ComponentConfig } from "./Component";
+import { ComponentContainer } from "./ComponentContainer";
 
 export const HERO_TYPE = "hero";
 
@@ -13,14 +15,14 @@ export interface HeroProps {
 // e.g. here image/video hero section shows up as a text input
 // and we can also have better names for the fields
 
-export const defaultHeroProps = {
+const defaultHeroProps = {
     title: "Welcome to My Portfolio",
     subtitle: "I'm a passionate creator building amazing digital experiences. Explore my work and let's create something amazing together.",
     backgroundType: "image",
     backgroundUrl: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?auto=format&fit=crop&q=80"
 };
 
-export function toHtml(props: HeroProps) {
+function toHtml(props: HeroProps) {
     return `
         <section class="w-full min-h-[500px] relative flex items-center">
           ${props.backgroundType === 'video'
@@ -37,4 +39,14 @@ export function toHtml(props: HeroProps) {
           </div>
         </section>`;
 };
+
+function createConfig(): ComponentConfig {
+    return {
+        id: `${HERO_TYPE}-${Date.now()}`,
+        type: HERO_TYPE,
+        props: defaultHeroProps,
+    }
+}
+
+ComponentContainer.register(HERO_TYPE, createConfig, toHtml);
 

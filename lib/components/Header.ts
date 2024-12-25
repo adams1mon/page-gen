@@ -3,7 +3,7 @@ import { ComponentConfig } from "./Component";
 import { ComponentContainer } from "./ComponentContainer";
 
 
-export const HEADER_TYPE = "header";
+export const HEADER_TYPE = "Header";
 
 export interface HeaderProps {
     title: string;

@@ -1,13 +1,45 @@
+import { createElement } from "react";
 import { ComponentConfig } from "./Component";
 import { ComponentContainer } from "./ComponentContainer";
+import { User } from "lucide-react";
+import { renderToStaticMarkup } from "react-dom/server";
 
-export const ABOUT_TYPE = "about";
+export const ABOUT_TYPE = "About";
 
 export interface AboutProps {
     title: string;
     description: string[],
     imageUrl: string,
 }
+
+function Elem(props: AboutProps) {
+    return (
+        <section className="w-full py-20 bg-background">
+          <div className="max-w-5xl mx-auto px-8">
+            <h2 className="text-3xl font-bold mb-8">${props.title}</h2>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div 
+                  className="aspect-square rounded-lg bg-cover bg-center" 
+                  style={{
+                      backgroundImage: `url('${props.imageUrl}')`
+                  }}>
+              </div>
+              <div className="space-y-4">
+                ${props.description.map(paragraph =>
+                    <p className="text-lg text-muted-foreground">${paragraph}</p>
+                ).join('')}
+              </div>
+            </div>
+          </div>
+        </section>
+    )
+}
+
+const comp = {
+    type: ABOUT_TYPE,
+    jsx: Elem,
+};
+
 
 const defaultAboutProps: AboutProps = {
     title: "About Me",
@@ -17,6 +49,8 @@ const defaultAboutProps: AboutProps = {
     ],
     imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
 };
+
+console.log(renderToStaticMarkup(createElement(comp.jsx, defaultAboutProps)));
 
 function toHtml(props: AboutProps) {
     return `
@@ -42,6 +76,8 @@ function createConfig(): ComponentConfig {
         props: defaultAboutProps,
     }
 }
+
+const icon = createElement(User, {className: "w-4 h-4"});
 
 ComponentContainer.register(ABOUT_TYPE, createConfig, toHtml);
 

@@ -1,7 +1,7 @@
 import { ComponentConfig } from "./Component";
 import { ComponentContainer } from "./ComponentContainer";
 
-export const HERO_TYPE = "hero";
+export const HERO_TYPE = "Hero";
 
 export interface HeroProps {
     title: string;

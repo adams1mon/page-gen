@@ -1,11 +1,11 @@
 import { createElement } from 'react';
-import { renderToString } from 'react-dom/server';
+import { renderToStaticMarkup } from 'react-dom/server';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ComponentConfig } from './Component';
 import { ComponentContainer } from './ComponentContainer';
 
-export const MARKDOWN_TYPE = "markdown";
+export const MARKDOWN_TYPE = "Markdown";
 
 export interface MarkdownProps {
     title: string;
@@ -18,10 +18,8 @@ const defaultMarkdownProps = {
 };
 
 function toHtml(props: MarkdownProps) {
-    // Note: For production, you'd want to use a markdown parser here
-    // TODO: SANITIZE MD
-
-    // manually create a JSX node and render HTML
+    // manually create a JSX node and render to HTML,
+    // the markdown should sanitize the input by default
     const element = createElement(
         ReactMarkdown,
         {
@@ -29,7 +27,7 @@ function toHtml(props: MarkdownProps) {
         },
         props.content,
     );
-    const content = renderToString(element);
+    const content = renderToStaticMarkup(element);
 
     return `
         <section class="w-full py-12 bg-background">

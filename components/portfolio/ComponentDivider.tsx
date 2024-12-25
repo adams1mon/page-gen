@@ -37,7 +37,7 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                 className="flex items-center gap-2"
               >
                 {component.icon}
-                <span>{component.title}</span>
+                <span>{component.type}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

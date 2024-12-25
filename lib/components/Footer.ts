@@ -2,7 +2,7 @@ import { ComponentConfig } from "./Component";
 import { ComponentContainer } from "./ComponentContainer";
 import { Link } from "./common";
 
-export const FOOTER_TYPE = "footer";
+export const FOOTER_TYPE = "Footer";
 
 export interface FooterProps {
     email: string;

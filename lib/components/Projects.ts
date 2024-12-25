@@ -1,7 +1,7 @@
 import { ComponentConfig } from "./Component";
 import { ComponentContainer } from "./ComponentContainer";
 
-export const PROJECTS_TYPE = "projects";
+export const PROJECTS_TYPE = "Projects";
 
 export interface Project {
     title: string;
@@ -9,6 +9,10 @@ export interface Project {
     imageUrl: string;
     link?: string;
 }
+
+//const projectsPropsDescription = {
+//
+//}
 
 export interface ProjectsProps {
     title: string;

@@ -2,15 +2,15 @@ import { Button } from "@/components/ui/button";
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { ReactNode, useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { ComponentConfig } from "@/lib/components/Component";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Card } from "../ui/card";
+import { ComponentInstance } from "@/lib/components/ComponentContainer";
 
 interface PortfolioComponentProps {
-    component: ComponentConfig;
+    component: ComponentInstance;
     index: number;
-    onUpdate: (component: ComponentConfig) => void;
+    onUpdate: (component: ComponentInstance) => void;
     moveComponent: (dragIndex: number, hoverIndex: number) => void;
     onDrop: (type: string, index: number) => void;
     onDelete: (id: string) => void;

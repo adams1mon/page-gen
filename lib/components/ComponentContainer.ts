@@ -1,32 +1,48 @@
 import { ReactNode } from "react";
-import { ComponentConfig, PropType } from "./Component";
+
+
+// holds the static state of a component
+export interface ComponentDescriptor {
+    type: string,
+    name: string,
+    icon: ReactNode,
+    defaultProps: any,
+    jsxFunc: React.FunctionComponent<any>,
+}
+
+// holds the mutable state of a newly created component
+export interface ComponentInstance {
+    id: string,
+    type: string,
+    props: any,
+}
+
+// hands out component factory functions to any React node that wants
+// to create a particular component
 
 export class ComponentContainer {
-    static configFactories: { [key: string]: () => ComponentConfig } = {}
-    static toHtmls: { [key: string]: (props: any) => string } = {}
-    static icons: { [key: string]: ReactNode } = {}
+    static components: { [type: string]: ComponentDescriptor } = {};
 
     static register(
         type: string,
-        createConfig: () => ComponentConfig,
-        toHtml: (props: any) => string,
-        //icon: ReactNode,
+        descriptor: ComponentDescriptor,
     ) {
-        ComponentContainer.configFactories[type] = createConfig;
-        ComponentContainer.toHtmls[type] = toHtml;
-        //ComponentContainer.icons[type] = icon;
+        ComponentContainer.components[type] = descriptor;
     }
 
-    static createComponentConfig(type: string): ComponentConfig {
-        const func = ComponentContainer.configFactories[type]
-        if (!func) throw new Error(`component ${type} doesn't have a createConfig function registered`);
-        return func();
+    static createInstance(type: string): ComponentInstance {
+        const desc = ComponentContainer.getDescriptor(type);
+        return {
+            id: `${type}-${Date.now()}`,
+            type,
+            props: desc.defaultProps,
+        }
     }
 
-    static toHtml(type: string, props: PropType): string {
-        const func = ComponentContainer.toHtmls[type];
-        if (!func) throw new Error(`component ${type} doesn't have a toHtml function registered`);
-        return func(props)
+    static getDescriptor(type: string): ComponentDescriptor {
+        const desc = ComponentContainer.components[type];
+        if (!desc) throw new Error(`component ${type} is not registered`);
+        return desc;
     }
 }
 

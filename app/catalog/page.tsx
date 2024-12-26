@@ -2,6 +2,7 @@ import { availableComponents } from "@/components/portfolio/available-components
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { ComponentContainer } from "@/lib/components/ComponentContainer";
 
 export default function CatalogPage() {
 
@@ -21,10 +22,10 @@ export default function CatalogPage() {
         </div>
 
         <div className="space-y-12">
-          {availableComponents.map((component) => (
-            <div key={component.type} className="space-y-4">
+          {ComponentContainer.getIcons().map(icon => (
+            <div key={icon.componentType} className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b">
-                {component.icon}
+                {icon.icon}
                 <h2 className="text-xl font-semibold">{component.title}</h2>
               </div> 
 

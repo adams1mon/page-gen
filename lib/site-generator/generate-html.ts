@@ -1,17 +1,25 @@
-import { ComponentConfig } from "../components/Component";
-import { ComponentContainer } from "../components/ComponentContainer";
+import { renderToStaticMarkup } from "react-dom/server";
+import { ComponentContainer, ComponentInstance } from "../components/ComponentContainer";
+import { createElement } from "react";
 
 
 export interface SiteConfig {
     title: string;
     description: string;
-    components: ComponentConfig[];
+    components: ComponentInstance[];
+}
+
+// renders a JSX node as HTML
+function componentToHtml(comp: ComponentInstance): string {
+    const { jsxFunc } = ComponentContainer.getDescriptor(comp.type);
+    const elem = createElement(jsxFunc, comp.props);
+    return renderToStaticMarkup(elem);
 }
 
 export function generateHtml(config: SiteConfig) {
     
         const renderedComponents = config.components
-            .map(c => ComponentContainer.toHtml(c.type, c.props))
+            .map(c => componentToHtml(c))
             .join('\n');
 
         const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;

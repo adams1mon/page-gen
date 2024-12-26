@@ -14,12 +14,11 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ComponentConfig, createComponentConfig } from "@/lib/components/Component";
 import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
-import { ComponentContainer } from "@/lib/components/ComponentContainer";
+import { ComponentContainer, ComponentInstance } from "@/lib/components/ComponentContainer";
 
 export default function Home() {
-    const [components, setComponents] = useState<ComponentConfig[]>([]);
+    const [components, setComponents] = useState<ComponentInstance[]>([]);
     const [previewHtml, setPreviewHtml] = useState<string>("");
     const [siteConfig, setSiteConfig] = useState<SiteConfig>({
         title: 'My Portfolio',
@@ -38,9 +37,13 @@ export default function Home() {
         setPreviewHtml(html);
     }, [components]);
 
+
     const handleDrop = (type: string, index?: number) => {
-        //const newComponent = createComponentConfig(type);
-        const newComponent = ComponentContainer.createComponentConfig(type);
+
+        // TODO: change to use new component
+        //const newComponent = ComponentContainer.createComponentConfig(type);
+        const newComponent = ComponentContainer.createInstance(type);
+
 
         setComponents(prevComponents => {
             const newComponents = [...prevComponents];
@@ -52,9 +55,9 @@ export default function Home() {
         });
     };
 
-    const handleComponentUpdate = (updatedComponent: ComponentConfig) => {
+    const handleComponentUpdate = (updatedComponent: ComponentInstance) => {
         console.log(updatedComponent);
-        
+
         setComponents(components.map(component =>
             component.id === updatedComponent.id ? updatedComponent : component
         ));
@@ -145,7 +148,7 @@ export default function Home() {
                     {/* Preview Panel */}
                     <ResizablePanel defaultSize={50} minSize={10}>
                         <div className="h-full bg-gray-50">
-                            
+
                             {/* TODO: use a shadow DOM element here */}
                             <iframe
                                 srcDoc={previewHtml}

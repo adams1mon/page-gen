@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
 import { useDrag, useDrop } from "react-dnd";
 import { ComponentInstance } from "@/lib/components/ComponentContainer";
-import { createInputs } from "./prop-editor";
+import { createInputs } from "./dynamic-input";
 import { useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
 
-interface PortfolioComponentProps {
+interface ComponentEditorProps {
     component: ComponentInstance;
     index: number;
     onUpdate: (component: ComponentInstance) => void;
@@ -22,14 +22,13 @@ interface DragItem {
     type: string;
 }
 
-
-export function PortfolioComponent({
+export function ComponentEditor({
     component,
     index,
     onUpdate,
     moveComponent,
     onDelete
-}: PortfolioComponentProps) {
+}: ComponentEditorProps) {
     const ref = useRef<HTMLDivElement>(null);
     const dragHandleRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(true);
@@ -93,12 +92,12 @@ export function PortfolioComponent({
     return (
         <div ref={ref} style={{ opacity }} className="group relative bg-background border rounded-lg">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between py-2 px-3 border-b">
                     <div ref={dragHandleRef} className="cursor-move flex items-center gap-2 text-muted-foreground">
                         <GripVertical className="w-4 h-4" />
-                        <span className="font-medium capitalize">{component.type}</span>
+                        <span className="font-medium capitalize text-sm">{component.type}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                         <Button
                             variant="ghost"
                             size="icon"
@@ -119,10 +118,6 @@ export function PortfolioComponent({
                 </div>
                 <CollapsibleContent>
                     <div className="p-4">
-                        {/* 
-                            iterate through all the props of the component configs
-                            and create editor elements
-                        */}
                         {createInputs(component.props, handleUpdate)}
                     </div>
                 </CollapsibleContent>
@@ -130,4 +125,3 @@ export function PortfolioComponent({
         </div>
     );
 }
-

@@ -7,35 +7,37 @@ export const HEADER_TYPE = "Header";
 export interface HeaderProps {
     title: string;
     links: Link[];
+    htmlId: string;
 }
 
-const defaultProps = {
+function Node(props: HeaderProps) {
+    return (
+        <header id={props.htmlId} className="w-full py-6 px-8 bg-background border-t">
+            <div className="max-w-5xl mx-auto">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">{props.title}</h1>
+                    <nav className="space-x-6">
+                        {props.links.map((link, index) => (
+                            <a key={index} href={link.url} className="text-muted-foreground hover:text-foreground">
+                                {link.text}
+                            </a>
+                        ))}
+                    </nav>
+                </div>
+            </div>
+        </header>
+    );
+}
+
+const defaultProps: HeaderProps = {
     title: "Your Name",
     links: [
         { text: "About", url: "#about" },
         { text: "Projects", url: "#projects" },
         { text: "Contact", url: "#contact" }
-    ]
+    ],
+    htmlId: "header"
 };
-
-function Node(props: HeaderProps) {
-    return (
-        <header className="w-full py-6 px-8 bg-background border-t" >
-            <div className="max-w-5xl mx-auto" >
-                <div className="flex justify-between items-center" >
-                    <h1 className="text-2xl font-bold" > {props.title}</h1 >
-                    <nav className="space-x-6" >
-                        {props.links.map((link, index) => (
-                            <a key={index} href={link.url} className="text-muted-foreground hover:text-foreground" >
-                                {link.text}
-                            </a>
-                        ))}
-                    </nav >
-                </div >
-            </div >
-        </header >
-    );
-}
 
 const desc: ComponentDescriptor = {
     type: HEADER_TYPE,
@@ -46,4 +48,3 @@ const desc: ComponentDescriptor = {
 }
 
 ComponentContainer.register(HEADER_TYPE, desc);
-

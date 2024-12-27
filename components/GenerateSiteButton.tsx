@@ -18,9 +18,6 @@ export function GenerateSiteButton({ siteConfig }: GenerateSiteButtonProps) {
 
             const html = generateHtml(siteConfig);
 
-            console.log(html);
-            
-
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });
             const url = URL.createObjectURL(blob);

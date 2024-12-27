@@ -7,11 +7,12 @@ export const FOOTER_TYPE = "Footer";
 export interface FooterProps {
     email: string;
     socialLinks: Link[];
+    htmlId: string;
 }
 
 function Node(props: FooterProps) {
     return (
-        <footer className="w-full py-12 bg-background border-t">
+        <footer id={props.htmlId} className="w-full py-12 bg-background border-t">
             <div className="max-w-5xl mx-auto px-8">
                 <div className="grid md:grid-cols-2 gap-8">
                     <div>
@@ -23,7 +24,10 @@ function Node(props: FooterProps) {
                         <div className="space-y-2">
                             {props.socialLinks.map(link => (
                                 <a
+                                    key={link.url}
                                     href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="block text-muted-foreground hover:text-foreground">
                                     {link.text}
                                 </a>
@@ -42,19 +46,9 @@ const defaultProps: FooterProps = {
         { text: "GitHub", url: "https://github.com" },
         { text: "LinkedIn", url: "https://linkedin.com" },
         { text: "Twitter", url: "https://twitter.com" }
-    ]
+    ],
+    htmlId: "contact"
 };
-
-export const urlPropDescription = {
-    text: {
-        type: "string",
-        label: "Text",
-    },
-    url: {
-        type: "string",
-        label: "Url",
-    },
-}
 
 const desc: ComponentDescriptor = {
     type: FOOTER_TYPE,

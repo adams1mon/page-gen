@@ -2,14 +2,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentContainer, ComponentInstance } from "../components/ComponentContainer";
 import { createElement } from "react";
 
-
 export interface SiteConfig {
     title: string;
     description: string;
     components: ComponentInstance[];
 }
 
-// renders a JSX node as HTML
 function componentToHtml(comp: ComponentInstance): string {
     const { jsxFunc } = ComponentContainer.getDescriptor(comp.type);
     const elem = createElement(jsxFunc, comp.props);
@@ -17,29 +15,54 @@ function componentToHtml(comp: ComponentInstance): string {
 }
 
 export function generateHtml(config: SiteConfig) {
+    const renderedComponents = config.components
+        .map(c => componentToHtml(c))
+        .join('\n');
+
+    // TODO: add tailwind via the tailwind cli,
+    // TODO: add separate CSS files,
+    // TODO: add separate JS files,
+        
+    // TODO: add dark mode,
+    const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;
     
-        const renderedComponents = config.components
-            .map(c => componentToHtml(c))
-            .join('\n');
+    // Add smooth scroll behavior script
+    const smoothScrollScript = `
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('a[hrnpx tailwindcss -i ./src/input.css -o ./src/output.css --watchef^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href').substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                            // Update URL without triggering a scroll
+                            history.pushState(null, '', '#' + targetId);
+                        }
+                    });
+                });
+            });
+        </script>
+    `;
 
-        const tailwindcss = `<script src="https://cdn.tailwindcss.com"></script>`;
-
-        return `<!DOCTYPE html>
-        <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta description="${config.description}">
-                <title>${config.title}</title>
-                ${tailwindcss}
-                <style>
-                  ${generateStyles()}
-                </style>
-            </head>
-            <body>
-                ${renderedComponents}
-            </body>
-        </html>`;
+    return `<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta description="${config.description}">
+            <title>${config.title}</title>
+            ${tailwindcss}
+            <style>
+              ${generateStyles()}
+            </style>
+            ${smoothScrollScript}
+        </head>
+        <body>
+            ${renderedComponents}
+        </body>
+    </html>`;
 }
 
 function generateStyles() {
@@ -70,6 +93,7 @@ function generateStyles() {
       background: hsl(var(--background));
       color: hsl(var(--foreground));
       line-height: 1.5;
+      scroll-behavior: smooth;
     }
 
     /* Typography */

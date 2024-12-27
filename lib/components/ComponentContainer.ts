@@ -19,7 +19,6 @@ export interface ComponentInstance {
 
 // hands out component factory functions to any React node that wants
 // to create a particular component
-
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};
 

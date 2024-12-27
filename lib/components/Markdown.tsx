@@ -8,27 +8,28 @@ export const MARKDOWN_TYPE = "Markdown";
 export interface MarkdownProps {
     title: string;
     content: string;
+    htmlId: string;
 }
 
-const defaultProps = {
-    title: "Markdown Section",
-    content: "# Hello World\n\nThis is a markdown section. You can write:\n\n- Lists\n- **Bold text**\n- *Italic text*\n\n## Code\n\n```js\nconsole.log('Hello World');\n```"
-};
-
 function Node(props: MarkdownProps) {
-
     return (
-        <section className="w-full py-12 bg-background">
-          <div className="max-w-5xl mx-auto px-8">
-            <h2 className="text-2xl font-bold mb-6">{props.title}</h2>
-            <div className="prose">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {props.content}
-            </ReactMarkdown>
+        <section id={props.htmlId} className="w-full py-12 bg-background">
+            <div className="max-w-5xl mx-auto px-8">
+                <h2 className="text-2xl font-bold mb-6">{props.title}</h2>
+                <div className="prose">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {props.content}
+                    </ReactMarkdown>
+                </div>
             </div>
-          </div>
         </section>
     );
+}
+
+const defaultProps: MarkdownProps = {
+    title: "Markdown Section",
+    content: "# Hello World\n\nThis is a markdown section. You can write:\n\n- Lists\n- **Bold text**\n- *Italic text*\n\n## Code\n\n```js\nconsole.log('Hello World');\n```",
+    htmlId: "markdown"
 };
 
 const desc: ComponentDescriptor = {
@@ -40,4 +41,3 @@ const desc: ComponentDescriptor = {
 }
 
 ComponentContainer.register(MARKDOWN_TYPE, desc);
-

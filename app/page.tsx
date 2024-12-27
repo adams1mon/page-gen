@@ -40,10 +40,7 @@ export default function Home() {
 
     const handleDrop = (type: string, index?: number) => {
 
-        // TODO: change to use new component
-        //const newComponent = ComponentContainer.createComponentConfig(type);
         const newComponent = ComponentContainer.createInstance(type);
-
 
         setComponents(prevComponents => {
             const newComponents = [...prevComponents];

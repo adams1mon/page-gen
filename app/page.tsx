@@ -11,7 +11,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
+import { SiteConfig, generateHtml, newSiteConfig } from "@/lib/site-generator/generate-html";
 import { ComponentContainer, ComponentInstance } from "@/lib/components/ComponentContainer";
 import { SitePreview } from "@/components/preview/SitePreview";
 import { PreviewToggle } from "@/components/preview/PreviewToggle";
@@ -21,22 +21,20 @@ export default function Home() {
     const [components, setComponents] = useState<ComponentInstance[]>([]);
     const [previewHtml, setPreviewHtml] = useState<string>("");
     const [previewEnabled, setPreviewEnabled] = useState(true);
-    const [siteConfig, setSiteConfig] = useState<SiteConfig>({
-        title: 'My Portfolio',
-        description: 'Welcome to my portfolio website',
-        components
-    });
+    const [siteConfig, setSiteConfig] = useState<SiteConfig>(newSiteConfig());
 
     useEffect(() => {
-        const newSiteConfig = {
+        const updatedSiteConfig = {
             ...siteConfig,
             components,
         };
-        setSiteConfig(newSiteConfig);
+        setSiteConfig(updatedSiteConfig);
         
         if (previewEnabled) {
-            const html = generateHtml(newSiteConfig);
-            setPreviewHtml(html);
+            (async () => {
+                const html = await generateHtml(updatedSiteConfig);
+                setPreviewHtml(html);
+            })();
         }
     }, [components, previewEnabled]);
 

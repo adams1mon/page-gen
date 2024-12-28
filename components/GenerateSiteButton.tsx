@@ -16,7 +16,7 @@ export function GenerateSiteButton({ siteConfig }: GenerateSiteButtonProps) {
         try {
             setIsGenerating(true);
 
-            const html = generateHtml(siteConfig);
+            const html = await generateHtml(siteConfig);
 
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });

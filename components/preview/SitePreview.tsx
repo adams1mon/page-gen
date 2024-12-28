@@ -14,7 +14,6 @@ export function SitePreview({ previewHtml, siteConfig }: SitePreviewProps) {
         srcDoc={previewHtml}
         className="w-full h-full border-0"
         title={siteConfig.title}
-        sandbox="allow-scripts allow-same-origin"
       />
     </div>
   );

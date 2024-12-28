@@ -7,8 +7,8 @@ interface OpenInNewTabProps {
 }
 
 export function OpenInNewTab({ siteConfig }: OpenInNewTabProps) {
-  const handleOpenInNewTab = () => {
-    const html = generateHtml(siteConfig);
+  const handleOpenInNewTab = async () => {
+    const html = await generateHtml(siteConfig);
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');

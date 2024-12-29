@@ -17,6 +17,7 @@ import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
 import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
+import { TestSitePreview } from "@/components/preview/TestSitePreview";
 
 export default function Home() {
     const [components, setComponents] = useState<ComponentDescriptor[]>([]);
@@ -137,10 +138,15 @@ export default function Home() {
                         <>
                             <ResizableHandle withHandle />
                             <ResizablePanel defaultSize={50} minSize={10}>
-                                <SitePreview
-                                    html={previewHtml}
+                                <TestSitePreview
                                     site={site}
                                 />
+                                {
+                                //<SitePreview
+                                //    html={previewHtml}
+                                //    site={site}
+                                ///>
+                                }
                             </ResizablePanel>
                         </>
                     )}

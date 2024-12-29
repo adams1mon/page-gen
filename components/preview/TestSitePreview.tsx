@@ -2,7 +2,8 @@
 
 import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
 import { createReactNode } from "@/lib/site-generator/generate-html";
-import { MutableRefObject, Suspense, useEffect, useRef, useState } from "react";
+import { Play } from "next/font/google";
+import { MutableRefObject, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 
@@ -22,52 +23,68 @@ export function TestSitePreview({ site }: SitePreviewProps) {
 
     const shadowRef = useRef(null);
 
+    //useEffect(() => {
+    //
+    //    if (!isClient) return;
+    //
+    //    if (!shadowRef.current && shadow) return;
+    //
+    //    const sh: ShadowRoot = shadowRef.current!.attachShadow({ mode: "open" });
+    //
+    //    const span = document.createElement("span");
+    //    span.textContent = "I'm in the shadow DOMMMM";
+    //    sh.appendChild(span);
+    //
+    //    setShadow(sh);
+    //
+    //    //const upper = document.querySelector("button#upper");
+    //    //upper.addEventListener("click", () => {
+    //    //    const spans = Array.from(document.querySelectorAll("span"));
+    //    //    for (const span of spans) {
+    //    //        span.textContent = span.textContent.toUpperCase();
+    //    //    }
+    //    //});
+    //    //
+    //}, [shadowRef.current]);
+
+    //useEffect(() => {
+    //    console.log("rendering site");
+    //    if (!shadow) return;
+    //
+    //    const element = createReactNode(site);
+    //    shadow.innerHTML = renderToStaticMarkup(element);
+    //    console.log("rendered");
+    //}, [site, shadow]);
+
     useEffect(() => {
+        console.log(shadowRef);
+        console.log(shadow);
 
-        if (!isClient) return;
-
-        if (!shadowRef.current && shadow) return;
+        if (!shadowRef.current || shadow) return;
 
         const sh: ShadowRoot = shadowRef.current!.attachShadow({ mode: "open" });
 
         const span = document.createElement("span");
-        span.textContent = "I'm in the shadow DOM";
+        span.textContent = "I'm in the shadow DOMMMM";
         sh.appendChild(span);
 
         setShadow(sh);
 
-        //const upper = document.querySelector("button#upper");
-        //upper.addEventListener("click", () => {
-        //    const spans = Array.from(document.querySelectorAll("span"));
-        //    for (const span of spans) {
-        //        span.textContent = span.textContent.toUpperCase();
-        //    }
-        //});
-        //
-    }, [shadowRef.current]);
+    }, [shadowRef]);
 
-    //useEffect(() => {
-    //    if (!shadow) return;
-    //    const element = createReactNode(site);
-    //    shadow.innerHTML = renderToStaticMarkup(element);
-    //}, [site]);
-
-    //const node = createReactNode(site);
     return (
         <div className="h-full bg-gray-50">
             {
                 !isClient ?
-                <p>Prerendered here...</p>
-                :
-
-                //node
-                //<site.jsxFunc {...site.props} />
-                <div id="preview-root" ref={shadowRef}>
-
-                    <template shadowrootmode="open">
-                        <p>shadow doem yeah</p>
-                    </template>
-                </div>
+                    <p>Prerendered here...</p>
+                    :
+                    //node
+                    //<site.jsxFunc {...site.props} />
+                    //<template shadowrootmode="open">
+                    //    <p>shadow doem yeah</p>
+                    //</template>
+                    <div id="preview-root" ref={shadowRef}>
+                    </div>
             }
         </div>
     );

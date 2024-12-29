@@ -1,40 +1,39 @@
 import { ReactNode } from "react";
 
-
-// holds the static state of a component
 export interface ComponentDescriptor {
+    id: string,
     type: string,
     name: string,
     icon: ReactNode,
-    defaultProps: any,
+    props: any,
     jsxFunc: React.FunctionComponent<any>,
 }
 
-// holds the mutable state of a newly created component
-export interface ComponentInstance {
-    id: string,
-    type: string,
-    props: any,
+export function updateProps(comp: ComponentDescriptor, props: any): ComponentDescriptor {
+    return {
+        ...comp,
+        props,
+    }
 }
 
-// hands out component factory functions to any React node that wants
-// to create a particular component
+
+// holds component descriptors and creates new component descriptors based on the templates
+
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};
 
     static register(
         type: string,
-        descriptor: ComponentDescriptor,
+        descriptorTemplate: ComponentDescriptor,
     ) {
-        ComponentContainer.components[type] = descriptor;
+        ComponentContainer.components[type] = descriptorTemplate;
     }
 
-    static createInstance(type: string): ComponentInstance {
+    static createInstance(type: string): ComponentDescriptor {
         const desc = ComponentContainer.getDescriptor(type);
         return {
+            ...desc,
             id: `${type}-${Date.now()}`,
-            type,
-            props: desc.defaultProps,
         }
     }
 

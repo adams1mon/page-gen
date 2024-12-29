@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
 import { useDrag, useDrop } from "react-dnd";
-import { ComponentInstance } from "@/lib/components/ComponentContainer";
 import { createInputs } from "./dynamic-input";
 import { useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
+import { ComponentDescriptor, updateProps } from "@/lib/components/ComponentContainer";
 
 interface ComponentEditorProps {
-    component: ComponentInstance;
+    component: ComponentDescriptor;
     index: number;
-    onUpdate: (component: ComponentInstance) => void;
+    onUpdate: (component: ComponentDescriptor) => void;
     moveComponent: (dragIndex: number, hoverIndex: number) => void;
     onDrop: (type: string, index: number) => void;
     onDelete: (id: string) => void;
@@ -83,10 +83,7 @@ export function ComponentEditor({
     drop(ref);
 
     const handleUpdate = (newProps: any) => {
-        onUpdate({
-            ...component,
-            props: newProps
-        });
+        onUpdate(updateProps(component, newProps))
     };
 
     return (

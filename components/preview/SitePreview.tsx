@@ -1,19 +1,19 @@
-"use client";
+import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
+import { SiteProps } from "@/lib/components/Site";
 
-import { SiteConfig } from "@/lib/site-generator/generate-html";
 
 interface SitePreviewProps {
-  previewHtml: string;
-  siteConfig: SiteConfig;
+  site: ComponentDescriptor;
+  html: string;
 }
 
-export function SitePreview({ previewHtml, siteConfig }: SitePreviewProps) {
+export function SitePreview({ site, html }: SitePreviewProps) {
   return (
     <div className="h-full bg-gray-50">
       <iframe
-        srcDoc={previewHtml}
+        srcDoc={html}
         className="w-full h-full border-0"
-        title={siteConfig.title}
+        title={(site.props as SiteProps).title}
       />
     </div>
   );

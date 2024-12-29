@@ -1,14 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
-import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
 
 interface OpenInNewTabProps {
-  siteConfig: SiteConfig;
+  html: string,
 }
 
-export function OpenInNewTab({ siteConfig }: OpenInNewTabProps) {
+export function OpenInNewTab({ html }: OpenInNewTabProps) {
   const handleOpenInNewTab = async () => {
-    const html = await generateHtml(siteConfig);
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');

@@ -67,9 +67,10 @@ const defaultProps: ProjectsProps = {
 };
 
 const desc: ComponentDescriptor = {
+    id: "id",
     type: PROJECTS_TYPE,
     name: "Projects",
-    defaultProps,
+    props: defaultProps,
     icon: <Briefcase className="w-4 h-4" />,
     jsxFunc: Node,
 }

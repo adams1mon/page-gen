@@ -44,9 +44,10 @@ const defaultProps: AboutProps = {
 };
 
 const desc: ComponentDescriptor = {
+    id: "id", // will be overwritten when a new instance is created
     type: ABOUT_TYPE,
     name: "About",
-    defaultProps,
+    props: defaultProps,
     icon: <User className="w-4 h-4" />,
     jsxFunc: Node,
 }

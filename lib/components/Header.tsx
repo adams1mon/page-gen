@@ -40,9 +40,10 @@ const defaultProps: HeaderProps = {
 };
 
 const desc: ComponentDescriptor = {
+    id: "id",
     type: HEADER_TYPE,
     name: "Header",
-    defaultProps,
+    props: defaultProps,
     icon: <Layout className="w-4 h-4" />,
     jsxFunc: Node,
 }

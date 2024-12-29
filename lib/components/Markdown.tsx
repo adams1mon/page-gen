@@ -33,9 +33,10 @@ const defaultProps: MarkdownProps = {
 };
 
 const desc: ComponentDescriptor = {
+    id: "id",
     type: MARKDOWN_TYPE,
     name: "Markdown",
-    defaultProps,
+    props: defaultProps,
     icon: <FileText className="w-4 h-4" />,
     jsxFunc: Node,
 }

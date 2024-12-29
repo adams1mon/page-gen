@@ -51,9 +51,10 @@ const defaultProps: FooterProps = {
 };
 
 const desc: ComponentDescriptor = {
+    id: "id",
     type: FOOTER_TYPE,
     name: "Footer",
-    defaultProps,
+    props: defaultProps,
     icon: <Mail className="w-4 h-4" />,
     jsxFunc: Node,
 }

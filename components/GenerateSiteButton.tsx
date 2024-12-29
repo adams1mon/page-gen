@@ -1,22 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SiteConfig, generateHtml } from "@/lib/site-generator/generate-html";
+import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
 import { Download } from "lucide-react";
 import { useState } from "react";
 
 interface GenerateSiteButtonProps {
-    siteConfig: SiteConfig,
+    site: ComponentDescriptor,
+    html: string;
 }
 
-export function GenerateSiteButton({ siteConfig }: GenerateSiteButtonProps) {
+export function GenerateSiteButton({ site, html }: GenerateSiteButtonProps) {
     const [isGenerating, setIsGenerating] = useState(false);
 
     const generateSite = async () => {
         try {
             setIsGenerating(true);
-
-            const html = await generateHtml(siteConfig);
 
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });
@@ -41,7 +40,7 @@ export function GenerateSiteButton({ siteConfig }: GenerateSiteButtonProps) {
         <div className="flex items-center gap-2">
             <Button
                 onClick={generateSite}
-                disabled={isGenerating || siteConfig.components.length === 0}
+                disabled={isGenerating || site.props.components.length === 0}
                 className="gap-2"
             >
                 <Download className="w-4 h-4" />

@@ -44,9 +44,10 @@ const defaultProps: HeroProps = {
 };
 
 const desc: ComponentDescriptor = {
+    id: "id",
     type: HERO_TYPE,
     name: "Hero",
-    defaultProps,
+    props: defaultProps,
     icon: <Layout className="w-4 h-4" />,
     jsxFunc: Node,
 }

@@ -11,34 +11,39 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { SiteConfig, generateHtml, newSiteConfig } from "@/lib/site-generator/generate-html";
-import { ComponentContainer, ComponentInstance } from "@/lib/components/ComponentContainer";
+import { ComponentContainer, ComponentDescriptor, updateProps } from "@/lib/components/ComponentContainer";
 import { SitePreview } from "@/components/preview/SitePreview";
 import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
+import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function Home() {
-    const [components, setComponents] = useState<ComponentInstance[]>([]);
+    const [components, setComponents] = useState<ComponentDescriptor[]>([]);
     const [previewHtml, setPreviewHtml] = useState<string>("");
     const [previewEnabled, setPreviewEnabled] = useState(true);
-    const [siteConfig, setSiteConfig] = useState<SiteConfig>(newSiteConfig());
+    const [site, setSite] = useState<ComponentDescriptor>(newSite());
+    const debounce = useDebounce();
+    const previewDebounceMillis = 100;
 
-    useEffect(() => {
-        const updatedSiteConfig = {
-            ...siteConfig,
+    const debouncePreview = () => debounce(() => {
+        const updatedSite = updateProps(site, {
+            ...site.props,
             components,
-        };
-        setSiteConfig(updatedSiteConfig);
-        
+        });
+        setSite(updatedSite);
+
         if (previewEnabled) {
             (async () => {
-                const html = await generateHtml(updatedSiteConfig);
+                const html = await generateHtml(updatedSite);
                 setPreviewHtml(html);
             })();
         }
-    }, [components, previewEnabled]);
+    }, previewDebounceMillis);
 
-    const handleDrop = (type: string, index?: number) => {
+    useEffect(debouncePreview, [components, previewEnabled]);
+
+    const addComponent = (type: string, index?: number) => {
         const newComponent = ComponentContainer.createInstance(type);
         setComponents(prevComponents => {
             const newComponents = [...prevComponents];
@@ -50,7 +55,7 @@ export default function Home() {
         });
     };
 
-    const handleComponentUpdate = (updatedComponent: ComponentInstance) => {
+    const handleComponentUpdate = (updatedComponent: ComponentDescriptor) => {
         setComponents(components.map(component =>
             component.id === updatedComponent.id ? updatedComponent : component
         ));
@@ -72,6 +77,7 @@ export default function Home() {
         );
     };
 
+
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="h-screen flex flex-col">
@@ -79,12 +85,12 @@ export default function Home() {
                     <div className="flex justify-between items-center p-4">
                         <h1 className="text-2xl font-bold">Portfolio Builder</h1>
                         <div className="flex items-center gap-4">
-                            <PreviewToggle 
+                            <PreviewToggle
                                 enabled={previewEnabled}
                                 onToggle={() => setPreviewEnabled(!previewEnabled)}
                             />
-                            <OpenInNewTab siteConfig={siteConfig} />
-                            <GenerateSiteButton siteConfig={siteConfig} />
+                            <OpenInNewTab html={previewHtml} />
+                            <GenerateSiteButton html={previewHtml} site={site} />
                         </div>
                     </div>
                 </div>
@@ -96,26 +102,26 @@ export default function Home() {
                                 <div className="space-y-4">
                                     {components.length === 0 ? (
                                         <div className="flex items-center justify-center h-full min-h-[400px]">
-                                            <ComponentDivider onInsert={(type) => handleDrop(type, 0)} />
+                                            <ComponentDivider onInsert={(type) => addComponent(type, 0)} />
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
                                             {components.map((component, index) => (
                                                 <div key={component.id}>
                                                     <ComponentDivider
-                                                        onInsert={(type) => handleDrop(type, index)}
+                                                        onInsert={(type) => addComponent(type, index)}
                                                     />
                                                     <ComponentEditor
                                                         index={index}
                                                         component={component}
                                                         onUpdate={handleComponentUpdate}
                                                         moveComponent={moveComponent}
-                                                        onDrop={handleDrop}
+                                                        onDrop={addComponent}
                                                         onDelete={deleteComponent}
                                                     />
                                                     {index === components.length - 1 && (
                                                         <ComponentDivider
-                                                            onInsert={(type) => handleDrop(type, index + 1)}
+                                                            onInsert={(type) => addComponent(type, index + 1)}
                                                         />
                                                     )}
                                                 </div>
@@ -131,9 +137,9 @@ export default function Home() {
                         <>
                             <ResizableHandle withHandle />
                             <ResizablePanel defaultSize={50} minSize={10}>
-                                <SitePreview 
-                                    previewHtml={previewHtml} 
-                                    siteConfig={siteConfig} 
+                                <SitePreview
+                                    html={previewHtml}
+                                    site={site}
                                 />
                             </ResizablePanel>
                         </>

@@ -1,6 +1,8 @@
 import { Layout } from "lucide-react";
 import { Link } from "./common";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
+import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
+import { linkDescriptor } from "./common";
 
 export const HEADER_TYPE = "Header";
 
@@ -39,11 +41,40 @@ const defaultProps: HeaderProps = {
     htmlId: "header"
 };
 
+
+const propsDescriptor: ObjectDesc = {
+    type: DataType.OBJECT,
+    displayName: "Header Settings",
+    child: {
+        title: {
+            type: DataType.STRING,
+            displayName: "Title",
+            desc: "Title to display in the header",
+            input: InputType.TEXT,
+            default: "Title",
+        },
+        links: {
+            type: DataType.ARRAY,
+            displayName: "Links",
+            desc: "Links to display in the header",
+            child: { ...linkDescriptor },
+        },
+        htmlId: {
+            type: DataType.STRING,
+            displayName: "Html id",
+            desc: "Html id of the element, if there is a link with '#<id>' on the page, clicking it will scroll to this element.",
+            input: InputType.URL,
+            default: "header",
+        },
+    }
+}
+
 const desc: ComponentDescriptor = {
     id: "id",
     type: HEADER_TYPE,
     name: "Header",
     props: defaultProps,
+    propsDescriptor,
     icon: <Layout className="w-4 h-4" />,
     jsxFunc: Node,
 }

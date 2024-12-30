@@ -1,5 +1,6 @@
 import { User } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
+import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
 
 export const ABOUT_TYPE = "About";
 
@@ -43,11 +44,51 @@ const defaultProps: AboutProps = {
     htmlId: "about"
 };
 
+const propsDescriptor: ObjectDesc = {
+    type: DataType.OBJECT,
+    displayName: "About section Settings",
+    child: {
+        title: {
+            type: DataType.STRING,
+            displayName: "Title",
+            desc: "Title to display",
+            input: InputType.TEXT,
+            default: "Title",
+        },
+        description: {
+            type: DataType.ARRAY,
+            displayName: "Description",
+            child: {
+                type: DataType.STRING,
+                displayName: "Title",
+                desc: "Paragraph to add to the section.",
+                input: InputType.TEXTAREA,
+                default: "I'm a creative professional with a passion for building beautiful and functional digital experiences. With expertise in design and development, I bring ideas to life through clean code and intuitive interfaces.",
+            }
+        },
+        imageUrl: {
+            type: DataType.STRING,
+            displayName: "Image Url",
+            desc: "An image to display alongside the text.",
+            input: InputType.URL,
+            default: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80",
+        },
+        htmlId: {
+            type: DataType.STRING,
+            displayName: "Html id",
+            desc: "Html id of the element, if there is a link with '#<id>' on the page, clicking it will scroll to this element.",
+            input: InputType.URL,
+            default: "header",
+        },
+    }
+}
+
 const desc: ComponentDescriptor = {
     id: "id", // will be overwritten when a new instance is created
     type: ABOUT_TYPE,
     name: "About",
     props: defaultProps,
+    propsDescriptor,
     icon: <User className="w-4 h-4" />,
     jsxFunc: Node,
 }

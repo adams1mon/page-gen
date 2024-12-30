@@ -115,7 +115,7 @@ export function ComponentEditor({
                 </div>
                 <CollapsibleContent>
                     <div className="p-4">
-                        {createInputs(component.props, handleUpdate)}
+                        {createInputs(component.propsDescriptor, component.props, handleUpdate)}
                     </div>
                 </CollapsibleContent>
             </Collapsible>

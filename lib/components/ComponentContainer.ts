@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { DescType } from "./PropDescriptor";
+import { PropsDesc } from "./PropDescriptor";
 
 export interface ComponentDescriptor {
     id: string,
@@ -7,7 +7,7 @@ export interface ComponentDescriptor {
     name: string,
     icon: ReactNode,
     props: any,
-    propsDescriptor: DescType,
+    propsDescriptor: PropsDesc,
     jsxFunc: React.FunctionComponent<any>,
 }
 

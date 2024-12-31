@@ -1,8 +1,8 @@
 import { Layout } from "lucide-react";
-import { Link } from "./common";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
-import { linkDescriptor } from "./common";
+import { Link, httpLinkDesc } from "./Link";
+import { htmlIdDesc } from "./common";
 
 export const HEADER_TYPE = "Header";
 
@@ -57,15 +57,11 @@ const propsDescriptor: ObjectDesc = {
             type: DataType.ARRAY,
             displayName: "Links",
             desc: "Links to display in the header",
-            child: { ...linkDescriptor },
+            child: { 
+                ...httpLinkDesc,
+            },
         },
-        htmlId: {
-            type: DataType.STRING,
-            displayName: "Html id",
-            desc: "Html id of the element, if there is a link with '#<id>' on the page, clicking it will scroll to this element.",
-            input: InputType.URL,
-            default: "header",
-        },
+        htmlId: { ...htmlIdDesc, default: "header", },
     }
 }
 

@@ -1,6 +1,8 @@
 import { Mail } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
-import { Link } from "./common";
+import { Link, httpLinkDesc } from "./Link";
+import { htmlIdDesc } from "./common";
+import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
 
 export const FOOTER_TYPE = "Footer";
 
@@ -50,11 +52,39 @@ const defaultProps: FooterProps = {
     htmlId: "contact"
 };
 
+const propsDescriptor: ObjectDesc = {
+    type: DataType.OBJECT,
+    displayName: "About section Settings",
+    child: {
+        email: {
+            type: DataType.STRING,
+            displayName: "Email",
+            desc: "Email you can be contacted at.",
+            input: InputType.TEXT,
+            default: "mail@example.com",
+        },
+        socialLinks: {
+            type: DataType.ARRAY,
+            displayName: "Links to social platforms.",
+            child: { ...httpLinkDesc },
+        },
+        imageUrl: {
+            type: DataType.STRING,
+            displayName: "Image Url",
+            desc: "An image to display alongside the text.",
+            input: InputType.URL,
+            default: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80",
+        },
+        htmlId: { ...htmlIdDesc, default: "footer", },
+    }
+}
+
 const desc: ComponentDescriptor = {
     id: "id",
     type: FOOTER_TYPE,
     name: "Footer",
     props: defaultProps,
+    propsDescriptor,
     icon: <Mail className="w-4 h-4" />,
     jsxFunc: Node,
 }

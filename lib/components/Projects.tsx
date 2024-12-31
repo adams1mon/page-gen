@@ -1,5 +1,7 @@
 import { Briefcase } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
+import { DataType, ObjectDesc } from "./PropDescriptor";
+import { htmlIdDesc, titleDesc, longTextDesc, imageUrlDesc } from "./common";
 
 export const PROJECTS_TYPE = "Projects";
 
@@ -66,11 +68,52 @@ const defaultProps: ProjectsProps = {
     htmlId: "projects"
 };
 
+const propsDescriptor: ObjectDesc = {
+    type: DataType.OBJECT,
+    displayName: "Projects section",
+    child: {
+        title: {
+            ...titleDesc,
+            desc: "Title to display above the section.",
+            default: "My projects",
+        },
+        projects: {
+            type: DataType.ARRAY,
+            displayName: "Projects",
+            desc: "Projects to display",
+            child: {
+                type: DataType.OBJECT,
+                displayName: "Project",
+                desc: "Project to showcase",
+                child: {
+                    title: {
+                        ...titleDesc,
+                        desc: "Project title",
+                        default: "Project",
+                    },
+                    description: {
+                        ...longTextDesc,
+                        desc: "Project description",
+                        default: "An innovative solution that demonstrates problem-solving abilities.",
+                    },
+                    imageUrl: {
+                        ...imageUrlDesc,
+                        desc: "Image to display for the project",
+                        default: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&q=80"
+                    },
+                },
+            },
+        },
+        htmlId: { ...htmlIdDesc, default: "projects" },
+    }
+};
+
 const desc: ComponentDescriptor = {
     id: "id",
     type: PROJECTS_TYPE,
     name: "Projects",
     props: defaultProps,
+    propsDescriptor,
     icon: <Briefcase className="w-4 h-4" />,
     jsxFunc: Node,
 }

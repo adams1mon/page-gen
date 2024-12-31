@@ -2,6 +2,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ComponentContainer, ComponentDescriptor } from './ComponentContainer';
 import { FileText } from 'lucide-react';
+import { DataType, InputType, ObjectDesc } from './PropDescriptor';
+import { htmlIdDesc, titleDesc } from "./common";
 
 export const MARKDOWN_TYPE = "Markdown";
 
@@ -32,11 +34,32 @@ const defaultProps: MarkdownProps = {
     htmlId: "markdown"
 };
 
+const propsDescriptor: ObjectDesc = {
+    type: DataType.OBJECT,
+    displayName: "About section Settings",
+    child: {
+        title: {
+            ...titleDesc,
+            desc: "Title to display above the section.",
+            default: "Markdown section",
+        },
+        content: {
+            type: DataType.STRING,
+            displayName: "Markdown Content",
+            desc: "Markdown content to render.",
+            input: InputType.TEXTAREA,
+            default: "# Hello World\n\nThis is a markdown section. You can write:\n\n- Lists\n- **Bold text**\n- *Italic text*\n\n## Code\n\n```js\nconsole.log('Hello World');\n```",
+        },
+        htmlId: { ...htmlIdDesc, default: "markdown" },
+    }
+};
+
 const desc: ComponentDescriptor = {
     id: "id",
     type: MARKDOWN_TYPE,
     name: "Markdown",
     props: defaultProps,
+    propsDescriptor,
     icon: <FileText className="w-4 h-4" />,
     jsxFunc: Node,
 }

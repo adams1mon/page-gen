@@ -1,5 +1,7 @@
 import { createElement } from 'react';
 import { ComponentContainer, ComponentDescriptor } from '../components/ComponentContainer';
+import { DataType, ObjectDesc } from './PropDescriptor';
+import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
 
 export const SITE_TYPE = "Site";
 
@@ -26,7 +28,7 @@ function Node(props: SiteProps) {
             <body>
                 {
                     // add 'key' prop 
-                    props.components.map(c => createElement(c.jsxFunc, {...c.props, key: c.id}))
+                    props.components.map(c => createElement(c.jsxFunc, { ...c.props, key: c.id }))
                 }
             </body>
         </html>
@@ -160,11 +162,47 @@ const defaultProps: SiteProps = {
     styles: generateStyles(),
 };
 
+const propsDescriptor: ObjectDesc = {
+    type: DataType.OBJECT,
+    displayName: "About section Settings",
+    child: {
+        title: {
+            ...titleDesc,
+            desc: "Title of the website, displayed in the browser window.",
+            default: "My Portfolio",
+        },
+        description: {
+            ...textDesc,
+            desc: "Description of the website, useful for Search Engine Optimization (SEO). Displayed in a <meta> tag.",
+            default: "Personal portfolio website showcasing my projects",
+        },
+        components: {
+            type: DataType.ARRAY,
+            displayName: "Components",
+            desc: "Components which make up the website.",
+            child: {},
+        },
+        tailwindCdn: {
+            ...urlDesc,
+            displayName: "Tailwind CDN URL",
+            desc: "URL of the Tailwind CSS CDN, required for the styling of most components.",
+            default: "https://cdn.tailwindcss.com/3.4.16",
+        },
+        styles: {
+            ...longTextDesc,
+            displayName: "Custom CSS styles",
+            desc: "Custom CSS styles to include in a <style> in the website",
+            default: generateStyles(),
+        },
+    }
+};
+
 const desc: ComponentDescriptor = {
     id: "site-id",
     type: SITE_TYPE,
     name: "Site",
     props: defaultProps,
+    propsDescriptor,
     icon: null,
     jsxFunc: Node,
 }

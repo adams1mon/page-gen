@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
-import { DescType, LeafDesc, ArrayDesc, ObjectDesc, createDefaultProps, DataType, InputType } from "@/lib/components/PropDescriptor";
+import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, createDefaultProps, DataType, InputType } from "@/lib/components/PropDescriptor";
+
 
 export function createInputs(
-    propsDescriptor: DescType,
+    propsDescriptor: PropsDesc,
     props: any,
     onChange: (props: any) => void,
     key: string = '',
@@ -25,6 +26,9 @@ export function createInputs(
 
         case DataType.OBJECT:
             return objectInput(propsDescriptor as ObjectDesc, props, onChange, key);
+
+        default:
+            console.error(`PropsDesc type is undefined or not implemented, displayName: ${propsDescriptor.displayName}, type: ${propsDescriptor.type}. Ensure every descriptor has a 'type' and a 'displayName' attribute.`);
     }
 }
 

@@ -1,6 +1,7 @@
 import { User } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
+import { htmlIdDesc } from "./common";
 
 export const ABOUT_TYPE = "About";
 
@@ -73,13 +74,7 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.URL,
             default: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80",
         },
-        htmlId: {
-            type: DataType.STRING,
-            displayName: "Html id",
-            desc: "Html id of the element, if there is a link with '#<id>' on the page, clicking it will scroll to this element.",
-            input: InputType.URL,
-            default: "header",
-        },
+        htmlId: { ...htmlIdDesc, default: "about", },
     }
 }
 

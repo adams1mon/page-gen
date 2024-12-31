@@ -1,6 +1,8 @@
 // ======================================
 // Prop descriptor types
 
+import { warn } from "console";
+
 export enum DataType {
     STRING = "string",
     NUMBER = "number",
@@ -14,32 +16,32 @@ export enum InputType {
     URL,
 }
 
-export type PropsDescriptor = LeafDesc | ArrayDesc | ObjectDesc;
+export type PropsDesc = LeafDesc | ArrayDesc | ObjectDesc;
 
-export interface BasePropsDescriptor {
-    type: DataType,
+export interface BaseDesc {
+    type: DataType;
     displayName: string;
-    desc?: string,
+    desc?: string;
 }
 
-export interface LeafDesc extends BasePropsDescriptor {
+export interface LeafDesc extends BaseDesc {
     input: InputType;
-    default: any,
+    default: any;
 }
 
-export interface ArrayDesc extends BasePropsDescriptor {
-    child: PropsDescriptor;
+export interface ArrayDesc extends BaseDesc {
+    child: PropsDesc;
 }
 
-export interface ObjectDesc extends BasePropsDescriptor {
+export interface ObjectDesc extends BaseDesc {
     child: {
-        [key: string]: PropsDescriptor;
+        [key: string]: PropsDesc;
     }
 }
 
 // traverses the descriptor and creates an object based on the 'default' values
 // of the leaf nodes
-export function createDefaultProps(desc: PropsDescriptor): any {
+export function createDefaultProps(desc: PropsDesc): any {
     switch (desc.type) {
         case DataType.STRING || DataType.NUMBER:
             return (desc as LeafDesc).default;

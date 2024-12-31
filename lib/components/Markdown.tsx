@@ -36,7 +36,7 @@ const defaultProps: MarkdownProps = {
 
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "About section Settings",
+    displayName: "Markdown section",
     child: {
         title: {
             ...titleDesc,

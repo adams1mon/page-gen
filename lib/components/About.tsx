@@ -47,7 +47,7 @@ const defaultProps: AboutProps = {
 
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "About section Settings",
+    displayName: "About section",
     child: {
         title: {
             type: DataType.STRING,
@@ -82,6 +82,7 @@ const desc: ComponentDescriptor = {
     id: "id", // will be overwritten when a new instance is created
     type: ABOUT_TYPE,
     name: "About",
+    //props: defaultProps,
     props: defaultProps,
     propsDescriptor,
     icon: <User className="w-4 h-4" />,

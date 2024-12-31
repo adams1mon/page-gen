@@ -47,7 +47,7 @@ const defaultProps: HeroProps = {
 
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "About section Settings",
+    displayName: "Hero section",
     child: {
         title: {
             type: DataType.STRING,

@@ -44,7 +44,7 @@ const defaultProps: HeaderProps = {
 
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "Header Settings",
+    displayName: "Header section",
     child: {
         title: {
             type: DataType.STRING,

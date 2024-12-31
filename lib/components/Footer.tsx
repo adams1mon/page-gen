@@ -2,7 +2,7 @@ import { Mail } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
-import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
+import { DataType, InputType, ObjectDesc, createDefaultProps } from "./PropDescriptor";
 
 export const FOOTER_TYPE = "Footer";
 
@@ -54,7 +54,7 @@ const defaultProps: FooterProps = {
 
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "About section Settings",
+    displayName: "Footer section",
     child: {
         email: {
             type: DataType.STRING,
@@ -83,7 +83,8 @@ const desc: ComponentDescriptor = {
     id: "id",
     type: FOOTER_TYPE,
     name: "Footer",
-    props: defaultProps,
+    //props: defaultProps,
+    props: createDefaultProps(propsDescriptor),
     propsDescriptor,
     icon: <Mail className="w-4 h-4" />,
     jsxFunc: Node,

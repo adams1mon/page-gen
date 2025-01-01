@@ -138,24 +138,26 @@ function arrayInput(propsDescriptor: ArrayDesc, props: any[], onChange: (props: 
                 </Button>
             </div>
 
-            {props.map((p: any, i: number) => (
-                <div key={key + i}>
-                    {createInputs(
-                        propsDescriptor.child,
-                        p,
-                        (partialProps) => onChange([...props.slice(0, i), partialProps, ...props.slice(i + 1)]),
-                        key + " " + (i + 1)
-                    )}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => onChange(props.filter((_: any, fi: number) => fi !== i))}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
-                </div>
-            ))}
+            {
+                props.map((p: any, i: number) => (
+                    <div key={key + i}>
+                        {createInputs(
+                            propsDescriptor.child,
+                            p,
+                            (partialProps) => onChange([...props.slice(0, i), partialProps, ...props.slice(i + 1)]),
+                            key + " " + (i + 1)
+                        )}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => onChange(props.filter((_: any, fi: number) => fi !== i))}
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </div>
+                ))
+            }
         </Card>
     );
 }
@@ -176,7 +178,7 @@ function objectInput(
             <label className="text-sm font-medium">{propsDescriptor.displayName}</label>
             {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
             {
-                Object.keys(props).map(k =>
+                Object.keys(propsDescriptor.child).map(k =>
                     createInputs(
                         propsDescriptor.child[k],
                         props[k],

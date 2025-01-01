@@ -159,9 +159,11 @@ const defaultProps: SiteProps = {
     children: [],
 };
 
+// NOTE: include only the properties which should be editable by the user.
+// Add the immutable properties to the defaultProps object.
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "About section Settings",
+    displayName: "Site settings",
     child: {
         title: {
             ...titleDesc,

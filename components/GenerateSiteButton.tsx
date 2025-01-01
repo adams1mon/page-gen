@@ -40,7 +40,7 @@ export function GenerateSiteButton({ site, html }: GenerateSiteButtonProps) {
         <div className="flex items-center gap-2">
             <Button
                 onClick={generateSite}
-                disabled={isGenerating || site.props.components.length === 0}
+                disabled={isGenerating || site.props.children.length === 0}
                 className="gap-2"
             >
                 <Download className="w-4 h-4" />

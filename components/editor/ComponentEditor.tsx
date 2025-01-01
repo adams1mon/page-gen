@@ -12,7 +12,6 @@ interface ComponentEditorProps {
     index: number;
     onUpdate: (component: ComponentDescriptor) => void;
     moveComponent: (dragIndex: number, hoverIndex: number) => void;
-    onDrop: (type: string, index: number) => void;
     onDelete: (id: string) => void;
 }
 

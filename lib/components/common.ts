@@ -1,4 +1,4 @@
-import { DataType, InputType, LeafDesc, ObjectDesc } from "./PropsDescriptor"
+import { ComponentSlotDesc, DataType, InputType, LeafDesc } from "./PropsDescriptor"
 
 
 export const htmlIdDesc: LeafDesc = {
@@ -9,7 +9,7 @@ export const htmlIdDesc: LeafDesc = {
     default: "some-html-id",
 }
 
-export const textDesc : LeafDesc = {
+export const textDesc: LeafDesc = {
     type: DataType.STRING,
     displayName: "Text",
     desc: "Text to display.",
@@ -45,4 +45,10 @@ export const imageUrlDesc: LeafDesc = {
     displayName: "Image URL",
     desc: "The URL of an image to display.",
     default: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?auto=format&fit=crop&q=80",
+}
+
+export const childrenDesc: ComponentSlotDesc = {
+    type: DataType.COMPONENT_SLOT,
+    displayName: "Children",
+    desc: "Nested components to add",
 }

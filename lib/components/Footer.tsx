@@ -2,7 +2,7 @@ import { Mail } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
-import { DataType, InputType, ObjectDesc, createDefaultProps } from "./PropsDescriptor";
+import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 
 export const FOOTER_TYPE = "Footer";
 
@@ -83,8 +83,7 @@ const desc: ComponentDescriptor = {
     id: "id",
     type: FOOTER_TYPE,
     name: "Footer",
-    //props: defaultProps,
-    props: createDefaultProps(propsDescriptor),
+    props: defaultProps,
     propsDescriptor,
     icon: <Mail className="w-4 h-4" />,
     jsxFunc: Node,

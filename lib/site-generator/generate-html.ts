@@ -24,7 +24,7 @@ export function nestComponents(props: NestedComponentsProps): FunctionComponentE
         null,
 
         // add 'key' prop to every child
-        ...props.components.map(c => createElement(c.jsxFunc, { ...c.props, key: c.id }))
+        ...props.children.map(c => createElement(c.jsxFunc, { ...c.props, key: c.id }))
     );
 }
 

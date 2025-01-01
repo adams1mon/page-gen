@@ -2,11 +2,10 @@ import { User } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from "./ComponentContainer";
 import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 import { htmlIdDesc } from "./common";
-import { createElement } from "react";
 
 export const ABOUT_TYPE = "About";
 
-export interface AboutProps extends NestedComponentsProps { 
+export interface AboutProps extends NestedComponentsProps {
     title: string;
     description: string[];
     imageUrl: string;
@@ -30,11 +29,6 @@ function Node(props: AboutProps) {
                             <p key={index} className="text-lg text-muted-foreground">{paragraph}</p>
                         )}
                     </div>
-
-                    {
-                        // add 'key' prop 
-                        props.children.map(c => createElement(c.jsxFunc, { ...c.props, key: c.id }))
-                    }
                 </div>
             </div>
         </section>
@@ -47,7 +41,7 @@ const defaultProps: AboutProps = {
         "I'm a creative professional with a passion for building beautiful and functional digital experiences. With expertise in design and development, I bring ideas to life through clean code and intuitive interfaces.",
         "When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing my knowledge with the community."
     ],
-    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1499557354967-2b2d8910bcca?q=80&auto=format&fit=crop",
     htmlId: "about",
     children: [],
 };
@@ -82,22 +76,17 @@ const propsDescriptor: ObjectDesc = {
             default: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80",
         },
         htmlId: { ...htmlIdDesc, default: "about", },
-        children: {
-            type: DataType.COMPONENT_SLOT,
-            displayName: "Children",
-            desc: "Nested components to add",
-        },
     }
-}
+};
 
 const desc: ComponentDescriptor = {
-    id: "id", // will be overwritten when a new instance is created
-    type: ABOUT_TYPE,
-    name: "About",
-    props: defaultProps,
-    propsDescriptor,
-    icon: <User className="w-4 h-4" />,
-    jsxFunc: Node,
-}
+        id: "id", // will be overwritten when a new instance is created
+        type: ABOUT_TYPE,
+        name: "About",
+        props: defaultProps,
+        propsDescriptor,
+        icon: <User className="w-4 h-4" />,
+        jsxFunc: Node,
+    }
 
 ComponentContainer.register(ABOUT_TYPE, desc);

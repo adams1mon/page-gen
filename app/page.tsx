@@ -3,7 +3,6 @@
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { ComponentEditor } from "@/components/editor/ComponentEditor";
-import { ComponentDivider } from "@/components/editor/ComponentDivider";
 import { useState, useEffect } from "react";
 import { GenerateSiteButton } from "@/components/GenerateSiteButton";
 import {
@@ -11,7 +10,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ComponentContainer, ComponentDescriptor, updateProps } from "@/lib/components/ComponentContainer";
+import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
 import { SitePreview } from "@/components/preview/SitePreview";
 import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
@@ -19,7 +18,6 @@ import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export default function Home() {
-    const [components, setComponents] = useState<ComponentDescriptor[]>([]);
     const [previewHtml, setPreviewHtml] = useState<string>("");
     const [previewEnabled, setPreviewEnabled] = useState(true);
     const [site, setSite] = useState<ComponentDescriptor>(newSite());
@@ -27,59 +25,15 @@ export default function Home() {
     const previewDebounceMillis = 100;
 
     const debouncePreview = () => debounce(() => {
-        const updatedSite = updateProps(site, {
-            ...site.props,
-            components,
-        });
-        setSite(updatedSite);
-
         if (previewEnabled) {
             (async () => {
-                const html = await generateHtml(updatedSite);
+                const html = await generateHtml(site);
                 setPreviewHtml(html);
             })();
         }
     }, previewDebounceMillis);
 
-    useEffect(debouncePreview, [components, previewEnabled]);
-
-    const addComponent = (type: string, index?: number) => {
-        const newComponent = ComponentContainer.createInstance(type);
-        setComponents(prevComponents => {
-            const newComponents = [...prevComponents];
-            if (typeof index === 'number') {
-                newComponents.splice(index, 0, newComponent);
-                return newComponents;
-            }
-            return [...prevComponents, newComponent];
-        });
-    };
-
-    const handleComponentUpdate = (updatedComponent: ComponentDescriptor) => {
-        console.log("updating components");
-        console.log(components, updatedComponent);
-        
-        setComponents(components.map(component =>
-            component.id === updatedComponent.id ? updatedComponent : component
-        ));
-    };
-
-    const moveComponent = (dragIndex: number, hoverIndex: number) => {
-        setComponents(prevComponents => {
-            const newComponents = [...prevComponents];
-            const draggedComponent = newComponents[dragIndex];
-            newComponents.splice(dragIndex, 1);
-            newComponents.splice(hoverIndex, 0, draggedComponent);
-            return newComponents;
-        });
-    };
-
-    const deleteComponent = (id: string) => {
-        setComponents(prevComponents =>
-            prevComponents.filter(component => component.id !== id)
-        );
-    };
-
+    useEffect(debouncePreview, [site, previewEnabled]);
 
     return (
         <DndProvider backend={HTML5Backend}>
@@ -103,34 +57,21 @@ export default function Home() {
                         <div className="h-full overflow-y-auto">
                             <div className="p-8">
                                 <div className="space-y-4">
-                                    {components.length === 0 ? (
-                                        <div className="flex items-center justify-center h-full min-h-[400px]">
-                                            <ComponentDivider onInsert={(type) => addComponent(type, 0)} />
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {components.map((component, index) => (
-                                                <div key={component.id}>
-                                                    <ComponentDivider
-                                                        onInsert={(type) => addComponent(type, index)}
-                                                    />
-                                                    <ComponentEditor
-                                                        index={index}
-                                                        component={component}
-                                                        onUpdate={handleComponentUpdate}
-                                                        moveComponent={moveComponent}
-                                                        onDrop={addComponent}
-                                                        onDelete={deleteComponent}
-                                                    />
-                                                    {index === components.length - 1 && (
-                                                        <ComponentDivider
-                                                            onInsert={(type) => addComponent(type, index + 1)}
-                                                        />
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <div className="flex items-center justify-center h-full min-h-[400px]">
+                                        <ComponentEditor
+                                            index={0}
+                                            component={site}
+                                            onUpdate={setSite}
+                                            moveComponent={
+                                                // unused for the site
+                                                () => { }
+                                            }
+                                            onDelete={
+                                                // unused for the site
+                                                () => { }
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -152,3 +93,5 @@ export default function Home() {
         </DndProvider>
     );
 }
+
+

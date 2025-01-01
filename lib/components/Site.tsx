@@ -1,6 +1,6 @@
 import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from '../components/ComponentContainer';
 import { DataType, ObjectDesc } from './PropsDescriptor';
-import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
+import { titleDesc, longTextDesc, textDesc, urlDesc, childrenDesc } from "./common";
 import { nestComponents } from '../site-generator/generate-html';
 
 export const SITE_TYPE = "Site";
@@ -154,7 +154,6 @@ function generateStyles() {
 const defaultProps: SiteProps = {
     title: 'My Portfolio',
     description: 'Welcome to my portfolio website',
-    components: [],
     tailwindCdn: "https://cdn.tailwindcss.com/3.4.16",
     styles: generateStyles(),
     children: [],
@@ -174,11 +173,6 @@ const propsDescriptor: ObjectDesc = {
             desc: "Description of the website, useful for Search Engine Optimization (SEO). Displayed in a <meta> tag.",
             default: "Personal portfolio website showcasing my projects",
         },
-        components: {
-            type: DataType.COMPONENT,
-            displayName: "Components",
-            desc: "Components which make up the website.",
-        },
         tailwindCdn: {
             ...urlDesc,
             displayName: "Tailwind CDN URL",
@@ -191,6 +185,7 @@ const propsDescriptor: ObjectDesc = {
             desc: "Custom CSS styles to include in a <style> in the website",
             default: generateStyles(),
         },
+        children: { ...childrenDesc },
     }
 };
 

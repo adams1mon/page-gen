@@ -1,5 +1,11 @@
 import { ReactNode } from "react";
-import { PropsDesc } from "./PropDescriptor";
+import { PropsDesc } from "./PropsDescriptor";
+
+
+// enables the nesting of components, used in the 'props' of ComponentDescriptor
+export interface NestedComponentsProps {
+    children: ComponentDescriptor[];
+};
 
 export interface ComponentDescriptor {
     id: string,

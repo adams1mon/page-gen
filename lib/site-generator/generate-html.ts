@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { ComponentContainer, ComponentDescriptor } from "../components/ComponentContainer";
-import { FunctionComponentElement, createElement } from "react";
+import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from "../components/ComponentContainer";
+import React, { FunctionComponentElement, createElement } from "react";
 import { SITE_TYPE } from "../components/Site";
 
 export function newSite(): ComponentDescriptor {
@@ -17,3 +17,14 @@ export async function generateHtml(comp: ComponentDescriptor) {
     const html = renderToStaticMarkup(element);
     return html;
 }
+
+export function nestComponents(props: NestedComponentsProps): FunctionComponentElement<any> {
+    return createElement(
+        React.Fragment,
+        null,
+
+        // add 'key' prop to every child
+        ...props.components.map(c => createElement(c.jsxFunc, { ...c.props, key: c.id }))
+    );
+}
+

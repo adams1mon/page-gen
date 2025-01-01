@@ -1,10 +1,15 @@
-import { ReactNode } from "react";
+"use client";
+
+import { ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
-import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, createDefaultProps, DataType, InputType } from "@/lib/components/PropDescriptor";
+import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, createDefaultProps, DataType, InputType, ComponentSlotDesc } from "@/lib/components/PropsDescriptor";
+import { ComponentDivider } from "./ComponentDivider";
+import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from "@/lib/components/ComponentContainer";
+import { ComponentEditor } from "./ComponentEditor";
 
 
 export function createInputs(
@@ -16,23 +21,57 @@ export function createInputs(
 
     switch (propsDescriptor.type) {
         case DataType.STRING:
-            return stringInput(propsDescriptor as LeafDesc, props, onChange, key);
+            return stringInput(
+                propsDescriptor as LeafDesc,
+                props as string,
+                onChange,
+                key,
+            );
 
         case DataType.NUMBER:
-            return numberInput(propsDescriptor as LeafDesc, props, onChange, key);
+            return numberInput(
+                propsDescriptor as LeafDesc,
+                props as number,
+                onChange,
+                key,
+            );
 
         case DataType.ARRAY:
-            return arrayInput(propsDescriptor as ArrayDesc, props, onChange, key);
+            return arrayInput(
+                propsDescriptor as ArrayDesc,
+                props as any,
+                onChange,
+                key,
+            );
 
         case DataType.OBJECT:
-            return objectInput(propsDescriptor as ObjectDesc, props, onChange, key);
+            return objectInput(
+                propsDescriptor as ObjectDesc,
+                props as strKeyObj,
+                onChange,
+                key,
+            );
+
+        case DataType.COMPONENT_SLOT:
+            return componentInput(
+                propsDescriptor as ComponentSlotDesc,
+                props,
+                onChange,
+                key,
+            );
 
         default:
             console.error(`PropsDesc type is undefined or not implemented, displayName: ${propsDescriptor.displayName}, type: ${propsDescriptor.type}. Ensure every descriptor has a 'type' and a 'displayName' attribute.`);
     }
 }
 
-function stringInput(propsDescriptor: LeafDesc, props: any, onChange: (props: any) => void, key: string): ReactNode {
+function stringInput(
+    propsDescriptor: LeafDesc,
+    str: string,
+    onChange: (str: string) => void,
+    key: string,
+): ReactNode {
+
     return <div
         key={key}
         className="mt-4"
@@ -42,7 +81,7 @@ function stringInput(propsDescriptor: LeafDesc, props: any, onChange: (props: an
         {propsDescriptor.input == InputType.TEXTAREA &&
             <Textarea
                 className="text-sm font-normal"
-                value={props}
+                value={str}
                 onChange={(e) => onChange(e.target.value)}
                 rows={3}
             />
@@ -51,7 +90,7 @@ function stringInput(propsDescriptor: LeafDesc, props: any, onChange: (props: an
         {propsDescriptor.input == InputType.TEXT &&
             <Input
                 type="text"
-                value={props}
+                value={str}
                 onChange={(e) => onChange(e.target.value)}
                 className="text-sm font-bold"
             />
@@ -60,7 +99,7 @@ function stringInput(propsDescriptor: LeafDesc, props: any, onChange: (props: an
         {propsDescriptor.input == InputType.URL &&
             <Input
                 type="url"
-                value={props}
+                value={str}
                 onChange={(e) => onChange(e.target.value)}
                 className="text-sm font-bold"
             />
@@ -68,14 +107,14 @@ function stringInput(propsDescriptor: LeafDesc, props: any, onChange: (props: an
     </div>
 }
 
-function numberInput(propsDescriptor: LeafDesc, props: any, onChange: (props: any) => void, key: string): ReactNode {
+function numberInput(propsDescriptor: LeafDesc, num: number, onChange: (num: number) => void, key: string): ReactNode {
     return (
         <div key={key} className="mt-4">
             <label className="text-sm font-medium">{propsDescriptor.displayName}</label>
             {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
             <Input
                 type="number"
-                value={props}
+                value={num}
                 onChange={(e) => onChange(Number(e.target.value))}
                 className="text-sm font-bold"
             />
@@ -83,7 +122,7 @@ function numberInput(propsDescriptor: LeafDesc, props: any, onChange: (props: an
     );
 }
 
-function arrayInput(propsDescriptor: ArrayDesc, props: any[], onChange: (props: any) => void, key: string): ReactNode {
+function arrayInput(propsDescriptor: ArrayDesc, props: any[], onChange: (props: any[]) => void, key: string): ReactNode {
     return (
         <Card key={key} className="w-full mt-4 p-2">
             <div className="flex items-center justify-between">
@@ -121,23 +160,118 @@ function arrayInput(propsDescriptor: ArrayDesc, props: any[], onChange: (props: 
     );
 }
 
+interface strKeyObj {
+    [key: string]: any,
+};
 
-function objectInput(propsDescriptor: ObjectDesc, props: any, onChange: (props: any) => void, key: string): ReactNode {
+function objectInput(
+    propsDescriptor: ObjectDesc,
+    props: strKeyObj,
+    onChange: (props: strKeyObj) => void,
+    key: string,
+): ReactNode {
+
     return (
         <Card key={key} className="w-full mt-4 p-2">
             <label className="text-sm font-medium">{propsDescriptor.displayName}</label>
             {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
-            {Object.keys(props).map(k =>
-                createInputs(
-                    propsDescriptor.child[k],
-                    props[k],
-                    (partialProps) => onChange({
-                        ...props,
-                        [k]: partialProps,
-                    }),
-                    k
+            {
+                Object.keys(props).map(k =>
+                    createInputs(
+                        propsDescriptor.child[k],
+                        props[k],
+                        (partialProps) => onChange({
+                            ...props,
+                            [k]: partialProps,
+                        }),
+                        k
+                    )
                 )
-            )}
+            }
         </Card>
+    );
+}
+
+function componentInput(
+    propsDescriptor: ComponentSlotDesc,
+    components: ComponentDescriptor[],
+    onChange: (components: ComponentDescriptor[]) => void,
+    key: string,
+): ReactNode {
+
+    // TODO: render ComponentEditor
+    // TODO: DND
+
+    //const [components, setComponents] = useState<ComponentDescriptor[]>(props.children);
+
+    const addComponent = (type: string, index?: number) => {
+
+        console.log(type, index);
+        
+        const newComponent = ComponentContainer.createInstance(type);
+
+        const newComponents = [...components];
+        if (typeof index === 'number') {
+            newComponents.splice(index, 0, newComponent);
+        }
+        onChange(newComponents);
+    };
+
+    const handleComponentUpdate = (updatedComponent: ComponentDescriptor) => {
+        const newComponents = components.map(component =>
+            component.id === updatedComponent.id ? updatedComponent : component
+        );
+        onChange(newComponents);
+    };
+
+    const moveComponent = (dragIndex: number, hoverIndex: number) => {
+            const newComponents = [...components];
+            const draggedComponent = newComponents[dragIndex];
+            newComponents.splice(dragIndex, 1);
+            newComponents.splice(hoverIndex, 0, draggedComponent);
+            onChange(newComponents);
+    };
+
+    const deleteComponent = (id: string) => {
+        const newComponents = components.filter(component => component.id !== id)
+        onChange(newComponents);
+    };
+
+
+    return (
+        <div className="h-full overflow-y-auto" key={key}>
+            <div className="p-8">
+                <div className="space-y-4">
+                    {components.length === 0 ? (
+                        <div className="flex items-center justify-center h-full min-h-[400px]">
+                            <ComponentDivider onInsert={(type) => addComponent(type, 0)} />
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {components.map((component, index) => (
+                                <div key={component.id}>
+                                    <ComponentDivider
+                                        onInsert={(type) => addComponent(type, index)}
+                                    />
+                                    <ComponentEditor
+                                        index={index}
+                                        component={component}
+                                        onUpdate={handleComponentUpdate}
+                                        moveComponent={moveComponent}
+                                        onDrop={addComponent}
+                                        onDelete={deleteComponent}
+                                    />
+                                    {index === components.length - 1 && (
+                                        <ComponentDivider
+                                            onInsert={(type) => addComponent(type, index + 1)}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }

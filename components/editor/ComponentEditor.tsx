@@ -89,30 +89,32 @@ export function ComponentEditor({
     return (
         <div ref={ref} style={{ opacity }} className="group relative bg-background border rounded-lg">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-                <div className="flex items-center justify-between py-2 px-3 border-b">
-                    <div ref={dragHandleRef} className="cursor-move flex items-center gap-2 text-muted-foreground">
-                        <GripVertical className="w-4 h-4" />
-                        <span className="font-medium capitalize text-sm">{component.type}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => onDelete(component.id)}
-                            className="text-destructive hover:text-destructive"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <ChevronDown className={cn(
-                                    "h-4 w-4 transition-transform duration-200",
-                                    isOpen ? "rotate-180" : ""
-                                )}/>
+                <CollapsibleTrigger asChild>
+                    <div className="flex items-center justify-between py-2 px-3 border-b">
+                        <div ref={dragHandleRef} className="cursor-move flex items-center gap-2 text-muted-foreground">
+                            <GripVertical className="w-4 h-4" />
+                            <span className="font-medium capitalize text-sm">{component.type}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => onDelete(component.id)}
+                                className="text-destructive hover:text-destructive"
+                            >
+                                <Trash2 className="w-4 h-4" />
                             </Button>
-                        </CollapsibleTrigger>
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <ChevronDown className={cn(
+                                        "h-4 w-4 transition-transform duration-200",
+                                        isOpen ? "rotate-180" : ""
+                                    )} />
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
                     </div>
-                </div>
+                </CollapsibleTrigger>
                 <CollapsibleContent>
                     <div className="p-4">
                         {createInputs(component.propsDescriptor, component.props, handleUpdate)}

@@ -1,6 +1,6 @@
 import { Layout } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
-import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
+import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 import { htmlIdDesc } from "./common";
 
 export const HERO_TYPE = "Hero";

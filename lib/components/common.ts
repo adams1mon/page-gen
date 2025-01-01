@@ -1,4 +1,4 @@
-import { DataType, InputType, LeafDesc, ObjectDesc } from "./PropDescriptor"
+import { DataType, InputType, LeafDesc, ObjectDesc } from "./PropsDescriptor"
 
 
 export const htmlIdDesc: LeafDesc = {

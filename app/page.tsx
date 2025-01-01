@@ -56,6 +56,9 @@ export default function Home() {
     };
 
     const handleComponentUpdate = (updatedComponent: ComponentDescriptor) => {
+        console.log("updating components");
+        console.log(components, updatedComponent);
+        
         setComponents(components.map(component =>
             component.id === updatedComponent.id ? updatedComponent : component
         ));

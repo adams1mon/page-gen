@@ -1,6 +1,6 @@
 import { Briefcase } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
-import { DataType, ObjectDesc } from "./PropDescriptor";
+import { DataType, ObjectDesc } from "./PropsDescriptor";
 import { htmlIdDesc, titleDesc, longTextDesc, imageUrlDesc } from "./common";
 
 export const PROJECTS_TYPE = "Projects";

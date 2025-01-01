@@ -1,16 +1,16 @@
-import { createElement } from 'react';
-import { ComponentContainer, ComponentDescriptor } from '../components/ComponentContainer';
-import { DataType, ObjectDesc } from './PropDescriptor';
+import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from '../components/ComponentContainer';
+import { DataType, ObjectDesc } from './PropsDescriptor';
 import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
+import { nestComponents } from '../site-generator/generate-html';
 
 export const SITE_TYPE = "Site";
 
-export interface SiteProps {
+export interface SiteProps extends NestedComponentsProps {
     title: string;
     description: string;
-    components: ComponentDescriptor[];
     tailwindCdn?: string;
     styles?: string;
+    children: ComponentDescriptor[],
 }
 
 function Node(props: SiteProps) {
@@ -26,10 +26,7 @@ function Node(props: SiteProps) {
                 <title>{props.title}</title>
             </head>
             <body>
-                {
-                    // add 'key' prop 
-                    props.components.map(c => createElement(c.jsxFunc, { ...c.props, key: c.id }))
-                }
+                {nestComponents(props)}
             </body>
         </html>
     );
@@ -160,6 +157,7 @@ const defaultProps: SiteProps = {
     components: [],
     tailwindCdn: "https://cdn.tailwindcss.com/3.4.16",
     styles: generateStyles(),
+    children: [],
 };
 
 const propsDescriptor: ObjectDesc = {
@@ -177,10 +175,9 @@ const propsDescriptor: ObjectDesc = {
             default: "Personal portfolio website showcasing my projects",
         },
         components: {
-            type: DataType.ARRAY,
+            type: DataType.COMPONENT,
             displayName: "Components",
             desc: "Components which make up the website.",
-            child: {},
         },
         tailwindCdn: {
             ...urlDesc,

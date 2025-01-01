@@ -1,4 +1,4 @@
-import { DataType, ObjectDesc } from "./PropDescriptor";
+import { DataType, ObjectDesc } from "./PropsDescriptor";
 import { textDesc, urlDesc } from "./common";
 
 export interface Link {

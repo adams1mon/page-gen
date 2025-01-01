@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ComponentContainer, ComponentDescriptor } from './ComponentContainer';
 import { FileText } from 'lucide-react';
-import { DataType, InputType, ObjectDesc } from './PropDescriptor';
+import { DataType, InputType, ObjectDesc } from './PropsDescriptor';
 import { htmlIdDesc, titleDesc } from "./common";
 
 export const MARKDOWN_TYPE = "Markdown";

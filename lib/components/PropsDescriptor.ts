@@ -1,13 +1,16 @@
 // ======================================
 // Prop descriptor types
 
-import { warn } from "console";
+import { ComponentDescriptor } from "./ComponentContainer";
 
 export enum DataType {
     STRING = "string",
     NUMBER = "number",
     ARRAY = "array",
     OBJECT = "object",
+
+    // a slot to add children components
+    COMPONENT_SLOT = "component-slot",
 }
 
 export enum InputType {
@@ -16,7 +19,7 @@ export enum InputType {
     URL,
 }
 
-export type PropsDesc = LeafDesc | ArrayDesc | ObjectDesc;
+export type PropsDesc = LeafDesc | ArrayDesc | ObjectDesc | ComponentSlotDesc;
 
 export interface BaseDesc {
     type: DataType;
@@ -25,19 +28,26 @@ export interface BaseDesc {
 }
 
 export interface LeafDesc extends BaseDesc {
+    type: DataType.NUMBER | DataType.STRING;
     input: InputType;
     default: any;
 }
 
 export interface ArrayDesc extends BaseDesc {
+    type: DataType.ARRAY;
     child: PropsDesc;
 }
 
 export interface ObjectDesc extends BaseDesc {
+    type: DataType.OBJECT;
     child: {
         [key: string]: PropsDesc;
     }
 }
+
+export interface ComponentSlotDesc extends BaseDesc {
+    type: DataType.COMPONENT_SLOT,
+};
 
 // traverses the descriptor and creates an object based on the 'default' values
 // of the leaf nodes
@@ -56,6 +66,10 @@ export function createDefaultProps(desc: PropsDesc): any {
                 obj[key] = createDefaultProps(childDesc[key]);
             }
             return obj;
+
+        case DataType.COMPONENT_SLOT:
+            return [];
+
         default:
             console.log("unknown type: ", desc.type);
             break;

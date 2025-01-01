@@ -1,6 +1,6 @@
 import { Layout } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
-import { DataType, InputType, ObjectDesc } from "./PropDescriptor";
+import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
 

@@ -2,7 +2,7 @@ import { Mail } from "lucide-react";
 import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
-import { DataType, InputType, ObjectDesc, createDefaultProps } from "./PropDescriptor";
+import { DataType, InputType, ObjectDesc, createDefaultProps } from "./PropsDescriptor";
 
 export const FOOTER_TYPE = "Footer";
 

@@ -118,4 +118,4 @@ const desc: ComponentDescriptor = {
     jsxFunc: Node,
 }
 
-ComponentContainer.register(PROJECTS_TYPE, desc);
+ComponentContainer.save(PROJECTS_TYPE, desc);

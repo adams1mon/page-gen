@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
 import { useDrag, useDrop } from "react-dnd";
-import { createInputs } from "./dynamic-input";
+import { createInputs } from "./dynamic-input/create-inputs";
 import { useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
@@ -21,12 +21,12 @@ interface DragItem {
     type: string;
 }
 
-export function ComponentEditor({
+export function ComponentPropsEditor({
     component,
     index,
     onUpdate,
     moveComponent,
-    onDelete
+    onDelete,
 }: ComponentEditorProps) {
     const ref = useRef<HTMLDivElement>(null);
     const dragHandleRef = useRef<HTMLDivElement>(null);

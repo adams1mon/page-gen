@@ -8,12 +8,18 @@ import { JSXEditor } from "./JSXEditor";
 import { PropsEditor } from "./PropsEditor";
 import { IconPicker } from "./IconPicker";
 import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
+import { Code2 } from "lucide-react";
+import { EMPTY_DESC } from "@/lib/components/PropsDescriptor";
 
 export function ComponentEditor() {
   const [component, setComponent] = useState<Partial<ComponentDescriptor>>({
-    type: "",
-    name: "",
+    id: "ignored",
+    type: "CUSTOM",
+    name: "CustomHeader",
+    icon: <Code2 className="h-4 w-4"/>,
     props: {},
+    propsDescriptor: EMPTY_DESC,
+    jsxFunc: undefined,
   });
 
   const handleSave = () => {

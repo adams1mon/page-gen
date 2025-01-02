@@ -75,4 +75,4 @@ const desc: ComponentDescriptor = {
     jsxFunc: Node,
 }
 
-ComponentContainer.register(HEADER_TYPE, desc);
+ComponentContainer.save(HEADER_TYPE, desc);

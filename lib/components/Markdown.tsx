@@ -64,4 +64,4 @@ const desc: ComponentDescriptor = {
     jsxFunc: Node,
 }
 
-ComponentContainer.register(MARKDOWN_TYPE, desc);
+ComponentContainer.save(MARKDOWN_TYPE, desc);

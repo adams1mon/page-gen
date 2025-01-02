@@ -2,7 +2,6 @@
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { ComponentEditor } from "@/components/editor/ComponentEditor";
 import { useState, useEffect } from "react";
 import { GenerateSiteButton } from "@/components/GenerateSiteButton";
 import {
@@ -16,6 +15,9 @@ import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
 import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
+import { ComponentPropsEditor } from "@/components/props-editor/ComponentPropsEditor";
+import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
+
 
 export default function Home() {
     const [previewHtml, setPreviewHtml] = useState<string>("");
@@ -38,19 +40,15 @@ export default function Home() {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="h-screen flex flex-col">
-                <div className="border-b bg-background">
-                    <div className="flex justify-between items-center p-4">
-                        <h1 className="text-2xl font-bold">Portfolio Builder</h1>
-                        <div className="flex items-center gap-4">
-                            <PreviewToggle
-                                enabled={previewEnabled}
-                                onToggle={() => setPreviewEnabled(!previewEnabled)}
-                            />
-                            <OpenInNewTab html={previewHtml} />
-                            <GenerateSiteButton html={previewHtml} site={site} />
-                        </div>
-                    </div>
-                </div>
+
+                <OptionsMenu>
+                    <PreviewToggle
+                        enabled={previewEnabled}
+                        onToggle={() => setPreviewEnabled(!previewEnabled)}
+                    />
+                    <OpenInNewTab html={previewHtml} />
+                    <GenerateSiteButton html={previewHtml} site={site} />
+                </OptionsMenu>
 
                 <ResizablePanelGroup direction="horizontal" className="flex-1">
                     <ResizablePanel defaultSize={previewEnabled ? 50 : 100} minSize={10}>
@@ -58,7 +56,7 @@ export default function Home() {
                             <div className="p-8">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-center h-full min-h-[400px]">
-                                        <ComponentEditor
+                                        <ComponentPropsEditor
                                             index={0}
                                             component={site}
                                             onUpdate={setSite}

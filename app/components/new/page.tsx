@@ -1,5 +1,3 @@
-"use client";
-
 import { ComponentEditor } from "@/components/component-editor/ComponentEditor";
 
 export default function NewComponentPage() {

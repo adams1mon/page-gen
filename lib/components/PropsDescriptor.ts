@@ -11,6 +11,9 @@ export enum DataType {
 
     // a slot to add children components
     COMPONENT_SLOT = "component-slot",
+
+    // empty props, don't render any inputs
+    EMPTY = "empty",
 }
 
 export enum InputType {
@@ -19,12 +22,17 @@ export enum InputType {
     URL,
 }
 
-export type PropsDesc = LeafDesc | ArrayDesc | ObjectDesc | ComponentSlotDesc;
+export type PropsDesc = EmptyDesc | LeafDesc | ArrayDesc | ObjectDesc | ComponentSlotDesc;
+
 
 export interface BaseDesc {
     type: DataType;
     displayName: string;
     desc?: string;
+}
+
+export interface EmptyDesc extends Omit<BaseDesc, "displayName"> {
+    type: DataType.EMPTY
 }
 
 export interface LeafDesc extends BaseDesc {
@@ -75,3 +83,7 @@ export function createDefaultProps(desc: PropsDesc): any {
             break;
     }
 }
+
+export const EMPTY_DESC: EmptyDesc = {
+    type: DataType.EMPTY,
+};

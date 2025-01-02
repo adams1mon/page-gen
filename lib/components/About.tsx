@@ -89,4 +89,4 @@ const desc: ComponentDescriptor = {
         jsxFunc: Node,
     }
 
-ComponentContainer.register(ABOUT_TYPE, desc);
+ComponentContainer.save(ABOUT_TYPE, desc);

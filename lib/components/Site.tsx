@@ -201,5 +201,5 @@ const desc: ComponentDescriptor = {
     jsxFunc: Node,
 }
 
-ComponentContainer.register(SITE_TYPE, desc);
+ComponentContainer.save(SITE_TYPE, desc);
 

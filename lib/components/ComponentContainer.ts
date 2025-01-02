@@ -30,7 +30,7 @@ export function updateProps(comp: ComponentDescriptor, props: any): ComponentDes
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};
 
-    static register(
+    static save(
         type: string,
         descriptorTemplate: ComponentDescriptor,
     ) {

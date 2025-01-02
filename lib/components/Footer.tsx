@@ -89,4 +89,4 @@ const desc: ComponentDescriptor = {
     jsxFunc: Node,
 }
 
-ComponentContainer.register(FOOTER_TYPE, desc);
+ComponentContainer.save(FOOTER_TYPE, desc);

@@ -91,4 +91,4 @@ const desc: ComponentDescriptor = {
     jsxFunc: Node,
 }
 
-ComponentContainer.register(HERO_TYPE, desc);
+ComponentContainer.save(HERO_TYPE, desc);

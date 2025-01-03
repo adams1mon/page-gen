@@ -1,16 +1,15 @@
-import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from '../components/ComponentContainer';
+import { ComponentContainer, ComponentDescriptor, ComponentPropsWithChildren } from '../components/ComponentContainer';
 import { DataType, ObjectDesc } from './PropsDescriptor';
 import { titleDesc, longTextDesc, textDesc, urlDesc, childrenDesc } from "./common";
-import { nestComponents } from '../site-generator/generate-html';
 
 export const SITE_TYPE = "Site";
 
-export interface SiteProps extends NestedComponentsProps {
+export interface SiteProps extends ComponentPropsWithChildren {
     title: string;
     description: string;
     tailwindCdn?: string;
     styles?: string;
-    children: ComponentDescriptor[],
+    childrenDesc: ComponentDescriptor[],
 }
 
 function Node(props: SiteProps) {
@@ -26,7 +25,9 @@ function Node(props: SiteProps) {
                 <title>{props.title}</title>
             </head>
             <body>
-                {nestComponents(props)}
+                {
+                    props.children
+                }
             </body>
         </html>
     );
@@ -156,7 +157,7 @@ const defaultProps: SiteProps = {
     description: 'Welcome to my portfolio website',
     tailwindCdn: "https://cdn.tailwindcss.com/3.4.16",
     styles: generateStyles(),
-    children: [],
+    childrenDesc: [],
 };
 
 // NOTE: include only the properties which should be editable by the user.
@@ -187,7 +188,7 @@ const propsDescriptor: ObjectDesc = {
             desc: "Custom CSS styles to include in a <style> in the website",
             default: generateStyles(),
         },
-        children: { ...childrenDesc },
+        childrenDesc: { ...childrenDesc },
     }
 };
 

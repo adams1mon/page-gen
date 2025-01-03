@@ -13,6 +13,7 @@ export interface HeaderProps {
 }
 
 function Node(props: HeaderProps) {
+
     return (
         <header id={props.htmlId} className="w-full py-6 px-8 bg-background border-t">
             <div className="max-w-5xl mx-auto">

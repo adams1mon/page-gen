@@ -31,6 +31,7 @@ export interface BaseDesc {
     desc?: string;
 }
 
+// Signals emtpy props, e.g. props: {}
 export interface EmptyDesc extends Omit<BaseDesc, "displayName"> {
     type: DataType.EMPTY
 }

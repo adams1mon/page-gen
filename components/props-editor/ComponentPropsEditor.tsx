@@ -12,7 +12,7 @@ interface ComponentEditorProps {
     index: number;
     onUpdate: (component: ComponentDescriptor) => void;
     moveComponent: (dragIndex: number, hoverIndex: number) => void;
-    onDelete: (id: string) => void;
+    onDelete: ((id: string) => void) | null;
 }
 
 interface DragItem {
@@ -95,14 +95,17 @@ export function ComponentPropsEditor({
                             <span className="font-medium capitalize text-sm">{component.type}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => onDelete(component.id)}
-                                className="text-destructive hover:text-destructive"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </Button>
+                            {
+                                onDelete != null &&
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => onDelete(component.id)}
+                                    className="text-destructive hover:text-destructive"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            }
                             <CollapsibleTrigger asChild>
                                 <Button variant="ghost" size="icon">
                                     <ChevronDown className={cn(

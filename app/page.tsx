@@ -64,10 +64,7 @@ export default function Home() {
                                                 // unused for the site
                                                 () => { }
                                             }
-                                            onDelete={
-                                                // unused for the site
-                                                () => { }
-                                            }
+                                            onDelete={null}
                                         />
                                     </div>
                                 </div>

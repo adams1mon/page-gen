@@ -1,11 +1,11 @@
 import { User } from "lucide-react";
-import { ComponentContainer, ComponentDescriptor, NestedComponentsProps } from "./ComponentContainer";
+import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 import { htmlIdDesc } from "./common";
 
 export const ABOUT_TYPE = "About";
 
-export interface AboutProps extends NestedComponentsProps {
+export interface AboutProps {
     title: string;
     description: string[];
     imageUrl: string;
@@ -43,7 +43,6 @@ const defaultProps: AboutProps = {
     ],
     imageUrl: "https://images.unsplash.com/photo-1499557354967-2b2d8910bcca?q=80&auto=format&fit=crop",
     htmlId: "about",
-    children: [],
 };
 
 const propsDescriptor: ObjectDesc = {

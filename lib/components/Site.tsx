@@ -9,11 +9,9 @@ export interface SiteProps extends ComponentPropsWithChildren {
     description: string;
     tailwindCdn?: string;
     styles?: string;
-    childrenDesc: ComponentDescriptor[],
 }
 
 function Node(props: SiteProps) {
-
     return (
         <html lang="en">
             <head>
@@ -158,6 +156,7 @@ const defaultProps: SiteProps = {
     tailwindCdn: "https://cdn.tailwindcss.com/3.4.16",
     styles: generateStyles(),
     childrenDesc: [],
+    children: [],
 };
 
 // NOTE: include only the properties which should be editable by the user.
@@ -199,6 +198,7 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: null,
+    customComponent: false,
     jsxFunc: Node,
 }
 

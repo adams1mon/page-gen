@@ -1,8 +1,6 @@
 // ======================================
 // Prop descriptor types
 
-import { ComponentDescriptor } from "./ComponentContainer";
-
 export enum DataType {
     STRING = "string",
     NUMBER = "number",
@@ -85,6 +83,6 @@ export function createDefaultProps(desc: PropsDesc): any {
     }
 }
 
-export const EMPTY_DESC: EmptyDesc = {
+export const EMPTY_DESCRIPTOR: EmptyDesc = {
     type: DataType.EMPTY,
 };

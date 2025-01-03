@@ -88,6 +88,7 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <Layout className="w-4 h-4" />,
+    customComponent: false,
     jsxFunc: Node,
 }
 

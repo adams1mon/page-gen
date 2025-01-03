@@ -86,6 +86,7 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <Mail className="w-4 h-4" />,
+    customComponent: false,
     jsxFunc: Node,
 }
 

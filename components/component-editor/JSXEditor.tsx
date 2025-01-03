@@ -1,5 +1,3 @@
-"use client";
-
 import Editor from "@monaco-editor/react";
 
 interface JSXEditorProps {

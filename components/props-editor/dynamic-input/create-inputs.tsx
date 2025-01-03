@@ -7,6 +7,7 @@ import { NumberInput } from "./NumberInput";
 import { ArrayInput } from "./ArrayInput";
 import { ObjectInput } from "./ObjectInput";
 import { ComponentInput } from "./ComponentInput";
+import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
 
 
 export function createInputs(
@@ -52,7 +53,7 @@ export function createInputs(
         case DataType.COMPONENT_SLOT:
             return ComponentInput(
                 propsDescriptor as ComponentSlotDesc,
-                props,
+                props as ComponentDescriptor[],
                 onChange,
                 key,
             );

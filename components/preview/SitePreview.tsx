@@ -14,6 +14,8 @@ export function SitePreview({ site, html }: SitePreviewProps) {
         srcDoc={html}
         className="w-full h-full border-0"
         title={(site.props as SiteProps).title}
+        // sandboxing from codepen.io
+        sandbox="allow-downloads allow-forms allow-modals allow-pointer-lock allow-popups-to-escape-sandbox allow-popups allow-presentation allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
       />
     </div>
   );

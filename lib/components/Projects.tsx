@@ -32,7 +32,7 @@ function Node(props: ProjectsProps) {
                             <div className="p-6">
                                 <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
                                 <p className="text-muted-foreground">{project.description}</p>
-                                {project.link && 
+                                {project.link &&
                                     <a href={project.link} className="text-primary hover:underline mt-4 inline-block">
                                         Learn More →
                                     </a>
@@ -115,6 +115,7 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <Briefcase className="w-4 h-4" />,
+    customComponent: false,
     jsxFunc: Node,
 }
 

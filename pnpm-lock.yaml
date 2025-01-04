@@ -207,9 +207,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.15
         version: 0.5.15(tailwindcss@3.3.3)
-      standalone:
-        specifier: link:@types/@babel/standalone
-        version: link:@types/@babel/standalone
 
 packages:
 

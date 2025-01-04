@@ -1,136 +1,145 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { JSXEditor } from "./JSXEditor";
-import { PropsEditor } from "./PropsEditor";
-import { ComponentContainer, ComponentDescriptor, ComponentPropsWithChildren } from "@/lib/components/ComponentContainer";
-import { Code2 } from "lucide-react";
-import { DataType, EMPTY_DESCRIPTOR } from "@/lib/components/PropsDescriptor";
-import { SitePreview } from "../preview/SitePreview";
+import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
+import { useDrag, useDrop } from "react-dnd";
+import { createInputs } from "./dynamic-input/create-inputs";
+import { useRef, useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { cn } from "@/lib/utils";
+import { ComponentDescriptor, updateProps } from "@/lib/components/ComponentContainer";
+import { ComponentInput } from "./component-input/ComponentInput";
 
-import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
-import { useDebounce } from "@/hooks/use-debounce";
+interface ComponentEditorProps {
+    component: ComponentDescriptor;
+    index: number;
+    onUpdate: (component: ComponentDescriptor) => void;
+    moveComponent: (dragIndex: number, hoverIndex: number) => void;
+    onDelete: ((id: string) => void) | null;
+}
 
-const defaultJsx = `function Component(props) {
-  return (
-    <div className="w-full py-12 bg-background">
-      <div className="max-w-5xl mx-auto px-8">
-        {/* Your component JSX here */}
-      </div>
-    </div>
-  );
-}`;
+interface DragItem {
+    index: number;
+    id: string;
+    type: string;
+}
 
-export function ComponentEditor() {
-    const [component, setComponent] = useState<ComponentDescriptor>({
-        id: "ignored",
-        type: "CUSTOM",
-        name: "CustomHeader",
-        icon: <Code2 className="h-4 w-4" />,
-        props: {},
-        propsDescriptor: EMPTY_DESCRIPTOR,
-        customComponent: true,
-        jsxFunc: defaultJsx,
+export function ComponentEditor({
+    component,
+    index,
+    onUpdate,
+    moveComponent,
+    onDelete,
+}: ComponentEditorProps) {
+    const ref = useRef<HTMLDivElement>(null);
+    const dragHandleRef = useRef<HTMLDivElement>(null);
+    const [isOpen, setIsOpen] = useState(true);
+
+    const [, drop] = useDrop({
+        accept: "portfolio-component-sort",
+        collect(monitor) {
+            return {
+                handlerId: monitor.getHandlerId(),
+            };
+        },
+        hover(item: DragItem, monitor) {
+            if (!ref.current) {
+                return;
+            }
+
+            const dragIndex = item.index;
+            const hoverIndex = index;
+
+            if (dragIndex === hoverIndex) {
+                return;
+            }
+
+            const hoverBoundingRect = ref.current?.getBoundingClientRect();
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+            const clientOffset = monitor.getClientOffset();
+            const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
+
+            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+                return;
+            }
+            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+                return;
+            }
+
+            moveComponent(dragIndex, hoverIndex);
+            item.index = hoverIndex;
+        },
     });
 
-    const [previewHtml, setPreviewHtml] = useState<string>("");
-    const [site, setSite] = useState<ComponentDescriptor>(newSite());
-    const debounce = useDebounce();
-    const previewDebounceMillis = 100;
+    const [{ isDragging }, drag] = useDrag({
+        type: "portfolio-component-sort",
+        item: () => ({ id: component.id, index }),
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    });
 
-    const debouncePreview = () => debounce(() => {
-        (async () => {
-            const html = await generateHtml(site);
-            setPreviewHtml(html);
-        })();
-    }, previewDebounceMillis);
+    const opacity = isDragging ? 0.5 : 1;
 
-    useEffect(debouncePreview, [site]);
+    drag(dragHandleRef);
+    drop(ref);
 
-    const updateSite = () => {
-        setSite({
-            ...site,
-            props: {
-                childrenDesc: [component],
-                children: [],
-            } as ComponentPropsWithChildren,
-        });
+    const updateComponentProps = (newProps: any) => {
+        onUpdate(updateProps(component, newProps))
     };
 
-    useEffect(updateSite, [component]);
-
-    const handleSave = async () => {
-        // TODO: Validate and save component
-        console.log("Saving component:", component);
-
-        if (!component.type) {
-            alert(`Component type ${component.type} is not defined`);
-        } else {
-            try {
-                ComponentContainer.getDescriptor(component.type);
-                ComponentContainer.save(component.type, component);
-
-                console.log(ComponentContainer.getCustomComponents());
-                updateSite();
-
-            } catch {
-                alert(`Component type ${component.type} already exists`);
-            }
-        }
+    const updateChildrenDescriptors = (descriptors: ComponentDescriptor[]) => {
+        onUpdate({ ...component, childrenDescriptors: descriptors });
     };
 
     return (
-        <div className="space-y-8">
-            <div className="grid gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="type">Component Type</Label>
-                    <Input
-                        id="type"
-                        value={component.type}
-                        onChange={(e) => setComponent({ ...component, type: e.target.value })}
-                        placeholder="MyCustomComponent"
-                    />
-                </div>
+        <div ref={ref} style={{ opacity }} className="group relative bg-background border rounded-lg">
+            <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                <CollapsibleTrigger asChild>
+                    <div className="flex items-center justify-between py-2 px-3 border-b">
+                        <div ref={dragHandleRef} className="cursor-move flex items-center gap-2 text-muted-foreground">
+                            <GripVertical className="w-4 h-4" />
+                            <span className="font-medium capitalize text-sm">{component.type}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            {
+                                onDelete != null &&
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => onDelete(component.id)}
+                                    className="text-destructive hover:text-destructive"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            }
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <ChevronDown className={cn(
+                                        "h-4 w-4 transition-transform duration-200",
+                                        isOpen ? "rotate-180" : ""
+                                    )} />
+                                </Button>
+                            </CollapsibleTrigger>
+                        </div>
+                    </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
 
-                <div className="space-y-2">
-                    <Label htmlFor="name">Display Name</Label>
-                    <Input
-                        id="name"
-                        value={component.name}
-                        onChange={(e) => setComponent({ ...component, name: e.target.value })}
-                        placeholder="My Custom Component"
-                    />
-                </div>
+                    {/* prop inputs */}
+                    <div className="p-4">
+                        {createInputs(component.propsDescriptor, component.props, updateComponentProps)}
+                    </div>
 
-                {
-                    //<IconPicker
-                    //  value={component.icon}
-                    //  onChange={(icon) => setComponent({ ...component, icon })}
-                    ///>
-                }
-            </div>
-
-            <PropsEditor
-                value={component.props}
-                onChange={(props) => setComponent({ ...component, props })}
-            />
-
-            <JSXEditor
-                value={component.jsxFunc as string}
-                onChange={(jsxFunc) => {
-                    setComponent({ ...component, jsxFunc });
-                }}
-            />
-
-            <SitePreview
-                html={previewHtml}
-                site={site}
-            />
-
-            <Button onClick={handleSave}>Save Component</Button>
+                    {/* children component inputs */}
+                    {component.acceptsChildren &&
+                        <div className="p-4">
+                            <ComponentInput
+                                components={component.childrenDescriptors}
+                                onChange={updateChildrenDescriptors}
+                            />
+                        </div>
+                    }
+                </CollapsibleContent>
+            </Collapsible>
         </div>
     );
 }

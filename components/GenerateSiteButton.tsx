@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
+import { hasChildren } from "@/lib/site-generator/generate-html";
 import { Download } from "lucide-react";
 import { useState } from "react";
 
@@ -40,7 +41,7 @@ export function GenerateSiteButton({ site, html }: GenerateSiteButtonProps) {
         <div className="flex items-center gap-2">
             <Button
                 onClick={generateSite}
-                disabled={isGenerating || site.props.childrenDesc.length === 0}
+                disabled={isGenerating || !hasChildren(site) }
                 className="gap-2"
             >
                 <Download className="w-4 h-4" />

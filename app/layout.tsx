@@ -2,11 +2,8 @@ import { SiteHeader } from '@/components/header/SiteHeader';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { NewComponentButton } from '@/components/header/NewComponentButton';
 
 const inter = Inter({ subsets: ['latin'] });
-
-const reactVersion = "18.2.0"
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -20,15 +17,8 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <head>
-                {/* needed by Babel to transform JSX to JS */}
-                <script src={`https://cdnjs.cloudflare.com/ajax/libs/react/${reactVersion}/umd/react.production.min.js`}></script>
-                <script src={`https://cdnjs.cloudflare.com/ajax/libs/react-dom/${reactVersion}/umd/react-dom.production.min.js`}></script>
-            </head>
             <body className={inter.className}>
-                <SiteHeader>
-                    <NewComponentButton />
-                </SiteHeader>
+                <SiteHeader/>
                 {children}
             </body>
         </html>

@@ -1,23 +1,22 @@
 import { ComponentContainer, ComponentDescriptor } from "@/lib/components/ComponentContainer";
-import { ComponentSlotDesc } from "@/lib/components/PropsDescriptor";
-import { ReactNode } from "react";
-import { ComponentDivider } from "../ComponentDivider";
-import { ComponentPropsEditor } from "../ComponentPropsEditor";
+import { ComponentDivider } from "./ComponentDivider";
+import { ComponentEditor } from "../ComponentEditor";
 
-
-// Slot for another component
-export function ComponentInput(
-    propsDescriptor: ComponentSlotDesc,
-    components: ComponentDescriptor[],
+interface ComponentInputProps {
+    components: ComponentDescriptor[];
 
     // called with the changed 'components', 
     // should set the updated components them on the parent component
-    onChange: (components: ComponentDescriptor[]) => void,
+    onChange: (components: ComponentDescriptor[]) => void;
+};
 
-    key: string,
-): ReactNode {
-
-    // TODO: drag and drop
+// Slot for another component
+export function ComponentInput(
+    {
+        components,
+        onChange,
+    }: ComponentInputProps
+) {
 
     const addComponent = (type: string, index?: number) => {
         const newComponent = ComponentContainer.createInstance(type);
@@ -51,9 +50,9 @@ export function ComponentInput(
 
 
     return (
-        <div className="overflow-y-auto" key={key}>
-            <label className="text-sm font-medium">{propsDescriptor.displayName}</label>
-            {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
+        <div className="overflow-y-auto">
+            <label className="text-sm font-medium">Children</label>
+            <p className="text-sm font-medium">Nested children to add to the component</p>
             <div className="space-y-4">
                 {components.length === 0 ? (
                     <div className="space-y-4">
@@ -66,9 +65,9 @@ export function ComponentInput(
                                 <ComponentDivider
                                     onInsert={(type) => addComponent(type, index)}
                                 />
-                                
+
                                 {/* Render the editors of the child components recursively */}
-                                <ComponentPropsEditor
+                                <ComponentEditor
                                     index={index}
                                     component={component}
                                     onUpdate={handleComponentUpdate}

@@ -1,14 +1,9 @@
-"use client";
-
 import { ReactNode } from "react";
-import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType, ComponentSlotDesc } from "@/lib/components/PropsDescriptor";
+import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType } from "@/lib/components/PropsDescriptor";
 import { StringInput } from "./StringInput";
 import { NumberInput } from "./NumberInput";
 import { ArrayInput } from "./ArrayInput";
 import { ObjectInput } from "./ObjectInput";
-import { ComponentInput } from "./ComponentInput";
-import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
-
 
 export function createInputs(
     propsDescriptor: PropsDesc,
@@ -46,14 +41,6 @@ export function createInputs(
             return ObjectInput(
                 propsDescriptor as ObjectDesc,
                 props as {[key: string]: any},
-                onChange,
-                key,
-            );
-
-        case DataType.COMPONENT_SLOT:
-            return ComponentInput(
-                propsDescriptor as ComponentSlotDesc,
-                props as ComponentDescriptor[],
                 onChange,
                 key,
             );

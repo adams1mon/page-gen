@@ -15,7 +15,7 @@ import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
 import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
-import { ComponentPropsEditor } from "@/components/props-editor/ComponentPropsEditor";
+import { ComponentEditor } from "@/components/component-editor/ComponentEditor";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 
 
@@ -53,20 +53,18 @@ export default function Home() {
                 <ResizablePanelGroup direction="horizontal" className="flex-1">
                     <ResizablePanel defaultSize={previewEnabled ? 50 : 100} minSize={10}>
                         <div className="h-full overflow-y-auto">
-                            <div className="p-8">
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-center h-full min-h-[400px]">
-                                        <ComponentPropsEditor
-                                            index={0}
-                                            component={site}
-                                            onUpdate={setSite}
-                                            moveComponent={
-                                                // unused for the site
-                                                () => { }
-                                            }
-                                            onDelete={null}
-                                        />
-                                    </div>
+                            <div className="p-8 space-y-4">
+                                <div className="flex flex-columnitems-center justify-center h-full min-h-[400px]">
+                                    <ComponentEditor
+                                        index={0}
+                                        component={site}
+                                        onUpdate={setSite}
+                                        moveComponent={
+                                            // unused for the site
+                                            () => { }
+                                        }
+                                        onDelete={null}
+                                    />
                                 </div>
                             </div>
                         </div>

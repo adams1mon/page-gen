@@ -115,8 +115,8 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <Briefcase className="w-4 h-4" />,
-    customComponent: false,
-    jsxFunc: Node,
+    acceptsChildren: false,
+    childrenDescriptors: [],
 }
 
-ComponentContainer.save(PROJECTS_TYPE, desc);
+ComponentContainer.save(PROJECTS_TYPE, desc, Node);

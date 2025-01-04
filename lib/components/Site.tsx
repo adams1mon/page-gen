@@ -1,6 +1,6 @@
 import { ComponentContainer, ComponentDescriptor, ComponentPropsWithChildren } from '../components/ComponentContainer';
 import { DataType, ObjectDesc } from './PropsDescriptor';
-import { titleDesc, longTextDesc, textDesc, urlDesc, childrenDesc } from "./common";
+import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
 
 export const SITE_TYPE = "Site";
 
@@ -155,7 +155,6 @@ const defaultProps: SiteProps = {
     description: 'Welcome to my portfolio website',
     tailwindCdn: "https://cdn.tailwindcss.com/3.4.16",
     styles: generateStyles(),
-    childrenDesc: [],
     children: [],
 };
 
@@ -187,7 +186,6 @@ const propsDescriptor: ObjectDesc = {
             desc: "Custom CSS styles to include in a <style> in the website",
             default: generateStyles(),
         },
-        childrenDesc: { ...childrenDesc },
     }
 };
 
@@ -198,9 +196,9 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: null,
-    customComponent: false,
-    jsxFunc: Node,
+    acceptsChildren: true,
+    childrenDescriptors: [],
 }
 
-ComponentContainer.save(SITE_TYPE, desc);
+ComponentContainer.save(SITE_TYPE, desc, Node);
 

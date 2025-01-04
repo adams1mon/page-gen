@@ -1,5 +1,4 @@
 import { ABOUT_TYPE } from "@/lib/components/About";
-import { ComponentContainer } from "@/lib/components/ComponentContainer";
 import { FOOTER_TYPE } from "@/lib/components/Footer";
 import { HEADER_TYPE } from "@/lib/components/Header";
 import { HERO_TYPE } from "@/lib/components/Hero";
@@ -8,9 +7,7 @@ import { PROJECTS_TYPE } from "@/lib/components/Projects";
 import { Layout, User, Briefcase, Mail, FileText } from "lucide-react";
 
 export const availableComponents = [
-    // make HEADER a custom component for testing
-    //{ type: HEADER_TYPE, icon: <Layout className="w-4 h-4" />},
-
+    { type: HEADER_TYPE, icon: <Layout className="w-4 h-4" />},
     { type: HERO_TYPE, icon: <Layout className="w-4 h-4" /> },
     { type: ABOUT_TYPE, icon: <User className="w-4 h-4" /> },
     { type: PROJECTS_TYPE, icon: <Briefcase className="w-4 h-4" /> },

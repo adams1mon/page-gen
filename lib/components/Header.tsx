@@ -12,28 +12,7 @@ export interface HeaderProps {
     htmlId: string;
 }
 
-//function Node(props: HeaderProps) {
-//    return (
-//        <header id={props.htmlId} className="w-full py-6 px-8 bg-background border-t">
-//            <div className="max-w-5xl mx-auto">
-//                <div className="flex justify-between items-center">
-//                    <h1 className="text-2xl font-bold">{props.title}</h1>
-//                    <nav className="space-x-6">
-//                        {props.links.map((link, index) => (
-//                            <a key={index} href={link.url} className="text-muted-foreground hover:text-foreground">
-//                                {link.text}
-//                            </a>
-//                        ))}
-//                    </nav>
-//                </div>
-//            </div>
-//        </header>
-//    );
-//}
-
-const nodeStr = `
-function Node(props) {
-
+function Node(props: HeaderProps) {
     return (
         <header id={props.htmlId} className="w-full py-6 px-8 bg-background border-t">
             <div className="max-w-5xl mx-auto">
@@ -51,7 +30,6 @@ function Node(props) {
         </header>
     );
 }
-`;
 
 const defaultProps: HeaderProps = {
     title: "Your Name",
@@ -94,11 +72,8 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <Layout className="w-4 h-4" />,
-
-    // use this as a custom component, to make sure that everything works
-    // JSX on the frontend works
-    customComponent: true,
-    jsxFunc: nodeStr,
+    acceptsChildren: false,
+    childrenDescriptors: [],
 }
 
-ComponentContainer.save(HEADER_TYPE, desc);
+ComponentContainer.save(HEADER_TYPE, desc, Node);

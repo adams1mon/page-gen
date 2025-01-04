@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -10,26 +8,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { availableComponents } from "./available-components";
 
-import { ComponentContainer } from "@/lib/components/ComponentContainer";
 
 interface ComponentDividerProps {
     onInsert: (type: string) => void;
 }
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {
-
-    const getAvailableComponents = () => {
-        const c=[
-            ...availableComponents,
-            ...ComponentContainer.getCustomComponents().map(c => ({
-                type: c.type,
-                icon: c.icon,
-            })),
-        ];
-        console.log(c);
-        
-        return c;
-    };
 
     return (
         <div className="relative h-8 flex items-center justify-center">
@@ -49,7 +33,7 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="center">
                         {
-                            getAvailableComponents().map((component) => (
+                            ...availableComponents.map((component) => (
                                 <DropdownMenuItem
                                     key={component.type}
                                     onClick={() => onInsert(component.type)}

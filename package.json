@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@babel/standalone": "^7.26.4",
     "@hookform/resolvers": "^3.9.0",
     "@monaco-editor/react": "^4.6.0",
     "@next/swc-wasm-nodejs": "13.5.1",
@@ -69,7 +68,6 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
-    "@types/babel__standalone": "^7.1.9",
     "standalone": "link:@types/@babel/standalone"
   }
 }

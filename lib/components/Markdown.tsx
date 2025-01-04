@@ -61,8 +61,8 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <FileText className="w-4 h-4" />,
-    customComponent: false,
-    jsxFunc: Node,
+    acceptsChildren: false,
+    childrenDescriptors: [],
 }
 
-ComponentContainer.save(MARKDOWN_TYPE, desc);
+ComponentContainer.save(MARKDOWN_TYPE, desc, Node);

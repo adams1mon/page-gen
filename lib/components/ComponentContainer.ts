@@ -8,6 +8,12 @@ export interface ComponentDescriptor {
     name: string;
     icon: ReactNode;
 
+    // if true, childrenDescriptors is populated,
+    // and 'props' will have 'children' populated with the rendered components
+    // when the component is rendered to HTML
+    acceptsChildren: boolean;
+    childrenDescriptors: ComponentDescriptor[];
+
     // Props that will be passed in to the React node once created.
     //
     // Contains user-defined props as well as some reserved attributes,
@@ -27,21 +33,11 @@ export interface ComponentDescriptor {
     // Descriptors of the props to generate inputs for them, 
     // a recursive tree.
     propsDescriptor: PropsDesc;
-
-    // true if this is a custom, user-made component
-    customComponent: boolean,
-
-    // string if this is a custom component (these cannot have dependencies),
-    // function element if predefined on the backend, with all their dependencies resolved.
-    jsxFunc: string | React.FunctionComponent<any>;
 }
 
 // enables the nesting of components, used in the 'props' of a ComponentDescriptor
 export interface ComponentPropsWithChildren {
-
-    // TODO: move this into ComponentDescriptor
-    childrenDesc: ComponentDescriptor[];
-
+    
     // NOTE: React nodes will be rendered here
     children: ReactNode[];
 };
@@ -55,19 +51,25 @@ export function updateProps(comp: ComponentDescriptor, props: any): ComponentDes
 }
 
 // holds component descriptors and creates new component descriptors based on the templates
-
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};
+    static jsxFuncs: { [type: string]: React.FunctionComponent<any>} = {};
 
     static save(
         type: string,
         descriptorTemplate: ComponentDescriptor,
+        jsxFunc: React.FunctionComponent<any>,
     ) {
-        ComponentContainer.components[type] = descriptorTemplate;
+        this.components[type] = descriptorTemplate;
+        this.jsxFuncs[type] = jsxFunc;
+    }
+
+    static getReactElement(type: string): React.FunctionComponent<any> {
+        return this.jsxFuncs[type];
     }
 
     static createInstance(type: string): ComponentDescriptor {
-        const desc = ComponentContainer.getDescriptor(type);
+        const desc = this.getDescriptor(type);
 
         if (!desc) {
             throw new Error(`Component of type ${type} does not exist`);
@@ -80,11 +82,7 @@ export class ComponentContainer {
     }
 
     static getDescriptor(type: string): ComponentDescriptor | undefined {
-        return ComponentContainer.components[type];
-    }
-
-    static getCustomComponents(): ComponentDescriptor[] {
-        return Object.values(ComponentContainer.components).filter(c => c.customComponent === true);
+        return this.components[type];
     }
 }
 

@@ -86,8 +86,8 @@ const desc: ComponentDescriptor = {
     props: defaultProps,
     propsDescriptor,
     icon: <Mail className="w-4 h-4" />,
-    customComponent: false,
-    jsxFunc: Node,
+    acceptsChildren: false,
+    childrenDescriptors: [],
 }
 
-ComponentContainer.save(FOOTER_TYPE, desc);
+ComponentContainer.save(FOOTER_TYPE, desc, Node);

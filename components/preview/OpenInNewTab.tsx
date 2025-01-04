@@ -10,8 +10,9 @@ export function OpenInNewTab({ html }: OpenInNewTabProps) {
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
+
     // Clean up the URL object after the window is opened
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+    URL.revokeObjectURL(url);
   };
 
   return (

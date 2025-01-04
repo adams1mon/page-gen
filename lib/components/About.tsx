@@ -79,14 +79,14 @@ const propsDescriptor: ObjectDesc = {
 };
 
 const desc: ComponentDescriptor = {
-        id: "id", // will be overwritten when a new instance is created
-        type: ABOUT_TYPE,
-        name: "About",
-        props: defaultProps,
-        propsDescriptor,
-        icon: <User className="w-4 h-4" />,
-        customComponent: false,
-        jsxFunc: Node,
-    }
+    id: "id", // will be overwritten when a new instance is created
+    type: ABOUT_TYPE,
+    name: "About",
+    icon: <User className="w-4 h-4" />,
+    props: defaultProps,
+    propsDescriptor,
+    acceptsChildren: false,
+    childrenDescriptors: [],
+};
 
-ComponentContainer.save(ABOUT_TYPE, desc);
+ComponentContainer.save(ABOUT_TYPE, desc, Node);

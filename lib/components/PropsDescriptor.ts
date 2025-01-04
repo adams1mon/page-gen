@@ -7,9 +7,6 @@ export enum DataType {
     ARRAY = "array",
     OBJECT = "object",
 
-    // a slot to add children components
-    COMPONENT_SLOT = "component-slot",
-
     // empty props, don't render any inputs
     EMPTY = "empty",
 }
@@ -20,8 +17,7 @@ export enum InputType {
     URL,
 }
 
-export type PropsDesc = EmptyDesc | LeafDesc | ArrayDesc | ObjectDesc | ComponentSlotDesc;
-
+export type PropsDesc = EmptyDesc | LeafDesc | ArrayDesc | ObjectDesc;
 
 export interface BaseDesc {
     type: DataType;
@@ -52,10 +48,6 @@ export interface ObjectDesc extends BaseDesc {
     }
 }
 
-export interface ComponentSlotDesc extends BaseDesc {
-    type: DataType.COMPONENT_SLOT,
-};
-
 // traverses the descriptor and creates an object based on the 'default' values
 // of the leaf nodes
 export function createDefaultProps(desc: PropsDesc): any {
@@ -67,16 +59,12 @@ export function createDefaultProps(desc: PropsDesc): any {
             return [createDefaultProps((desc as ArrayDesc).child)]
 
         case DataType.OBJECT:
-            const obj: {[key: string]: any} = {};
+            const obj: { [key: string]: any } = {};
             const childDesc = (desc as ObjectDesc).child;
             for (const key in childDesc) {
                 obj[key] = createDefaultProps(childDesc[key]);
             }
             return obj;
-
-        case DataType.COMPONENT_SLOT:
-            return [];
-
         default:
             console.log("unknown type: ", desc.type);
             break;

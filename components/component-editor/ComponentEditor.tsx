@@ -5,8 +5,9 @@ import { createInputs } from "./dynamic-input/create-inputs";
 import { useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
-import { ComponentDescriptor, updateProps } from "@/lib/components/ComponentContainer";
+import { updateProps } from "@/lib/components-meta/ComponentContainer";
 import { ComponentInput } from "./component-input/ComponentInput";
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 
 interface ComponentEditorProps {
     component: ComponentDescriptor;

@@ -1,8 +1,9 @@
 import { Mail } from "lucide-react";
-import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
 import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
-import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
+import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
+import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { ComponentContainer } from "../components-meta/ComponentContainer";
 
 export const FOOTER_TYPE = "Footer";
 

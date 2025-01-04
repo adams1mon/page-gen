@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType } from "@/lib/components/PropsDescriptor";
+import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType } from "@/lib/components-meta/PropsDescriptor";
 import { StringInput } from "./StringInput";
 import { NumberInput } from "./NumberInput";
 import { ArrayInput } from "./ArrayInput";

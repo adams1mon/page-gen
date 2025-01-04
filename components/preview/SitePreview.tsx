@@ -1,4 +1,4 @@
-import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteProps } from "@/lib/components/Site";
 
 

@@ -1,7 +1,8 @@
 import { User } from "lucide-react";
-import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
-import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 import { htmlIdDesc } from "./common";
+import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
+import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { ComponentContainer } from "../components-meta/ComponentContainer";
 
 export const ABOUT_TYPE = "About";
 

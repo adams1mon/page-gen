@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { ObjectDesc } from "@/lib/components/PropsDescriptor";
+import { ObjectDesc } from "@/lib/components-meta/PropsDescriptor";
 import { ReactNode } from "react";
 import { createInputs } from "./create-inputs";
 

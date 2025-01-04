@@ -1,6 +1,7 @@
-import { ComponentContainer, ComponentDescriptor } from "@/lib/components/ComponentContainer";
+import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDivider } from "./ComponentDivider";
 import { ComponentEditor } from "../ComponentEditor";
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 
 interface ComponentInputProps {
     components: ComponentDescriptor[];

@@ -1,8 +1,9 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ComponentContainer, ComponentDescriptor } from './ComponentContainer';
 import { FileText } from 'lucide-react';
-import { DataType, InputType, ObjectDesc } from './PropsDescriptor';
+import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { htmlIdDesc, titleDesc } from "./common";
 
 export const MARKDOWN_TYPE = "Markdown";

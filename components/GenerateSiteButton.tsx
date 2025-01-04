@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { hasChildren } from "@/lib/site-generator/generate-html";
 import { Download } from "lucide-react";
 import { useState } from "react";

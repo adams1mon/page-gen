@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { InputType, LeafDesc } from "@/lib/components/PropsDescriptor";
+import { InputType, LeafDesc } from "@/lib/components-meta/PropsDescriptor";
 import { ReactNode } from "react";
 
 export function StringInput(

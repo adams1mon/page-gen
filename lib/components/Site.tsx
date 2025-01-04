@@ -1,5 +1,6 @@
-import { ComponentContainer, ComponentDescriptor, ComponentPropsWithChildren } from '../components/ComponentContainer';
-import { DataType, ObjectDesc } from './PropsDescriptor';
+import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
+import { DataType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
 
 export const SITE_TYPE = "Site";

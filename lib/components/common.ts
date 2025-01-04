@@ -1,4 +1,4 @@
-import { ComponentSlotDesc, DataType, InputType, LeafDesc } from "./PropsDescriptor"
+import { DataType, InputType, LeafDesc } from "../components-meta/PropsDescriptor";
 
 
 export const htmlIdDesc: LeafDesc = {
@@ -47,8 +47,8 @@ export const imageUrlDesc: LeafDesc = {
     default: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?auto=format&fit=crop&q=80",
 }
 
-export const childrenDesc: ComponentSlotDesc = {
-    type: DataType.COMPONENT_SLOT,
-    displayName: "Children",
-    desc: "Nested components to add",
-}
+//export const childrenDesc: ComponentSlotDesc = {
+//    type: DataType.COMPONENT_SLOT,
+//    displayName: "Children",
+//    desc: "Nested components to add",
+//}

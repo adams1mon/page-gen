@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { LeafDesc } from "@/lib/components/PropsDescriptor";
+import { LeafDesc } from "@/lib/components-meta/PropsDescriptor";
 import { ReactNode } from "react";
 
 export function NumberInput(

@@ -9,7 +9,6 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ComponentDescriptor } from "@/lib/components/ComponentContainer";
 import { SitePreview } from "@/components/preview/SitePreview";
 import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
@@ -17,6 +16,7 @@ import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 import { ComponentEditor } from "@/components/component-editor/ComponentEditor";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 
 
 export default function Home() {

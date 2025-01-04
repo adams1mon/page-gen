@@ -1,8 +1,9 @@
 import { Layout } from "lucide-react";
-import { ComponentContainer, ComponentDescriptor } from "./ComponentContainer";
-import { DataType, InputType, ObjectDesc } from "./PropsDescriptor";
 import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
+import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 
 export const HEADER_TYPE = "Header";
 

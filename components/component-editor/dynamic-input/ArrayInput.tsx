@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrayDesc, createDefaultProps } from "@/lib/components/PropsDescriptor";
+import { ArrayDesc, createDefaultProps } from "@/lib/components-meta/PropsDescriptor";
 import { ReactNode } from "react";
 import { createInputs } from "./create-inputs";
 import { Plus, Trash2 } from "lucide-react";

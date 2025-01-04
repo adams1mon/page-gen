@@ -1,17 +1,20 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { InputType, LeafDesc } from "@/lib/components-meta/PropsDescriptor";
-import { ReactNode } from "react";
 
 export function StringInput(
-    propsDescriptor: LeafDesc,
-    str: string,
-    onChange: (str: string) => void,
-    key: string,
-): ReactNode {
+    {
+        propsDescriptor,
+        text,
+        onChange,
+    }: {
+        propsDescriptor: LeafDesc,
+        text: string,
+        onChange: (str: string) => void,
+    }
+) {
 
     return <div
-        key={key}
         className="mt-4"
     >
         <label className="text-sm font-medium py-1">{propsDescriptor.displayName}</label>
@@ -19,7 +22,7 @@ export function StringInput(
         {propsDescriptor.input == InputType.TEXTAREA &&
             <Textarea
                 className="text-sm font-normal"
-                value={str}
+                value={text}
                 onChange={(e) => onChange(e.target.value)}
                 rows={3}
             />
@@ -28,7 +31,7 @@ export function StringInput(
         {propsDescriptor.input == InputType.TEXT &&
             <Input
                 type="text"
-                value={str}
+                value={text}
                 onChange={(e) => onChange(e.target.value)}
                 className="text-sm font-bold"
             />
@@ -37,7 +40,7 @@ export function StringInput(
         {propsDescriptor.input == InputType.URL &&
             <Input
                 type="url"
-                value={str}
+                value={text}
                 onChange={(e) => onChange(e.target.value)}
                 className="text-sm font-bold"
             />

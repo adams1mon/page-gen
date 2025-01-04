@@ -1,36 +1,53 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import { ObjectDesc } from "@/lib/components-meta/PropsDescriptor";
-import { ReactNode } from "react";
 import { createInputs } from "./create-inputs";
+import { usePropInputContext } from "./PropInputContext";
 
 interface strKeyObj {
     [key: string]: any,
 };
 
 export function ObjectInput(
-    propsDescriptor: ObjectDesc,
-    props: strKeyObj,
-    onChange: (props: strKeyObj) => void,
-    key: string,
-): ReactNode {
+    {
+        propsDescriptor,
+        obj,
+        onChange,
+    }: {
+        propsDescriptor: ObjectDesc,
+        obj: strKeyObj,
+        onChange: (props: strKeyObj) => void,
+    },
+) {
+    const { addToPath } = usePropInputContext();
 
     return (
-        <Card key={key} className="w-full mt-4 p-2">
-            <label className="text-sm font-medium">{propsDescriptor.displayName}</label>
-            {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
-            {
-                Object.keys(propsDescriptor.child).map(k =>
+        <Card className="w-full p-4">
+            <div
+                className="mb-4"
+                onClick={() => addToPath({
+                    displayName: propsDescriptor.displayName,
+                })}
+            >
+                <h3 className="text-sm font-medium">{propsDescriptor.displayName}</h3>
+                {propsDescriptor.desc &&
+                    <p className="text-sm text-muted-foreground">{propsDescriptor.desc}</p>
+                }
+            </div>
+            <div className="space-y-4">
+                {Object.keys(propsDescriptor.child).map(k =>
                     createInputs(
                         propsDescriptor.child[k],
-                        props[k],
+                        obj[k],
                         (partialProps) => onChange({
-                            ...props,
+                            ...obj,
                             [k]: partialProps,
                         }),
-                        k
+                        //k
                     )
-                )
-            }
+                )}
+            </div>
         </Card>
     );
 }

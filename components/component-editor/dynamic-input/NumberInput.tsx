@@ -1,15 +1,19 @@
 import { Input } from "@/components/ui/input";
 import { LeafDesc } from "@/lib/components-meta/PropsDescriptor";
-import { ReactNode } from "react";
 
 export function NumberInput(
-    propsDescriptor: LeafDesc,
-    num: number, 
-    onChange: (num: number) => void, 
-        key: string,
-): ReactNode {
+    {
+        propsDescriptor,
+        num,
+        onChange,
+    }: {
+        propsDescriptor: LeafDesc,
+        num: number,
+        onChange: (num: number) => void,
+    },
+) {
     return (
-        <div key={key} className="mt-4">
+        <div className="mt-4">
             <label className="text-sm font-medium">{propsDescriptor.displayName}</label>
             {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
             <Input

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { updateProps } from "@/lib/components-meta/ComponentContainer";
 import { ComponentInput } from "./component-input/ComponentInput";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+import { PropInputWrapper } from "./dynamic-input/PropInputWrapper";
 
 interface ComponentEditorProps {
     component: ComponentDescriptor;
@@ -125,20 +126,24 @@ export function ComponentEditor({
                 </CollapsibleTrigger>
                 <CollapsibleContent>
 
-                    {/* prop inputs */}
-                    <div className="p-4">
-                        {createInputs(component.propsDescriptor, component.props, updateComponentProps)}
-                    </div>
+                {/* prop inputs */}
+                <PropInputWrapper>
+                  <div className="p-4">
+                    {createInputs(component.propsDescriptor, component.props, updateComponentProps)}
+                  </div>
+                </PropInputWrapper>
 
-                    {/* children component inputs */}
-                    {component.acceptsChildren &&
-                        <div className="p-4">
-                            <ComponentInput
-                                components={component.childrenDescriptors}
-                                onChange={updateChildrenDescriptors}
-                            />
-                        </div>
-                    }
+                  {/* children component inputs */}
+                  {component.acceptsChildren &&
+                    <PropInputWrapper>
+                     <div className="p-4">
+                          <ComponentInput
+                              components={component.childrenDescriptors}
+                              onChange={updateChildrenDescriptors}
+                          />
+                      </div>
+                    </PropInputWrapper>     
+                  }
                 </CollapsibleContent>
             </Collapsible>
         </div>

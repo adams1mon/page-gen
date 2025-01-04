@@ -17,7 +17,10 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { ComponentEditor } from "@/components/component-editor/ComponentEditor";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-
+import { SiteSettings } from "@/components/site-editor/SiteSettings";
+import { ObjectDesc } from "@/lib/components-meta/PropsDescriptor";
+import { PropInputWrapper } from "@/components/component-editor/dynamic-input/PropInputWrapper";
+import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 
 export default function Home() {
     const [previewHtml, setPreviewHtml] = useState<string>("");
@@ -40,7 +43,6 @@ export default function Home() {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="h-screen flex flex-col">
-
                 <OptionsMenu>
                     <PreviewToggle
                         enabled={previewEnabled}
@@ -53,19 +55,41 @@ export default function Home() {
                 <ResizablePanelGroup direction="horizontal" className="flex-1">
                     <ResizablePanel defaultSize={previewEnabled ? 50 : 100} minSize={10}>
                         <div className="h-full overflow-y-auto">
-                            <div className="p-8 space-y-4">
-                                <div className="flex flex-columnitems-center justify-center h-full min-h-[400px]">
-                                    <ComponentEditor
-                                        index={0}
-                                        component={site}
-                                        onUpdate={setSite}
-                                        moveComponent={
-                                            // unused for the site
-                                            () => { }
-                                        }
-                                        onDelete={null}
-                                    />
-                                </div>
+                            <div className="p-8 space-y-8">
+                                <SiteSettings site={site} onUpdate={setSite} />
+
+                                {
+                                    <div className="space-y-4">
+                                        <h2 className="text-lg font-semibold">Page Content</h2>
+                                        <div className="min-h-[400px]">
+
+                                            {
+                                                //<ComponentEditor
+                                                //    index={0}
+                                                //    component={(site.propsDescriptor as ObjectDesc).child}
+                                                //    onUpdate={setSite}
+                                                //    moveComponent={() => {}}
+                                                //    onDelete={null}
+                                                ///>
+
+                                            }
+                                            {/* children component inputs */}
+                                            {site.acceptsChildren &&
+                                                <PropInputWrapper>
+                                                    <div className="p-4">
+                                                        <ComponentInput
+                                                            components={site.childrenDescriptors}
+                                                            onChange={(components) => setSite({
+                                                                ...site,
+                                                                childrenDescriptors: components
+                                                            })}
+                                                        />
+                                                    </div>
+                                                </PropInputWrapper>
+                                            }
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </ResizablePanel>
@@ -86,5 +110,3 @@ export default function Home() {
         </DndProvider>
     );
 }
-
-

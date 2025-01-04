@@ -9,47 +9,46 @@ export function createInputs(
     propsDescriptor: PropsDesc,
     props: any,
     onChange: (props: any) => void,
-    key: string = '',
+    //key: string = '',
 ): ReactNode {
-
     switch (propsDescriptor.type) {
         case DataType.STRING:
-            return StringInput(
-                propsDescriptor as LeafDesc,
-                props as string,
-                onChange,
-                key,
-            );
+            return <StringInput
+                propsDescriptor={propsDescriptor as LeafDesc}
+                text={props as string}
+                onChange={onChange}
+                //key={key}
+            />
 
         case DataType.NUMBER:
-            return NumberInput(
-                propsDescriptor as LeafDesc,
-                props as number,
-                onChange,
-                key,
-            );
+            return <NumberInput
+                propsDescriptor={propsDescriptor as LeafDesc}
+                num={props as number}
+                onChange={onChange}
+                //key={key}
+            />
 
         case DataType.ARRAY:
-            return ArrayInput(
-                propsDescriptor as ArrayDesc,
-                props as any,
-                onChange,
-                key,
-            );
+            return <ArrayInput
+                propsDescriptor={propsDescriptor as ArrayDesc}
+                arr={props as any}
+                onChange={onChange}
+                //key={key}
+            />
 
         case DataType.OBJECT:
-            return ObjectInput(
-                propsDescriptor as ObjectDesc,
-                props as {[key: string]: any},
-                onChange,
-                key,
-            );
+            return <ObjectInput
+                propsDescriptor={propsDescriptor as ObjectDesc}
+                obj={props as { [key: string]: any }}
+                onChange={onChange}
+                //key={key}
+            />
 
         case DataType.EMPTY:
             return null;
 
         default:
-            console.error(`PropsDesc type is undefined or not implemented, displayName: ${propsDescriptor.displayName}, type: ${propsDescriptor.type}. Ensure every descriptor has a 'type' and a 'displayName' attribute.`);
+            console.error(`PropsDesc type is undefined or not implemented, displayName: ${propsDescriptor.displayName}, type: ${propsDescriptor.type}`);
+            return null;
     }
 }
-

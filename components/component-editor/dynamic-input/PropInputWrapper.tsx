@@ -6,7 +6,6 @@ import { PropBreadcrumbs } from "./PropBreadcrumbs";
 
 interface PropPath {
   displayName: string;
-  key: string;
 }
 
 interface PropInputWrapperProps {

@@ -55,7 +55,7 @@ export function ArrayInput(
                                 partialProps,
                                 ...arr.slice(i + 1)
                             ]),
-                            //key + i
+                            i.toString(),
                         )}
                         <Button
                             variant="ghost"

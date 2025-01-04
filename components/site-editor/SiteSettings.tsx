@@ -15,9 +15,14 @@ export function SiteSettings({ site, onUpdate }: SiteSettingsProps) {
         <CollapsibleSection title="Site Settings">
             <PropInputWrapper>
                 {
-                    createInputs(site.propsDescriptor, site.props, (newProps) => {
-                        onUpdate({ ...site, props: newProps });
-                    })
+                    createInputs(
+                        site.propsDescriptor,
+                        site.props,
+                        (newProps) => {
+                            onUpdate({ ...site, props: newProps });
+                        },
+                        "site-settings",
+                    )
                 }
             </PropInputWrapper>
         </CollapsibleSection>

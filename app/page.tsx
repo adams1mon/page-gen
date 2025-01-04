@@ -14,11 +14,9 @@ import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
 import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
-import { ComponentEditor } from "@/components/component-editor/ComponentEditor";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteSettings } from "@/components/site-editor/SiteSettings";
-import { ObjectDesc } from "@/lib/components-meta/PropsDescriptor";
 import { PropInputWrapper } from "@/components/component-editor/dynamic-input/PropInputWrapper";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 
@@ -58,25 +56,15 @@ export default function Home() {
                             <div className="p-8 space-y-8">
                                 <SiteSettings site={site} onUpdate={setSite} />
 
-                                {
-                                    <div className="space-y-4">
-                                        <h2 className="text-lg font-semibold">Page Content</h2>
-                                        <div className="min-h-[400px]">
+                                <div className="space-y-4">
+                                    <h2 className="text-lg font-semibold">Page Content</h2>
+                                    <div className="min-h-[400px]">
 
-                                            {
-                                                //<ComponentEditor
-                                                //    index={0}
-                                                //    component={(site.propsDescriptor as ObjectDesc).child}
-                                                //    onUpdate={setSite}
-                                                //    moveComponent={() => {}}
-                                                //    onDelete={null}
-                                                ///>
-
-                                            }
-                                            {/* children component inputs */}
-                                            {site.acceptsChildren &&
-                                                <PropInputWrapper>
-                                                    <div className="p-4">
+                                        {/* children component inputs */}
+                                        {site.acceptsChildren &&
+                                            <PropInputWrapper>
+                                                <div className="p-4">
+                                                    {
                                                         <ComponentInput
                                                             components={site.childrenDescriptors}
                                                             onChange={(components) => setSite({
@@ -84,12 +72,12 @@ export default function Home() {
                                                                 childrenDescriptors: components
                                                             })}
                                                         />
-                                                    </div>
-                                                </PropInputWrapper>
-                                            }
-                                        </div>
+                                                    }
+                                                </div>
+                                            </PropInputWrapper>
+                                        }
                                     </div>
-                                }
+                                </div>
                             </div>
                         </div>
                     </ResizablePanel>

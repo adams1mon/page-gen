@@ -9,7 +9,7 @@ export function createInputs(
     propsDescriptor: PropsDesc,
     props: any,
     onChange: (props: any) => void,
-    //key: string = '',
+    key: string = '',
 ): ReactNode {
     switch (propsDescriptor.type) {
         case DataType.STRING:
@@ -17,7 +17,7 @@ export function createInputs(
                 propsDescriptor={propsDescriptor as LeafDesc}
                 text={props as string}
                 onChange={onChange}
-                //key={key}
+                key={key}
             />
 
         case DataType.NUMBER:
@@ -25,7 +25,7 @@ export function createInputs(
                 propsDescriptor={propsDescriptor as LeafDesc}
                 num={props as number}
                 onChange={onChange}
-                //key={key}
+                key={key}
             />
 
         case DataType.ARRAY:
@@ -33,7 +33,7 @@ export function createInputs(
                 propsDescriptor={propsDescriptor as ArrayDesc}
                 arr={props as any}
                 onChange={onChange}
-                //key={key}
+                key={key}
             />
 
         case DataType.OBJECT:
@@ -41,7 +41,7 @@ export function createInputs(
                 propsDescriptor={propsDescriptor as ObjectDesc}
                 obj={props as { [key: string]: any }}
                 onChange={onChange}
-                //key={key}
+                key={key}
             />
 
         case DataType.EMPTY:

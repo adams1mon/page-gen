@@ -126,24 +126,25 @@ export function ComponentEditor({
                 </CollapsibleTrigger>
                 <CollapsibleContent>
 
-                {/* prop inputs */}
-                <PropInputWrapper>
-                  <div className="p-4">
-                    {createInputs(component.propsDescriptor, component.props, updateComponentProps)}
-                  </div>
-                </PropInputWrapper>
-
-                  {/* children component inputs */}
-                  {component.acceptsChildren &&
+                    {/* prop inputs */}
                     <PropInputWrapper>
-                     <div className="p-4">
-                          <ComponentInput
-                              components={component.childrenDescriptors}
-                              onChange={updateChildrenDescriptors}
-                          />
-                      </div>
-                    </PropInputWrapper>     
-                  }
+                        <div className="p-4">
+                            {createInputs(component.propsDescriptor, component.props, updateComponentProps)}
+                        </div>
+                    </PropInputWrapper>
+
+                    {/* children component inputs */}
+                    <PropInputWrapper>
+                        {component.acceptsChildren &&
+                            <div className="p-4">
+                                <ComponentInput
+                                    components={component.childrenDescriptors}
+                                    onChange={updateChildrenDescriptors}
+                                />
+                            </div>
+                        }
+                    </PropInputWrapper>
+
                 </CollapsibleContent>
             </Collapsible>
         </div>

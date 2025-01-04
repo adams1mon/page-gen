@@ -44,7 +44,7 @@ export function ObjectInput(
                             ...obj,
                             [k]: partialProps,
                         }),
-                        //k
+                        k,
                     )
                 )}
             </div>

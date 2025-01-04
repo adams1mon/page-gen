@@ -33,6 +33,8 @@ export function PropInputProvider({
 }) {
   const addToPath = (item: PropPath) => {
     const newPath = [...initialPath, item];
+    console.log("new path", newPath);
+    
     onPathChange?.(newPath);
   };
 

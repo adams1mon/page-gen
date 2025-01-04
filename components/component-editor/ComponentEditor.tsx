@@ -1,14 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
 import { useDrag, useDrop } from "react-dnd";
-import { createInputs } from "./dynamic-input/create-inputs";
+import { PropInputs } from "./dynamic-input/PropInputs";
 import { useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
 import { updateProps } from "@/lib/components-meta/ComponentContainer";
 import { ComponentInput } from "./component-input/ComponentInput";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { PropInputWrapper } from "./dynamic-input/PropInputWrapper";
 
 interface ComponentEditorProps {
     component: ComponentDescriptor;
@@ -127,23 +126,24 @@ export function ComponentEditor({
                 <CollapsibleContent>
 
                     {/* prop inputs */}
-                    <PropInputWrapper>
-                        <div className="p-4">
-                            {createInputs(component.propsDescriptor, component.props, updateComponentProps)}
-                        </div>
-                    </PropInputWrapper>
+                    <div className="p-4">
+                        <PropInputs
+                            propsDescriptor={component.propsDescriptor}
+                            props={component.props}
+                            onChange={updateComponentProps}
+                        //breadcrumbsPath={['editor']}
+                        />
+                    </div>
 
                     {/* children component inputs */}
-                    <PropInputWrapper>
-                        {component.acceptsChildren &&
-                            <div className="p-4">
-                                <ComponentInput
-                                    components={component.childrenDescriptors}
-                                    onChange={updateChildrenDescriptors}
-                                />
-                            </div>
-                        }
-                    </PropInputWrapper>
+                    {component.acceptsChildren &&
+                        <div className="p-4">
+                            <ComponentInput
+                                components={component.childrenDescriptors}
+                                onChange={updateChildrenDescriptors}
+                            />
+                        </div>
+                    }
 
                 </CollapsibleContent>
             </Collapsible>

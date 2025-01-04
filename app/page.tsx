@@ -17,7 +17,6 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteSettings } from "@/components/site-editor/SiteSettings";
-import { PropInputWrapper } from "@/components/component-editor/dynamic-input/PropInputWrapper";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 
 export default function Home() {
@@ -62,7 +61,6 @@ export default function Home() {
 
                                         {/* children component inputs */}
                                         {site.acceptsChildren &&
-                                            <PropInputWrapper>
                                                 <div className="p-4">
                                                     {
                                                         <ComponentInput
@@ -74,7 +72,6 @@ export default function Home() {
                                                         />
                                                     }
                                                 </div>
-                                            </PropInputWrapper>
                                         }
                                     </div>
                                 </div>

@@ -1,9 +1,6 @@
-"use client";
-
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { createInputs } from "../component-editor/dynamic-input/create-inputs";
+import { PropInputs } from "../component-editor/dynamic-input/PropInputs";
 import { CollapsibleSection } from "../ui/collapsible-section";
-import { PropInputWrapper } from "../component-editor/dynamic-input/PropInputWrapper";
 
 interface SiteSettingsProps {
     site: ComponentDescriptor;
@@ -13,18 +10,16 @@ interface SiteSettingsProps {
 export function SiteSettings({ site, onUpdate }: SiteSettingsProps) {
     return (
         <CollapsibleSection title="Site Settings">
-            <PropInputWrapper>
-                {
-                    createInputs(
-                        site.propsDescriptor,
-                        site.props,
-                        (newProps) => {
-                            onUpdate({ ...site, props: newProps });
-                        },
-                        "site-settings",
-                    )
-                }
-            </PropInputWrapper>
+            {
+                <PropInputs
+                    propsDescriptor={site.propsDescriptor}
+                    props={site.props}
+                    onChange={(newProps) => {
+                        onUpdate({ ...site, props: newProps });
+                    }}
+                    key="site-settings"
+                />
+            }
         </CollapsibleSection>
     );
 }

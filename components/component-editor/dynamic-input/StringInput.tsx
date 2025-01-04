@@ -14,36 +14,34 @@ export function StringInput(
     }
 ) {
 
-    return <div
-        className="mt-4"
-    >
-        <label className="text-sm font-medium py-1">{propsDescriptor.displayName}</label>
-        {propsDescriptor.desc && <p className="text-sm font-medium">{propsDescriptor.desc}</p>}
-        {propsDescriptor.input == InputType.TEXTAREA &&
-            <Textarea
-                className="text-sm font-normal"
-                value={text}
-                onChange={(e) => onChange(e.target.value)}
-                rows={3}
-            />
-        }
+    return (
+        <>
+            {propsDescriptor.input == InputType.TEXTAREA &&
+                <Textarea
+                    className="text-sm font-normal"
+                    value={text}
+                    onChange={(e) => onChange(e.target.value)}
+                    rows={3}
+                />
+            }
 
-        {propsDescriptor.input == InputType.TEXT &&
-            <Input
-                type="text"
-                value={text}
-                onChange={(e) => onChange(e.target.value)}
-                className="text-sm font-bold"
-            />
-        }
+            {propsDescriptor.input == InputType.TEXT &&
+                <Input
+                    type="text"
+                    value={text}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="text-sm font-bold"
+                />
+            }
 
-        {propsDescriptor.input == InputType.URL &&
-            <Input
-                type="url"
-                value={text}
-                onChange={(e) => onChange(e.target.value)}
-                className="text-sm font-bold"
-            />
-        }
-    </div>
+            {propsDescriptor.input == InputType.URL &&
+                <Input
+                    type="url"
+                    value={text}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="text-sm font-bold"
+                />
+            }
+        </>
+    );
 }

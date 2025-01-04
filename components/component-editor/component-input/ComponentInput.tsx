@@ -51,38 +51,34 @@ export function ComponentInput(
 
 
     return (
-        <div className="overflow-y-auto">
+        <div>
             <label className="text-sm font-medium">Children</label>
             <p className="text-sm font-medium">Nested children to add to the component</p>
             <div className="space-y-4">
                 {components.length === 0 ? (
-                    <div className="space-y-4">
-                        <ComponentDivider onInsert={(type) => addComponent(type, 0)} />
-                    </div>
+                    <ComponentDivider onInsert={(type) => addComponent(type, 0)} />
                 ) : (
-                    <div className="space-y-4">
-                        {components.map((component, index) => (
-                            <div key={component.id}>
-                                <ComponentDivider
-                                    onInsert={(type) => addComponent(type, index)}
-                                />
+                    components.map((component, index) => (
+                        <div key={component.id}>
+                            <ComponentDivider
+                                onInsert={(type) => addComponent(type, index)}
+                            />
 
-                                {/* Render the editors of the child components recursively */}
-                                <ComponentEditor
-                                    index={index}
-                                    component={component}
-                                    onUpdate={handleComponentUpdate}
-                                    moveComponent={moveComponent}
-                                    onDelete={deleteComponent}
+                            {/* Render the editors of the child components recursively */}
+                            <ComponentEditor
+                                index={index}
+                                component={component}
+                                onUpdate={handleComponentUpdate}
+                                moveComponent={moveComponent}
+                                onDelete={deleteComponent}
+                            />
+                            {index === components.length - 1 && (
+                                <ComponentDivider
+                                    onInsert={(type) => addComponent(type, index + 1)}
                                 />
-                                {index === components.length - 1 && (
-                                    <ComponentDivider
-                                        onInsert={(type) => addComponent(type, index + 1)}
-                                    />
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                            )}
+                        </div>
+                    ))
                 )}
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { Briefcase } from "lucide-react";
-import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { DataType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { htmlIdDesc, titleDesc, longTextDesc, imageUrlDesc } from "./common";
 
@@ -120,4 +120,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 }
 
-ComponentContainer.save(PROJECTS_TYPE, desc, Node);
+export default {
+    type: PROJECTS_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

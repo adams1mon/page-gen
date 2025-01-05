@@ -95,7 +95,7 @@ export function ComponentEditor({
         <div ref={ref} style={{ opacity }} className="group relative bg-background border rounded-lg">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger asChild>
-                    <div className="flex items-center justify-between py-2 px-3 border-b">
+                    <div className="flex items-center justify-between py-2 px-3 border-b cursor-pointer">
                         <div ref={dragHandleRef} className="cursor-move flex items-center gap-2 text-muted-foreground">
                             <GripVertical className="w-4 h-4" />
                             <span className="font-medium capitalize text-sm">{component.type}</span>
@@ -131,7 +131,6 @@ export function ComponentEditor({
                             propsDescriptor={component.propsDescriptor}
                             props={component.props}
                             onChange={updateComponentProps}
-                        //breadcrumbsPath={['editor']}
                         />
                     </div>
 

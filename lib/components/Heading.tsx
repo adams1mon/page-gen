@@ -1,8 +1,8 @@
 import { Heading1 } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { customCssDesc, textAlignDesc } from "./styles/shared";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 
 export const HEADING_TYPE = "Heading";
 
@@ -51,8 +51,8 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "1",
         },
-        textAlign,
-        customCss,
+        textAlign: textAlignDesc,
+        customCss: customCssDesc,
     }
 };
 
@@ -67,4 +67,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(HEADING_TYPE, desc, Node);
+export default {
+    type: HEADING_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

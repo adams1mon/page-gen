@@ -1,15 +1,16 @@
 import { Mail } from "lucide-react";
-import { Link, httpLinkDesc } from "./Link";
 import { htmlIdDesc } from "./common";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { LinkProps, desc as linkDescriptor, Node as linkNode } from "./Link";
+import { createElement } from "react";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 
 export const FOOTER_TYPE = "Footer";
 
 export interface FooterProps {
     email: string;
-    socialLinks: Link[];
+    socialLinks: LinkProps[];
     htmlId: string;
 }
 
@@ -25,15 +26,17 @@ function Node(props: FooterProps) {
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Social</h3>
                         <div className="space-y-2">
-                            {props.socialLinks.map(link => (
-                                <a
-                                    key={link.url}
-                                    href={link.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block text-muted-foreground hover:text-foreground">
-                                    {link.text}
-                                </a>
+                            {props.socialLinks.map((link, index) => (
+
+                                createElement(linkNode, {...link, key: index})
+                                //<a
+                                //    key={link.url}
+                                //    href={link.url}
+                                //    target="_blank"
+                                //    rel="noopener noreferrer"
+                                //    className="block text-muted-foreground hover:text-foreground">
+                                //    {link.text}
+                                //</a>
                             ))}
                         </div>
                     </div>
@@ -46,9 +49,10 @@ function Node(props: FooterProps) {
 const defaultProps: FooterProps = {
     email: "email@example.com",
     socialLinks: [
-        { text: "GitHub", url: "https://github.com" },
-        { text: "LinkedIn", url: "https://linkedin.com" },
-        { text: "Twitter", url: "https://twitter.com" }
+        linkDescriptor.props,
+        //{ text: "GitHub", url: "https://github.com" },
+        //{ text: "LinkedIn", url: "https://linkedin.com" },
+        //{ text: "Twitter", url: "https://twitter.com" }
     ],
     htmlId: "contact"
 };
@@ -67,7 +71,7 @@ const propsDescriptor: ObjectDesc = {
         socialLinks: {
             type: DataType.ARRAY,
             displayName: "Links to social platforms.",
-            child: { ...httpLinkDesc },
+            child: linkDescriptor.propsDescriptor,
         },
         imageUrl: {
             type: DataType.STRING,
@@ -80,7 +84,7 @@ const propsDescriptor: ObjectDesc = {
     }
 }
 
-const desc: ComponentDescriptor = {
+export const desc: ComponentDescriptor = {
     id: "id",
     type: FOOTER_TYPE,
     name: "Footer",
@@ -91,4 +95,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 }
 
-ComponentContainer.save(FOOTER_TYPE, desc, Node);
+export default {
+    type: FOOTER_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

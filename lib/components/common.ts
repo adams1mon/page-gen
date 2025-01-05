@@ -46,9 +46,3 @@ export const imageUrlDesc: LeafDesc = {
     desc: "The URL of an image to display.",
     default: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?auto=format&fit=crop&q=80",
 }
-
-//export const childrenDesc: ComponentSlotDesc = {
-//    type: DataType.COMPONENT_SLOT,
-//    displayName: "Children",
-//    desc: "Nested components to add",
-//}

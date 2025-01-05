@@ -1,5 +1,5 @@
 import { Layout } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 
@@ -81,4 +81,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(CONTAINER_TYPE, desc, Node);
+export default {
+    type: CONTAINER_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

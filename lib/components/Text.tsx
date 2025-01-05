@@ -1,5 +1,5 @@
 import { Type } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { customCssDesc, textAlignDesc } from "./styles/shared";
@@ -50,8 +50,8 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "1rem",
         },
-        textAlign,
-        customCss,
+        textAlign: textAlignDesc,
+        customCss: customCssDesc,
     }
 };
 
@@ -66,4 +66,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(TEXT_TYPE, desc, Node);
+export default {
+    type: TEXT_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

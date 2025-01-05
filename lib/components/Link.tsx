@@ -1,5 +1,5 @@
 import { Link as LinkIcon } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { customCssDesc } from "./styles/shared";
@@ -13,7 +13,7 @@ export interface LinkProps {
     customCss: string;
 }
 
-function Node(props: LinkProps) {
+export function Node(props: LinkProps) {
     return (
         <a 
             href={props.href}
@@ -32,7 +32,7 @@ function Node(props: LinkProps) {
 const defaultProps: LinkProps = {
     href: "#",
     text: "Click here",
-    target: "_self",
+    target: "_blank",
     customCss: "{}",
 };
 
@@ -59,13 +59,13 @@ const propsDescriptor: ObjectDesc = {
             displayName: "Target",
             desc: "Where to open the link (_self, _blank)",
             input: InputType.TEXT,
-            default: "_self",
+            default: "_blank",
         },
-        ...customCssDesc,
+        customCss: customCssDesc,
     }
 };
 
-const desc: ComponentDescriptor = {
+export const desc: ComponentDescriptor = {
     id: "id",
     type: LINK_TYPE,
     name: "Link",
@@ -76,4 +76,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(LINK_TYPE, desc, Node);
+export default {
+    type: LINK_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

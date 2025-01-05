@@ -15,9 +15,7 @@ export function PropInputHeader(
     if (!displayName && !description && !breadcrumbsPath) 
         return null;
     
-    return <div
-        className="mt-4"
-    >
+    return <div>
         {displayName &&
             <label className="text-sm font-medium py-1">{displayName}</label>
         }

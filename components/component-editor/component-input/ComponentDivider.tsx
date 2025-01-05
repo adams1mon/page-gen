@@ -6,7 +6,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { availableComponents } from "./available-components";
+import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
 
 
 interface ComponentDividerProps {
@@ -33,15 +33,17 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                             </div>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center">
+                    <DropdownMenuContent align="center" className="max-h-80 overflow-y-auto">
                         {
-                            ...availableComponents.map((component) => (
+                            ComponentContainer.getAvailableComponents().map(component => (
                                 <DropdownMenuItem
                                     key={component.type}
                                     onClick={() => onInsert(component.type)}
                                     className="flex items-center gap-2"
                                 >
-                                    {component.icon}
+                                    {
+                                        component.icon
+                                    }
                                     <span>{component.type}</span>
                                 </DropdownMenuItem>
                             ))

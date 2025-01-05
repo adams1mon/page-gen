@@ -1,5 +1,5 @@
 import { LayoutGrid } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 
@@ -40,6 +40,7 @@ const defaultProps: ColumnProps = {
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
     displayName: "Column",
+    desc: "Layout element which groups components in a vertical order",
     child: {
         gap: {
             type: DataType.STRING,
@@ -83,4 +84,9 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(COLUMN_TYPE, desc, Node);
+export default {
+    type: COLUMN_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;
+

@@ -1,4 +1,4 @@
-import { DataType, InputType, ObjectDesc } from "../../components-meta/PropsDescriptor";
+import { DataType, InputType, LeafDesc, ObjectDesc } from "../../components-meta/PropsDescriptor";
 
 export const customCssDesc: ObjectDesc["child"]["customCss"] = {
     type: DataType.STRING,

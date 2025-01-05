@@ -1,5 +1,5 @@
 import { List as ListIcon } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { customCssDesc } from "./styles/shared";
@@ -57,7 +57,7 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "unordered",
         },
-        customCssDesc,
+        customCss: customCssDesc,
     }
 };
 
@@ -72,4 +72,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(LIST_TYPE, desc, Node);
+export default {
+    type: LIST_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

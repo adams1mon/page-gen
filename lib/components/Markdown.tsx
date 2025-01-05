@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { FileText } from 'lucide-react';
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { htmlIdDesc, titleDesc } from "./common";
 
@@ -66,4 +66,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 }
 
-ComponentContainer.save(MARKDOWN_TYPE, desc, Node);
+export default {
+    type: MARKDOWN_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

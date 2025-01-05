@@ -1,29 +1,40 @@
+"use client";
+
 import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType } from "@/lib/components-meta/PropsDescriptor";
 import { StringInput } from "./StringInput";
 import { NumberInput } from "./NumberInput";
 import { ArrayInput } from "./ArrayInput";
 import { ObjectInput } from "./ObjectInput";
 import { PropInputHeader } from "./PropInputHeader";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function PropInputs(
     {
         propsDescriptor,
         props,
         onChange,
-        key = '',
+
+        // the 'key' prop can't be passed as a prop, so use a different name for it
+        keyProp = '',
+
         breadcrumbsPath = [],
     }: {
         propsDescriptor: PropsDesc,
         props: any,
         onChange: (props: any) => void,
-        key?: string,
+        keyProp?: string,
         breadcrumbsPath?: string[],
     }
 ) {
-
     if (propsDescriptor.type == DataType.EMPTY) {
         return null;
     }
+
+    const [isOpen, setIsOpen] = useState(true);
 
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
@@ -34,14 +45,14 @@ export function PropInputs(
                     propsDescriptor={propsDescriptor as LeafDesc}
                     text={props as string}
                     onChange={onChange}
-                    key={key}
+                    key={keyProp}
                 />
 
             case DataType.NUMBER:
                 return <NumberInput
                     num={props as number}
                     onChange={onChange}
-                    key={key}
+                    key={keyProp}
                 />
 
             case DataType.ARRAY:
@@ -50,7 +61,7 @@ export function PropInputs(
                     arr={props as any}
                     onChange={onChange}
                     breadcrumbsPath={path}
-                    key={key}
+                    key={keyProp}
                 />
 
             case DataType.OBJECT:
@@ -59,7 +70,7 @@ export function PropInputs(
                     obj={props as { [key: string]: any }}
                     onChange={onChange}
                     breadcrumbsPath={path}
-                    key={key}
+                    key={keyProp}
                 />
 
             default:
@@ -70,14 +81,31 @@ export function PropInputs(
 
     return (
         <div
-            className="mt-4"
+            className="mt-2"
         >
-            <PropInputHeader
-                displayName={propsDescriptor.displayName}
-                description={propsDescriptor.desc}
-                breadcrumbsPath={path}
-            />
-            {createInput()}
-        </div>
+            <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                <CollapsibleTrigger asChild>
+                    <CollapsibleTrigger asChild>
+                        <div className="flex items-center justify-between border-b cursor-pointer">
+                            <PropInputHeader
+                                displayName={propsDescriptor.displayName}
+                                description={propsDescriptor.desc}
+                                breadcrumbsPath={path}
+                            />
+                            <Button variant="ghost" size="icon">
+                                <ChevronDown className={cn(
+                                    "h-4 w-4 transition-transform duration-200",
+                                    isOpen ? "rotate-180" : ""
+                                )} />
+                            </Button>
+                        </div>
+                    </CollapsibleTrigger>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                    {createInput()}
+                </CollapsibleContent>
+            </Collapsible>
+        </div >
     );
 }

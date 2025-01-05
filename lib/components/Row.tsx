@@ -1,5 +1,5 @@
 import { LayoutGrid } from "lucide-react";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 
@@ -17,6 +17,7 @@ function Node(props: RowProps) {
         <div 
             style={{
                 display: "flex",
+                width: "100%",
                 flexDirection: "row",
                 gap: props.gap,
                 alignItems: props.alignItems,
@@ -83,4 +84,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(ROW_TYPE, desc, Node);
+export default {
+    type: ROW_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

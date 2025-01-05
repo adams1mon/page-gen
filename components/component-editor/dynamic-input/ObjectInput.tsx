@@ -30,6 +30,11 @@ export function ObjectInput(
                             [k]: partialProps,
                         })}
                         breadcrumbsPath={breadcrumbsPath}
+
+                        // key for the child components
+                        keyProp={k}
+
+                        // key for React
                         key={k}
                     />
                 )}

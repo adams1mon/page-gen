@@ -17,7 +17,7 @@ export function SiteSettings({ site, onUpdate }: SiteSettingsProps) {
                     onChange={(newProps) => {
                         onUpdate({ ...site, props: newProps });
                     }}
-                    key="site-settings"
+                    keyProp="site-settings"
                 />
             }
         </CollapsibleSection>

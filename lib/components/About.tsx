@@ -2,7 +2,7 @@ import { User } from "lucide-react";
 import { htmlIdDesc } from "./common";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 
 export const ABOUT_TYPE = "About";
 
@@ -13,7 +13,7 @@ export interface AboutProps {
     htmlId: string;
 }
 
-function Node(props: AboutProps) {
+export function Node(props: AboutProps) {
     return (
         <section id={props.htmlId} className="w-full py-20 bg-background">
             <div className="max-w-5xl mx-auto px-8">
@@ -79,7 +79,7 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-const desc: ComponentDescriptor = {
+export const desc: ComponentDescriptor = {
     id: "id", // will be overwritten when a new instance is created
     type: ABOUT_TYPE,
     name: "About",
@@ -90,4 +90,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 };
 
-ComponentContainer.save(ABOUT_TYPE, desc, Node);
+export default {
+    type: ABOUT_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

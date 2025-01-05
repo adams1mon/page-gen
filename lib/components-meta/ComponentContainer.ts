@@ -1,3 +1,19 @@
+import About from "../components/About";
+import Column from "../components/Column";
+import Container from "../components/Container";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import Heading from "../components/Heading";
+import Hero from "../components/Hero";
+import Image from "../components/Image";
+import Link from "../components/Link";
+import List from "../components/List";
+import Markdown from "../components/Markdown";
+import Projects from "../components/Projects";
+import Row from "../components/Row";
+import Text from "../components/Text";
+import Site from "../components/Site";
+
 import { ComponentDescriptor } from "./ComponentDescriptor";
 
 export function updateProps(comp: ComponentDescriptor, props: any): ComponentDescriptor {
@@ -13,12 +29,10 @@ export class ComponentContainer {
     static jsxFuncs: { [type: string]: React.FunctionComponent<any>} = {};
 
     static save(
-        type: string,
-        descriptorTemplate: ComponentDescriptor,
-        jsxFunc: React.FunctionComponent<any>,
+        config: ComponentExport,
     ) {
-        this.components[type] = descriptorTemplate;
-        this.jsxFuncs[type] = jsxFunc;
+        this.components[config.type] = config.descriptor;
+        this.jsxFuncs[config.type] = config.node;
     }
 
     static getReactElement(type: string): React.FunctionComponent<any> {
@@ -41,6 +55,45 @@ export class ComponentContainer {
     static getDescriptor(type: string): ComponentDescriptor | undefined {
         return this.components[type];
     }
+
+    // Returns the components that are allowed to be created,
+    // so everything besides the Site itself.
+    // Otherwise we could have nested Sites, 
+    // because the Site is also a component.
+    static getAvailableComponents(): ComponentDescriptor[] {
+        
+        // omit the Site
+        const {[Site.type]: _, ...rest} = this.components;
+
+        return Object.values(rest);
+    }
 }
 
+export interface ComponentExport {
+    type: string,
+    descriptor: ComponentDescriptor,
+    node: React.FunctionComponent<any>,
+};
 
+// register the components
+ComponentContainer.save(Site);
+
+// container components 
+ComponentContainer.save(Container);
+ComponentContainer.save(Column);
+ComponentContainer.save(Row);
+ComponentContainer.save(List);
+
+// basic components
+ComponentContainer.save(Text);
+ComponentContainer.save(Heading);
+ComponentContainer.save(Link);
+ComponentContainer.save(Image);
+
+// composite components
+ComponentContainer.save(About);
+ComponentContainer.save(Footer);
+ComponentContainer.save(Header);
+ComponentContainer.save(Hero);
+ComponentContainer.save(Markdown);
+ComponentContainer.save(Projects);

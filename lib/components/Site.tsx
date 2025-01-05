@@ -1,4 +1,4 @@
-import { ComponentContainer } from "../components-meta/ComponentContainer";
+import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
@@ -201,5 +201,8 @@ const desc: ComponentDescriptor = {
     childrenDescriptors: [],
 }
 
-ComponentContainer.save(SITE_TYPE, desc, Node);
-
+export default {
+    type: SITE_TYPE,
+    descriptor: desc,
+    node: Node,
+} as ComponentExport;

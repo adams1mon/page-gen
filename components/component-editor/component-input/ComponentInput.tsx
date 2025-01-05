@@ -3,6 +3,7 @@ import { ComponentDivider } from "./ComponentDivider";
 import { ComponentEditor } from "../ComponentEditor";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 
+
 interface ComponentInputProps {
     components: ComponentDescriptor[];
 
@@ -18,13 +19,11 @@ export function ComponentInput(
         onChange,
     }: ComponentInputProps
 ) {
-
-    const addComponent = (type: string, index?: number) => {
-        const newComponent = ComponentContainer.createInstance(type);
-
+  
+    const addComponent = (component: ComponentDescriptor, index?: number) => {
         const newComponents = [...components];
         if (typeof index === 'number') {
-            newComponents.splice(index, 0, newComponent);
+            newComponents.splice(index, 0, component);
         }
         onChange(newComponents);
     };
@@ -56,12 +55,12 @@ export function ComponentInput(
             <p className="text-sm font-medium">Nested children to add to the component</p>
             <div className="space-y-4">
                 {components.length === 0 ? (
-                    <ComponentDivider onInsert={(type) => addComponent(type, 0)} />
+                    <ComponentDivider onInsert={(comp) => addComponent(comp, 0)} />
                 ) : (
                     components.map((component, index) => (
                         <div key={component.id}>
                             <ComponentDivider
-                                onInsert={(type) => addComponent(type, index)}
+                                onInsert={(comp) => addComponent(comp, index)}
                             />
 
                             {/* Render the editors of the child components recursively */}
@@ -74,7 +73,7 @@ export function ComponentInput(
                             />
                             {index === components.length - 1 && (
                                 <ComponentDivider
-                                    onInsert={(type) => addComponent(type, index + 1)}
+                                    onInsert={(comp) => addComponent(comp, index + 1)}
                                 />
                             )}
                         </div>

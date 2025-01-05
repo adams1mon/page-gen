@@ -1,7 +1,7 @@
 import { Heading1 } from "lucide-react";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { customCssDesc, textAlignDesc } from "./styles/shared";
+import { cn } from "@/lib/utils";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 
 export const HEADING_TYPE = "Heading";
@@ -10,17 +10,34 @@ export interface HeadingProps {
     content: string;
     level: string;
     textAlign: string;
-    customCss: string;
+    className?: string;
 }
 
 function Node(props: HeadingProps) {
     const Tag = `h${props.level}` as keyof JSX.IntrinsicElements;
     
+    const baseClasses = "font-bold text-foreground";
+    const alignmentClasses = {
+        'left': 'text-left',
+        'center': 'text-center',
+        'right': 'text-right'
+    };
+    const levelClasses = {
+        '1': 'text-4xl mb-6',
+        '2': 'text-3xl mb-5',
+        '3': 'text-2xl mb-4',
+        '4': 'text-xl mb-3',
+        '5': 'text-lg mb-2',
+        '6': 'text-base mb-2'
+    };
+    
     return (
-        <Tag style={{
-            textAlign: props.textAlign as any,
-            ...JSON.parse(props.customCss || '{}')
-        }}>
+        <Tag className={cn(
+            baseClasses,
+            levelClasses[props.level as keyof typeof levelClasses] || 'text-4xl',
+            alignmentClasses[props.textAlign as keyof typeof alignmentClasses] || 'text-left',
+            props.className
+        )}>
             {props.content}
         </Tag>
     );
@@ -30,7 +47,7 @@ const defaultProps: HeadingProps = {
     content: "Heading",
     level: "1",
     textAlign: "left",
-    customCss: "{}",
+    className: "",
 };
 
 const propsDescriptor: ObjectDesc = {
@@ -51,8 +68,20 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "1",
         },
-        textAlign: textAlignDesc,
-        customCss: customCssDesc,
+        textAlign: {
+            type: DataType.STRING,
+            displayName: "Text Align",
+            desc: "Text alignment (left, center, right)",
+            input: InputType.TEXT,
+            default: "left",
+        },
+        className: {
+            type: DataType.STRING,
+            displayName: "Custom Classes",
+            desc: "Additional Tailwind classes",
+            input: InputType.TEXT,
+            default: "",
+        }
     }
 };
 

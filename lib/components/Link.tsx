@@ -2,7 +2,7 @@ import { Link as LinkIcon } from "lucide-react";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { customCssDesc } from "./styles/shared";
+import { cn } from "@/lib/utils";
 
 export const LINK_TYPE = "Link";
 
@@ -10,19 +10,18 @@ export interface LinkProps {
     href: string;
     text: string;
     target: string;
-    customCss: string;
+    className?: string;
 }
 
 export function Node(props: LinkProps) {
+    const baseClasses = "text-primary hover:text-primary/80 transition-colors duration-200";
+    
     return (
         <a 
             href={props.href}
             target={props.target}
             rel={props.target === "_blank" ? "noopener noreferrer" : undefined}
-            style={{
-                textDecoration: "none",
-                ...JSON.parse(props.customCss || '{}')
-            }}
+            className={cn(baseClasses, props.className)}
         >
             {props.text}
         </a>
@@ -33,7 +32,7 @@ const defaultProps: LinkProps = {
     href: "#",
     text: "Click here",
     target: "_blank",
-    customCss: "{}",
+    className: "",
 };
 
 const propsDescriptor: ObjectDesc = {
@@ -61,7 +60,13 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "_blank",
         },
-        customCss: customCssDesc,
+        className: {
+            type: DataType.STRING,
+            displayName: "Custom Classes",
+            desc: "Additional Tailwind classes",
+            input: InputType.TEXT,
+            default: "",
+        }
     }
 };
 

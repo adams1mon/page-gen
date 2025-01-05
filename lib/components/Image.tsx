@@ -2,7 +2,8 @@ import { Image as ImageIcon } from "lucide-react";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { customCssDesc } from "./styles/shared";
+import { cn } from "@/lib/utils";
+import { objectFitClasses, type ClassMapKey } from "./styles/tailwind-utils";
 
 export const IMAGE_TYPE = "Image";
 
@@ -11,21 +12,32 @@ export interface ImageProps {
     alt: string;
     width: string;
     height: string;
-    objectFit: string;
-    customCss: string;
+    objectFit: ClassMapKey<typeof objectFitClasses>;
+    className?: string;
 }
 
 function Node(props: ImageProps) {
+    // Convert size props to Tailwind classes where possible
+    const sizeClasses = {
+        width: props.width === "100%" ? "w-full" : "",
+        height: props.height === "100%" ? "h-full" : "",
+    };
+
     return (
         <img 
             src={props.src}
             alt={props.alt}
             style={{
-                width: props.width,
-                height: props.height,
-                objectFit: props.objectFit as any,
-                ...JSON.parse(props.customCss || '{}')
+                // Only use inline styles for specific dimensions
+                width: !sizeClasses.width ? props.width : undefined,
+                height: !sizeClasses.height ? props.height : undefined,
             }}
+            className={cn(
+                sizeClasses.width,
+                sizeClasses.height,
+                objectFitClasses[props.objectFit] || objectFitClasses.cover,
+                props.className
+            )}
         />
     );
 }
@@ -36,7 +48,7 @@ const defaultProps: ImageProps = {
     width: "100%",
     height: "auto",
     objectFit: "cover",
-    customCss: "{}",
+    className: "",
 };
 
 const propsDescriptor: ObjectDesc = {
@@ -74,11 +86,17 @@ const propsDescriptor: ObjectDesc = {
         objectFit: {
             type: DataType.STRING,
             displayName: "Object Fit",
-            desc: "How the image should fit its container (cover, contain, fill)",
+            desc: "How the image should fit its container (cover, contain, fill, none, scale-down)",
             input: InputType.TEXT,
             default: "cover",
         },
-        customCss: customCssDesc,
+        className: {
+            type: DataType.STRING,
+            displayName: "Custom Classes",
+            desc: "Additional Tailwind classes",
+            input: InputType.TEXT,
+            default: "",
+        }
     }
 };
 

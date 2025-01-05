@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { updateProps } from "@/lib/components-meta/ComponentContainer";
 import { ComponentInput } from "./component-input/ComponentInput";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+import { Copy } from "lucide-react";
+import { useComponentClipboard } from '@/lib/store/component-clipboard-context';
 
 interface ComponentEditorProps {
     component: ComponentDescriptor;
@@ -32,7 +34,8 @@ export function ComponentEditor({
 }: ComponentEditorProps) {
     const ref = useRef<HTMLDivElement>(null);
     const dragHandleRef = useRef<HTMLDivElement>(null);
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
+    const { copy } = useComponentClipboard();
 
     const [, drop] = useDrop({
         accept: "portfolio-component-sort",
@@ -102,15 +105,32 @@ export function ComponentEditor({
                         </div>
                         <div className="flex items-center gap-1">
                             {
-                                onDelete != null &&
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => onDelete(component.id)}
-                                    className="text-destructive hover:text-destructive"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
+                                onDelete != null && (
+                                    <>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={(e) => {
+                                                e.stopPropagation;
+                                                onDelete(component.id);
+                                            }}
+                                            className="text-destructive hover:text-destructive"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                copy(component);
+                                            }}
+                                            className="text-muted-foreground hover:text-foreground"
+                                        >
+                                            <Copy className="w-4 h-4" />
+                                        </Button>
+                                    </>
+                                )
                             }
                             <CollapsibleTrigger asChild>
                                 <Button variant="ghost" size="icon">

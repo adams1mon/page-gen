@@ -12,6 +12,7 @@ import Markdown from "../components/Markdown";
 import Projects from "../components/Projects";
 import Row from "../components/Row";
 import Text from "../components/Text";
+import Gallery from "../components/Gallery";
 import Site from "../components/Site";
 
 import { ComponentDescriptor } from "./ComponentDescriptor";
@@ -39,6 +40,10 @@ export class ComponentContainer {
         return this.jsxFuncs[type];
     }
 
+    static createId(type: string): string {
+      return `${type}-${Date.now()}`;
+    }
+
     static createInstance(type: string): ComponentDescriptor {
         const desc = this.getDescriptor(type);
 
@@ -48,9 +53,22 @@ export class ComponentContainer {
 
         return {
             ...desc,
-            id: `${type}-${Date.now()}`,
+            id: this.createId(),
         }
     }
+
+  static clone(component: ComponentDescriptor): ComponentDescriptor {
+    // Clone children recursively if they exist
+    const clonedChildren = component.acceptsChildren 
+        ? component.childrenDescriptors.map(child => this.clone(child))
+        : [];
+
+    return {
+        ...component,
+        id: this.createId(component.type),
+        childrenDescriptors: clonedChildren
+    };
+  }
 
     static getDescriptor(type: string): ComponentDescriptor | undefined {
         return this.components[type];
@@ -97,3 +115,4 @@ ComponentContainer.save(Header);
 ComponentContainer.save(Hero);
 ComponentContainer.save(Markdown);
 ComponentContainer.save(Projects);
+ComponentContainer.save(Gallery);

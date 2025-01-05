@@ -3,16 +3,24 @@ import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { cn } from "@/lib/utils";
-import { objectFitClasses, type ClassMapKey } from "./styles/tailwind-utils";
+import { classNameDesc } from "./common";
 
 export const IMAGE_TYPE = "Image";
+
+const objectFitClasses = {
+    'cover': 'object-cover',
+    'contain': 'object-contain',
+    'fill': 'object-fill',
+    'none': 'object-none',
+    'scale-down': 'object-scale-down'
+};
 
 export interface ImageProps {
     src: string;
     alt: string;
     width: string;
     height: string;
-    objectFit: ClassMapKey<typeof objectFitClasses>;
+    objectFit: keyof typeof objectFitClasses;
     className?: string;
 }
 
@@ -90,13 +98,7 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "cover",
         },
-        className: {
-            type: DataType.STRING,
-            displayName: "Custom Classes",
-            desc: "Additional Tailwind classes",
-            input: InputType.TEXT,
-            default: "",
-        }
+        className: classNameDesc, 
     }
 };
 

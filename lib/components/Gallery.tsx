@@ -4,6 +4,7 @@ import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { cn } from "@/lib/utils";
+import { classNameDesc } from "./common";
 
 export const GALLERY_TYPE = "Gallery";
 
@@ -146,13 +147,7 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "square"
         },
-        className: {
-            type: DataType.STRING,
-            displayName: "Custom Classes",
-            desc: "Additional Tailwind classes",
-            input: InputType.TEXT,
-            default: ""
-        }
+        className: classNameDesc,
     }
 };
 

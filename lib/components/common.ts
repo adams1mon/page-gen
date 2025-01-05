@@ -38,11 +38,36 @@ export const urlDesc: LeafDesc = {
     desc: "An arbitrary URL to any type of content.",
     input: InputType.URL,
     default: "https://www.duckduckgo.com",
-}
+};
 
 export const imageUrlDesc: LeafDesc = {
     ...urlDesc,
     displayName: "Image URL",
     desc: "The URL of an image to display.",
     default: "https://images.unsplash.com/photo-1579547621869-0ddb5f237392?auto=format&fit=crop&q=80",
-}
+};
+
+export const classNameDesc: LeafDesc = {
+    type: DataType.STRING,
+    displayName: "Custom Classes",
+    desc: "Additional Tailwind classes",
+    input: InputType.TEXT,
+    default: "",
+};
+
+export const alignItemsDesc: LeafDesc = {
+    type: DataType.STRING,
+    displayName: "Align Items",
+    desc: "Horizontal alignment (stretch, center, flex-start, flex-end)",
+    input: InputType.TEXT,
+    default: "stretch",
+};
+
+export const justifyContentDesc: LeafDesc = {
+    type: DataType.STRING,
+    displayName: "Justify Content",
+    desc: "Vertical alignment (flex-start, center, flex-end, space-between, space-around)",
+    input: InputType.TEXT,
+    default: "flex-start",
+};
+

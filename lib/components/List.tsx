@@ -2,25 +2,23 @@ import { List as ListIcon } from "lucide-react";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { customCssDesc } from "./styles/shared";
+import { cn } from "@/lib/utils";
+import { classNameDesc } from "./common";
 
 export const LIST_TYPE = "List";
 
 export interface ListProps {
     items: string[];
     type: string;
-    customCss: string;
+    className?: string;
 }
 
 function Node(props: ListProps) {
     const ListTag = props.type === "ordered" ? "ol" : "ul";
-    
+
     return (
         <ListTag
-            style={{
-                paddingLeft: "1.5rem",
-                ...JSON.parse(props.customCss || '{}')
-            }}
+            className={cn("pl-6", props.className)}
         >
             {props.items.map((item, index) => (
                 <li key={index}>{item}</li>
@@ -32,7 +30,7 @@ function Node(props: ListProps) {
 const defaultProps: ListProps = {
     items: ["First item", "Second item", "Third item"],
     type: "unordered",
-    customCss: "{}",
+    className: "",
 };
 
 const propsDescriptor: ObjectDesc = {
@@ -48,7 +46,7 @@ const propsDescriptor: ObjectDesc = {
                 desc: "List item text",
                 input: InputType.TEXT,
                 default: "List item",
-            }
+            },
         },
         type: {
             type: DataType.STRING,
@@ -57,8 +55,8 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "unordered",
         },
-        customCss: customCssDesc,
-    }
+        className: classNameDesc,
+    },
 };
 
 const desc: ComponentDescriptor = {
@@ -77,3 +75,4 @@ export default {
     descriptor: desc,
     node: Node,
 } as ComponentExport;
+

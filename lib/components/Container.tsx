@@ -2,6 +2,8 @@ import { Layout } from "lucide-react";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { cn } from "@/lib/utils";
+import { classNameDesc } from "./common";
 
 export const CONTAINER_TYPE = "Container";
 
@@ -9,17 +11,22 @@ export interface ContainerProps extends ComponentPropsWithChildren {
     maxWidth: string;
     padding: string;
     margin: string;
-    customCss: string;
+    className?: string;
 }
 
 function Node(props: ContainerProps) {
+    const baseClasses = "container";
+
     return (
         <div 
+            className={cn(
+                baseClasses,
+                props.className
+            )}
             style={{
                 maxWidth: props.maxWidth,
                 padding: props.padding,
                 margin: props.margin,
-                ...JSON.parse(props.customCss || '{}')
             }}
         >
             {props.children}
@@ -31,7 +38,7 @@ const defaultProps: ContainerProps = {
     maxWidth: "1200px",
     padding: "1rem",
     margin: "0 auto",
-    customCss: "{}",
+    className: "",
     children: [],
 };
 
@@ -60,13 +67,7 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "0 auto",
         },
-        customCss: {
-            type: DataType.STRING,
-            displayName: "Custom CSS",
-            desc: "Additional CSS properties in JSON format (e.g., {\"backgroundColor\": \"#f0f0f0\"})",
-            input: InputType.TEXTAREA,
-            default: "{}",
-        },
+        className: classNameDesc,
     }
 };
 
@@ -86,3 +87,4 @@ export default {
     descriptor: desc,
     node: Node,
 } as ComponentExport;
+

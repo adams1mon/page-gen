@@ -2,6 +2,8 @@ import { LayoutGrid } from "lucide-react";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
+import { cn } from "@/lib/utils";
+import { classNameDesc, alignItemsDesc, justifyContentDesc } from "./common";
 
 export const ROW_TYPE = "Row";
 
@@ -9,21 +11,39 @@ export interface RowProps extends ComponentPropsWithChildren {
     gap: string;
     alignItems: string;
     justifyContent: string;
-    customCss: string;
+    className?: string;
 }
 
 function Node(props: RowProps) {
+    const baseClasses = "flex w-full";
+    const gapClasses = {
+        '1rem': 'gap-4',
+        '0.5rem': 'gap-2',
+        '2rem': 'gap-8',
+    };
+    const alignmentClasses = {
+        'stretch': 'items-stretch',
+        'center': 'items-center',
+        'flex-start': 'items-start',
+        'flex-end': 'items-end',
+    };
+    const justifyClasses = {
+        'flex-start': 'justify-start',
+        'center': 'justify-center',
+        'flex-end': 'justify-end',
+        'space-between': 'justify-between',
+        'space-around': 'justify-around',
+    };
+
     return (
         <div 
-            style={{
-                display: "flex",
-                width: "100%",
-                flexDirection: "row",
-                gap: props.gap,
-                alignItems: props.alignItems,
-                justifyContent: props.justifyContent,
-                ...JSON.parse(props.customCss || '{}')
-            }}
+            className={cn(
+                baseClasses,
+                gapClasses[props.gap as keyof typeof gapClasses] || 'gap-4',
+                alignmentClasses[props.alignItems as keyof typeof alignmentClasses] || 'items-center',
+                justifyClasses[props.justifyContent as keyof typeof justifyClasses] || 'justify-start',
+                props.className
+            )}
         >
             {props.children}
         </div>
@@ -34,7 +54,7 @@ const defaultProps: RowProps = {
     gap: "1rem",
     alignItems: "center",
     justifyContent: "flex-start",
-    customCss: "{}",
+    className: "",
     children: [],
 };
 
@@ -49,27 +69,9 @@ const propsDescriptor: ObjectDesc = {
             input: InputType.TEXT,
             default: "1rem",
         },
-        alignItems: {
-            type: DataType.STRING,
-            displayName: "Align Items",
-            desc: "Vertical alignment (center, flex-start, flex-end, stretch)",
-            input: InputType.TEXT,
-            default: "center",
-        },
-        justifyContent: {
-            type: DataType.STRING,
-            displayName: "Justify Content",
-            desc: "Horizontal alignment (flex-start, center, flex-end, space-between, space-around)",
-            input: InputType.TEXT,
-            default: "flex-start",
-        },
-        customCss: {
-            type: DataType.STRING,
-            displayName: "Custom CSS",
-            desc: "Additional CSS properties in JSON format",
-            input: InputType.TEXTAREA,
-            default: "{}",
-        },
+        alignItems: alignItemsDesc,
+        justifyContent: justifyContentDesc,
+        className: classNameDesc,
     }
 };
 
@@ -89,3 +91,4 @@ export default {
     descriptor: desc,
     node: Node,
 } as ComponentExport;
+

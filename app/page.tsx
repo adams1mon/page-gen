@@ -12,12 +12,16 @@ import {
 import { SitePreview } from "@/components/preview/SitePreview";
 import { PreviewToggle } from "@/components/preview/PreviewToggle";
 import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
-import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
+import { createReactNode, generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteSettings } from "@/components/site-editor/SiteSettings";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
+import { PreviewShadow } from "@/components/preview/PreviewShadow";
+import PreviewIframe from "@/components/preview/PreviewIframe";
+import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
+import PreviewTest from "@/components/preview/PreviewTest";
 
 export default function Home() {
     const [previewHtml, setPreviewHtml] = useState<string>("");
@@ -37,9 +41,14 @@ export default function Home() {
 
     useEffect(debouncePreview, [site, previewEnabled]);
 
+    console.log(ComponentContainer.getReactElement(site.type)(site.props));
+
     return (
         <DndProvider backend={HTML5Backend}>
-            <div className="h-screen flex flex-col">
+            <div className="flex flex-col">
+
+                <PreviewTest comp={site}/>
+
                 <OptionsMenu>
                     <PreviewToggle
                         enabled={previewEnabled}
@@ -91,6 +100,8 @@ export default function Home() {
                         </>
                     )}
                 </ResizablePanelGroup>
+
+
             </div>
         </DndProvider>
     );

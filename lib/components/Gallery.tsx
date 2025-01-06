@@ -80,7 +80,7 @@ const defaultProps: GalleryProps = {
             caption: "Image caption"
         },
         {
-            url: "https://images.unsplash.com/photo-1682687221038-404670f09561?auto=format&fit=crop&q=80",
+            url: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?auto=format&fit=crop&q=80",
             alt: "Gallery image 2",
             caption: "Image caption"
         }

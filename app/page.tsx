@@ -41,13 +41,11 @@ export default function Home() {
 
     useEffect(debouncePreview, [site, previewEnabled]);
 
-    console.log(ComponentContainer.getReactElement(site.type)(site.props));
-
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="flex flex-col">
 
-                <PreviewTest comp={site}/>
+                <PreviewTest comp={site} onChange={setSite} />
 
                 <OptionsMenu>
                     <PreviewToggle
@@ -70,17 +68,17 @@ export default function Home() {
 
                                         {/* children component inputs */}
                                         {site.acceptsChildren &&
-                                                <div className="p-4">
-                                                    {
-                                                        <ComponentInput
-                                                            components={site.childrenDescriptors}
-                                                            onChange={(components) => setSite({
-                                                                ...site,
-                                                                childrenDescriptors: components
-                                                            })}
-                                                        />
-                                                    }
-                                                </div>
+                                            <div className="p-4">
+                                                {
+                                                    <ComponentInput
+                                                        components={site.childrenDescriptors}
+                                                        onChange={(components) => setSite({
+                                                            ...site,
+                                                            childrenDescriptors: components
+                                                        })}
+                                                    />
+                                                }
+                                            </div>
                                         }
                                     </div>
                                 </div>

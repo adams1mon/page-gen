@@ -4,24 +4,27 @@ import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SITE_TYPE } from "@/lib/components/Site";
 import { ReactNode, createElement, useState } from "react";
-import { ComponentEditor } from "../component-editor/ComponentEditor";
 import { ComponentInput } from "../component-editor/component-input/ComponentInput";
 import { PropInputs } from "../component-editor/dynamic-input/PropInputs";
+import { ComponentDivider } from "../component-editor/component-input/ComponentDivider";
+
+type ChangeFunc = (comp: ComponentDescriptor) => void;
 
 interface CompProps {
     comp: ComponentDescriptor;
+    onChange: ChangeFunc;
 };
 
-function wrapTreeWithEditor(comp: ComponentDescriptor): ReactNode {
+function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: ChangeFunc): ReactNode {
     if (comp.acceptsChildren) {
         comp.props = {
             ...comp.props,
-            children: comp.childrenDescriptors.map(wrapTreeWithEditor),
+            children: comp.childrenDescriptors.map((c) => wrapTreeWithEditor(c, onChange)),
         };
     }
 
     return (
-        <EditorOverlay component={comp}>
+        <EditorOverlay component={comp} onChange={onChange}>
             {
                 createElement(
                     ComponentContainer.getReactElement(comp.type),
@@ -34,12 +37,15 @@ function wrapTreeWithEditor(comp: ComponentDescriptor): ReactNode {
 
 
 interface EditorOverlayProps extends React.PropsWithChildren {
-    component: ComponentDescriptor,
+    component: ComponentDescriptor;
+    onChange: ChangeFunc;
 };
 
-function EditorOverlay(props: EditorOverlayProps) {
+function EditorOverlay({ component, onChange, children }: EditorOverlayProps) {
 
     const [settingsOpen, setSettingsOpen] = useState(false);
+
+    console.log(component.type, "editor rerender");
 
     return (
         <div
@@ -50,49 +56,74 @@ function EditorOverlay(props: EditorOverlayProps) {
             }}
         >
             {settingsOpen &&
-                <div className="absolute top-0 right-0 z-10 bg-white">
+                <div className="absolute top-0 right-0 bg-white">
                     <PropInputs
-                        propsDescriptor={props.component.propsDescriptor}
-                        props={props.component.props}
-                        onChange={(p) => console.log("props change", p)}
+                        propsDescriptor={component.propsDescriptor}
+                        props={component.props}
+                        onChange={newComponentProps => onChange(
+                            {
+                                ...component,
+                                props: newComponentProps,
+                            }
+                        )}
                     />
-                    {props.component.acceptsChildren &&
-                        <div className="p-4">
+                    {component.acceptsChildren &&
+                        <div className="p-4" onClick={e => e.stopPropagation()}>
                             {
                                 <ComponentInput
-                                    components={props.component.childrenDescriptors}
-                                    //onChange={(components) => setSite({
-                                    //    ...site,
-                                    //    childrenDescriptors: components
-                                    //})}
-                                    onChange={(c) => console.log("changed", c)}
+                                    components={component.childrenDescriptors}
+                                    onChange={components => onChange({
+                                        ...component,
+                                        childrenDescriptors: components,
+                                    })}
                                 />
                             }
                         </div>
                     }
                 </div>
             }
-            {props.children}
+            {component.acceptsChildren && component.childrenDescriptors.length == 0 &&
+                <div className="p-4">
+                    {
+                        <ComponentDivider
+                            onInsert={(comp) => {
+                                onChange({
+                                    ...component,
+                                    childrenDescriptors: [comp],
+                                })
+                            }}
+                        />
+                    }
+                </div>
+            }
+
+            {children}
         </div>
     );
 }
 
-export default function PreviewTest({ comp }: CompProps) {
+export default function PreviewTest({ comp, onChange }: CompProps) {
 
-    // also populates comp.props.children as a side effect
+    const updateChild = (updatedComp: ComponentDescriptor) => {
+        const newDescriptors = comp.childrenDescriptors.map(old =>
+            old.id === updatedComp.id ? updatedComp : old
+        );
+        onChange({
+            ...comp,
+            childrenDescriptors: newDescriptors,
+        });
+    };
 
     return (
         <div className="m-4">
             {
-
                 comp.type == SITE_TYPE ?
                     comp.childrenDescriptors.map(d =>
-                        wrapTreeWithEditor(d)
+                        wrapTreeWithEditor(d, updateChild)
                     )
                     :
-                    wrapTreeWithEditor(comp)
+                    wrapTreeWithEditor(comp, onChange)
             }
-
         </div>
     );
 }

@@ -13,9 +13,6 @@ export function useDebounce(): (func: any, debounceMillis: number) => void {
         const id = setTimeout(() => {
             func();
 
-            // idk how the id is resolved correctly in this closure 
-            // (before the setTimeout returns??)
-
             clearTimeout(id);
             setTimeoutObj(null);
         }, debounceMillis);

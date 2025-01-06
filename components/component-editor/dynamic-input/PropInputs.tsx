@@ -81,7 +81,8 @@ export function PropInputs(
 
     return (
         <div
-            className="mt-2"
+            className="mt-2 z-50"
+            onClick={(e) => e.stopPropagation()}
         >
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger asChild>

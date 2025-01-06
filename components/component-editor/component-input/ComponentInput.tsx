@@ -1,4 +1,3 @@
-import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDivider } from "./ComponentDivider";
 import { ComponentEditor } from "../ComponentEditor";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
@@ -50,7 +49,7 @@ export function ComponentInput(
 
 
     return (
-        <div>
+        <div className="z-50">
             <label className="text-sm font-medium">Children</label>
             <p className="text-sm font-medium">Nested children to add to the component</p>
             <div className="space-y-4">

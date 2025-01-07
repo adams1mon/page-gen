@@ -6,11 +6,10 @@ import { SITE_TYPE } from "@/lib/components/Site";
 import { ReactNode, createElement } from "react";
 import { ComponentDivider } from "../component-editor/component-input/ComponentDivider";
 import { ComponentEditor } from "./editor/ComponentEditor";
-import { cn } from "@/lib/utils";
 
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
-function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRemove?: CompFunc, z: number = 10): ReactNode {
+function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRemove?: CompFunc): ReactNode {
     if (comp.acceptsChildren) {
         comp.props = {
             ...comp.props,
@@ -18,13 +17,12 @@ function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRem
                 c, 
                 updated => onChange(updateChild(comp, updated)), 
                 toRemove => onChange(removeChild(comp, toRemove)),
-                z+10,
             )),
         };
     }
 
     return (
-        <ComponentEditor key={comp.id} component={comp} onChange={onChange} onRemove={onRemove} z={z}>
+        <ComponentEditor key={comp.id} component={comp} onChange={onChange} onRemove={onRemove}>
             {createElement(
                 ComponentContainer.getReactElement(comp.type),
                 { ...comp.props, key: comp.id },

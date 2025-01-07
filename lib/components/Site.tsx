@@ -102,7 +102,6 @@ function generateStyles() {
     .rounded-lg { border-radius: 0.5rem; }
     .bg-cover { background-size: cover; }
     .bg-center { background-position: center; }
-    .overflow-hidden { overflow: hidden; }
 
     /* Colors */
     .bg-background { background-color: hsl(var(--background)); }

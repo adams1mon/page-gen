@@ -8,7 +8,7 @@ import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
 import { ComponentSelector } from "./ComponentSelector";
 import { insertChild } from "@/lib/components-meta/ComponentContainer";
-import { cn } from "@/lib/utils";
+import "./styles.css"
 
 interface ComponentEditorProps extends React.PropsWithChildren {
     component: ComponentDescriptor;

@@ -61,7 +61,7 @@ const propsDescriptor: ObjectDesc = {
             type: DataType.STRING,
             displayName: "Subtitle",
             desc: "Subtitle to display in the Hero section.",
-            input: InputType.TEXT,
+            input: InputType.TEXTAREA,
             default: "I'm a passionate creator building amazing digital experiences. Explore my work and let's create something amazing together.",
         },
         backgroundType: {

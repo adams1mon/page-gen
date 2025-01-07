@@ -1,46 +1,30 @@
 "use client";
 
-import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
+import { ComponentContainer, insertChild, removeChild, updateChild } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SITE_TYPE } from "@/lib/components/Site";
 import { ReactNode, createElement } from "react";
 import { ComponentDivider } from "../component-editor/component-input/ComponentDivider";
 import { ComponentEditor } from "./editor/ComponentEditor";
+import { cn } from "@/lib/utils";
 
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
-interface CompProps {
-    comp: ComponentDescriptor;
-    onChange: CompFunc;
-}
-
-function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRemove?: CompFunc): ReactNode {
+function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRemove?: CompFunc, z: number = 10): ReactNode {
     if (comp.acceptsChildren) {
-        const updateChild = (updatedComponent: ComponentDescriptor) => {
-            const newComponents = comp.childrenDescriptors.map(component =>
-                component.id === updatedComponent.id ? updatedComponent : component
-            );
-            onChange({
-                ...comp,
-                childrenDescriptors: newComponents,
-            });
-        };
-
-        const removeChild = (compToRemove: ComponentDescriptor) => {
-            onChange({
-                ...comp,
-                childrenDescriptors: comp.childrenDescriptors.filter(c => c.id !== compToRemove.id),
-            });
-        }
-
         comp.props = {
             ...comp.props,
-            children: comp.childrenDescriptors.map(c => wrapTreeWithEditor(c, updateChild, removeChild)),
+            children: comp.childrenDescriptors.map(c => wrapTreeWithEditor(
+                c, 
+                updated => onChange(updateChild(comp, updated)), 
+                toRemove => onChange(removeChild(comp, toRemove)),
+                z+10,
+            )),
         };
     }
 
     return (
-        <ComponentEditor key={comp.id} component={comp} onChange={onChange} onRemove={onRemove}>
+        <ComponentEditor key={comp.id} component={comp} onChange={onChange} onRemove={onRemove} z={z}>
             {createElement(
                 ComponentContainer.getReactElement(comp.type),
                 { ...comp.props, key: comp.id },
@@ -49,37 +33,28 @@ function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRem
     );
 }
 
-export default function PreviewTest({ comp, onChange }: CompProps) {
-    const updateChild = (updatedComp: ComponentDescriptor) => {
-        const newDescriptors = comp.childrenDescriptors.map(old =>
-            old.id === updatedComp.id ? updatedComp : old
-        );
-        onChange({
-            ...comp,
-            childrenDescriptors: newDescriptors,
-        });
-    };
+interface CompProps {
+    comp: ComponentDescriptor;
+    onChange: CompFunc;
+}
 
-    const removeChild = (compToRemove: ComponentDescriptor) => {
-        onChange({
-            ...comp,
-            childrenDescriptors: comp.childrenDescriptors.filter(c => c.id !== compToRemove.id),
-        });
-    }
+
+export default function PreviewTest({ comp, onChange }: CompProps) {
 
     return (
         <div className="m-4">
             {comp.type === SITE_TYPE
-                ? comp.childrenDescriptors.map(d => wrapTreeWithEditor(d, updateChild, removeChild))
+                ? comp.childrenDescriptors.map(d => wrapTreeWithEditor(
+                    d, 
+                    updated => onChange(updateChild(comp, updated)), 
+                    toRemove => onChange(removeChild(comp, toRemove)),
+                ))
                 : wrapTreeWithEditor(comp, onChange)
             }
             {comp.acceptsChildren && (
                 <div className="p-4">
                     <ComponentDivider
-                        onInsert={c => onChange({
-                            ...comp,
-                            childrenDescriptors: [...comp.childrenDescriptors, c]
-                        })}
+                        onInsert={c => onChange(insertChild(comp, c))}
                     />
                 </div>
             )}

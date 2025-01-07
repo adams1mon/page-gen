@@ -11,16 +11,27 @@ import {
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useEffect, useState } from "react";
+import { Switch } from "@/components/ui/switch";
 
 interface EditorContextMenuProps extends React.PropsWithChildren {
     component: ComponentDescriptor;
+    overlayEnabled: boolean;
+    onOverlayToggle: () => void;
     onEdit: (e: React.MouseEvent) => void;
     onInsert: (component: ComponentDescriptor) => void;
     onRemove?: (component: ComponentDescriptor) => void;
 }
 
-export function EditorContextMenu({ component, onEdit, onInsert, onRemove, children }: EditorContextMenuProps) {
-    
+export function EditorContextMenu({
+    component,
+    overlayEnabled,
+    onOverlayToggle,
+    onEdit,
+    onInsert,
+    onRemove,
+    children,
+}: EditorContextMenuProps) {
+
     const { copy, paste, hasCopiedComponent } = useComponentClipboard();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -42,6 +53,10 @@ export function EditorContextMenu({ component, onEdit, onInsert, onRemove, child
         <ContextMenu open={isOpen} onOpenChange={setIsOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent className="w-48">
+                <ContextMenuItem className="flex flex-col items-center mb-2">
+                    <p>{component.name}</p>
+                    <hr className="w-full mt-2" />
+                </ContextMenuItem>
                 {component.acceptsChildren && (
                     <ComponentSelector onInsert={onInsert}>
                         <ContextMenuItem className="flex items-center gap-2">
@@ -51,31 +66,37 @@ export function EditorContextMenu({ component, onEdit, onInsert, onRemove, child
                     </ComponentSelector>
                 )}
                 {component.acceptsChildren && hasCopiedComponent() && (
-                    <ComponentSelector onInsert={() => {
+                    <ContextMenuItem onClick={() => {
                         const component = paste();
                         if (component) {
                             onInsert(component);
                         }
-                    }}>
-                        <ContextMenuItem className="flex items-center gap-2">
-                            <Clipboard className="h-4 w-4" />
-                            Paste component
-                        </ContextMenuItem>
-                    </ComponentSelector>
+                    }}
+                        className="flex items-center gap-2"
+                    >
+                        <Clipboard className="h-4 w-4" />
+                        Paste component
+                    </ContextMenuItem>
                 )}
                 <ContextMenuItem onClick={onEdit} className="flex items-center gap-2">
                     <Edit className="h-4 w-4" />
                     Edit properties
                 </ContextMenuItem>
                 <ContextMenuItem
-                    onClick={(e) => {
-                        e.preventDefault();
+                    onClick={() => {
                         copy(component);
                     }}
                     className="flex items-center gap-2"
                 >
                     <Copy className="h-4 w-4" />
                     Copy component
+                </ContextMenuItem>
+                <ContextMenuItem
+                    className="flex items-center gap-2"
+                    onClick={onOverlayToggle}
+                >
+                    <Switch checked={overlayEnabled} className="transition-none" />
+                    Overlay enabled
                 </ContextMenuItem>
                 {onRemove && (
                     <ContextMenuItem

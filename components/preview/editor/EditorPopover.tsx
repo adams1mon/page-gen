@@ -37,6 +37,8 @@ export function EditorPopover({ component, position, onClose, onChange }: Editor
                 left: `${position.x}px`,
                 top: `${position.y}px`,
                 maxHeight: `${position.maxHeight}px`,
+                minHeight: "600px",
+                minWidth: "400px",
             }}
         >
             <div className="flex items-center justify-between p-2 border-b z-50 sticky top-0 bg-background">

@@ -24,10 +24,41 @@ export function updateProps(comp: ComponentDescriptor, props: any): ComponentDes
     }
 }
 
+export function updateChildren(comp: ComponentDescriptor, children: ComponentDescriptor[]): ComponentDescriptor {
+    return {
+        ...comp,
+        childrenDescriptors: children,
+    };
+};
+
+export function removeChild(comp: ComponentDescriptor, child: ComponentDescriptor): ComponentDescriptor {
+    return updateChildren(
+        comp,
+        comp.childrenDescriptors.filter(c => c.id !== child.id),
+    );
+};
+
+export function updateChild(comp: ComponentDescriptor, child: ComponentDescriptor): ComponentDescriptor {
+    const newDescriptors = comp.childrenDescriptors.map(old =>
+        old.id === child.id ? child : old
+    );
+    return updateChildren(comp, newDescriptors);
+};
+
+export function insertChild(comp: ComponentDescriptor, child: ComponentDescriptor): ComponentDescriptor {
+    return updateChildren(comp, [...comp.childrenDescriptors, child]);
+};
+
+//export function mapFromTree(comp: ComponentDescriptor, m: {[key: string]: ComponentDescriptor} = {}) { 
+//    m[comp.id] = comp;
+//    comp.childrenDescriptors.forEach(c => mapFromTree(c, m));
+//    return m;
+//};
+
 // holds component descriptors and creates new component descriptors based on the templates
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};
-    static jsxFuncs: { [type: string]: React.FunctionComponent<any>} = {};
+    static jsxFuncs: { [type: string]: React.FunctionComponent<any> } = {};
 
     static save(
         config: ComponentExport,
@@ -41,7 +72,7 @@ export class ComponentContainer {
     }
 
     static createId(type: string): string {
-      return `${type}-${Date.now()}`;
+        return `${type}-${Date.now()}`;
     }
 
     static createInstance(type: string): ComponentDescriptor {
@@ -57,18 +88,18 @@ export class ComponentContainer {
         }
     }
 
-  static clone(component: ComponentDescriptor): ComponentDescriptor {
-    // Clone children recursively if they exist
-    const clonedChildren = component.acceptsChildren 
-        ? component.childrenDescriptors.map(child => this.clone(child))
-        : [];
+    static clone(component: ComponentDescriptor): ComponentDescriptor {
+        // Clone children recursively if they exist
+        const clonedChildren = component.acceptsChildren
+            ? component.childrenDescriptors.map(child => this.clone(child))
+            : [];
 
-    return {
-        ...component,
-        id: this.createId(component.type),
-        childrenDescriptors: clonedChildren
-    };
-  }
+        return {
+            ...component,
+            id: this.createId(component.type),
+            childrenDescriptors: clonedChildren
+        };
+    }
 
     static getDescriptor(type: string): ComponentDescriptor | undefined {
         return this.components[type];
@@ -79,9 +110,9 @@ export class ComponentContainer {
     // Otherwise we could have nested Sites, 
     // because the Site is also a component.
     static getAvailableComponents(): ComponentDescriptor[] {
-        
+
         // omit the Site
-        const {[Site.type]: _, ...rest} = this.components;
+        const { [Site.type]: _, ...rest } = this.components;
 
         return Object.values(rest);
     }

@@ -7,6 +7,9 @@ import { ReactNode, createElement, useState } from "react";
 import { ComponentInput } from "../component-editor/component-input/ComponentInput";
 import { PropInputs } from "../component-editor/dynamic-input/PropInputs";
 import { ComponentDivider } from "../component-editor/component-input/ComponentDivider";
+import { log } from "util";
+import { Play } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 type ChangeFunc = (comp: ComponentDescriptor) => void;
 
@@ -19,12 +22,12 @@ function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: ChangeFunc): Re
     if (comp.acceptsChildren) {
         comp.props = {
             ...comp.props,
-            children: comp.childrenDescriptors.map((c) => wrapTreeWithEditor(c, onChange)),
+            children: comp.childrenDescriptors.map(c => wrapTreeWithEditor(c, onChange)),
         };
     }
 
     return (
-        <EditorOverlay component={comp} onChange={onChange}>
+        <EditorOverlay key={comp.id} component={comp} onChange={onChange}>
             {
                 createElement(
                     ComponentContainer.getReactElement(comp.type),
@@ -43,7 +46,12 @@ interface EditorOverlayProps extends React.PropsWithChildren {
 
 function EditorOverlay({ component, onChange, children }: EditorOverlayProps) {
 
-    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [settingsState, setSettingsState] = useState({
+        open: false,
+        clientX: 0,
+        clientY: 0,
+    });
+    //const [settingsOpen, setSettingsOpen] = useState(false);
 
     console.log(component.type, "editor rerender");
 
@@ -52,11 +60,18 @@ function EditorOverlay({ component, onChange, children }: EditorOverlayProps) {
             className="relative outline outline-2 outline-red-500 hover:outline-dashed"
             onClick={(e) => {
                 e.stopPropagation();
-                setSettingsOpen(prev => !prev);
+                console.log(e.clientX, e.clientY);
+                setSettingsState(prev => ({
+                    open: !prev.open,
+                    clientX: e.clientX,
+                    clientY: e.clientY,
+                }));
             }}
         >
-            {settingsOpen &&
-                <div className="absolute top-0 right-0 bg-white">
+            {settingsState.open &&
+                <div
+                    className={cn("absolute bg-white", `right-${settingsState.clientX}`)}
+                >
                     <PropInputs
                         propsDescriptor={component.propsDescriptor}
                         props={component.props}
@@ -118,7 +133,7 @@ export default function PreviewTest({ comp, onChange }: CompProps) {
         <div className="m-4">
             {
                 comp.type == SITE_TYPE ?
-                    comp.childrenDescriptors.map(d =>
+                    comp.childrenDescriptors.map((d, index) =>
                         wrapTreeWithEditor(d, updateChild)
                     )
                     :

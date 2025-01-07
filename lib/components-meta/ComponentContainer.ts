@@ -53,7 +53,7 @@ export class ComponentContainer {
 
         return {
             ...desc,
-            id: this.createId(),
+            id: this.createId(type),
         }
     }
 

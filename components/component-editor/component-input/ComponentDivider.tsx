@@ -25,39 +25,20 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                 <div className="w-full border-t border-border" />
             </div>
             <div className="relative">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className="bg-background border-border"
-                        >
-                            <div className="flex gap-2 text-muted-foreground">
-                                <Plus className="h-4 w-4" />
-                                <span>Add component</span>
-                            </div>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center" className="max-h-80 overflow-y-auto">
-                        {
-                            ComponentContainer.getAvailableComponents().map(component => (
-                                <DropdownMenuItem
-                                    key={component.type}
-                                    onClick={() => {
-                                      onInsert(ComponentContainer.createInstance(component.type))
-                                    }}
-                                    className="flex items-center gap-2"
-                                >
-                                    {
-                                        component.icon
-                                    }
-                                    <span>{component.type}</span>
-                                </DropdownMenuItem>
-                            ))
-                        }
-                    </DropdownMenuContent>
-                </DropdownMenu>
 
-               {hasCopiedComponent() && (
+                <ComponentSelectorDropdown onInsert={onInsert}>
+                    <Button
+                        variant="outline"
+                        className="bg-background border-border"
+                    >
+                        <div className="flex gap-2 text-muted-foreground">
+                            <Plus className="h-4 w-4" />
+                            <span>Add component</span>
+                        </div>
+                    </Button>
+                </ComponentSelectorDropdown>
+
+                {hasCopiedComponent() && (
                     <Button
                         variant="outline"
                         className="bg-background border-border"
@@ -78,3 +59,37 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
         </div>
     );
 }
+
+interface ComponentSelectorProps extends React.PropsWithChildren {
+    onInsert: (component: ComponentDescriptor) => void;
+}
+
+export function ComponentSelectorDropdown({ onInsert, children }: ComponentSelectorProps) {
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                {children}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="max-h-80 overflow-y-auto">
+                {
+                    ComponentContainer.getAvailableComponents().map(component => (
+                        <DropdownMenuItem
+                            key={component.type}
+                            onClick={() => {
+                                onInsert(ComponentContainer.createInstance(component.type))
+                            }}
+                            className="flex items-center gap-2"
+                        >
+                            {
+                                component.icon
+                            }
+                            <span>{component.type}</span>
+                        </DropdownMenuItem>
+                    ))
+                }
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+

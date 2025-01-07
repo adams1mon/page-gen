@@ -15,7 +15,7 @@ export interface HeadingProps {
 }
 
 function Node(props: HeadingProps) {
-    const Tag = `h${props.level}` as keyof JSX.IntrinsicElements;
+    const Tag = `h${props.level || 1}` as keyof JSX.IntrinsicElements;
     
     const baseClasses = "font-bold text-foreground";
     const alignmentClasses = {

@@ -10,6 +10,7 @@ import {
     ContextMenuItem,
     ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { useEffect, useState } from "react";
 
 interface EditorContextMenuProps extends React.PropsWithChildren {
     component: ComponentDescriptor;
@@ -19,10 +20,26 @@ interface EditorContextMenuProps extends React.PropsWithChildren {
 }
 
 export function EditorContextMenu({ component, onEdit, onInsert, onRemove, children }: EditorContextMenuProps) {
+    
     const { copy, paste, hasCopiedComponent } = useComponentClipboard();
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (isOpen && !(event.target as Element).closest('[role="menu"]')) {
+                setIsOpen(false);
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isOpen]);
+
 
     return (
-        <ContextMenu>
+        <ContextMenu open={isOpen} onOpenChange={setIsOpen}>
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent className="w-48">
                 {component.acceptsChildren && (

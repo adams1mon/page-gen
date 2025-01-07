@@ -24,7 +24,7 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
             <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border" />
             </div>
-            <div className="relative">
+            <div className="relative flex justify-center gap-x-2">
 
                 <ComponentSelectorDropdown onInsert={onInsert}>
                     <Button

@@ -32,7 +32,7 @@ function Node(props: SiteProps) {
     );
 }
 
-function generateStyles() {
+function defaultStyles() {
     return `
     /* Reset */
     *, *::before, *::after {
@@ -153,8 +153,11 @@ function generateStyles() {
 const defaultProps: SiteProps = {
     title: 'My Portfolio',
     description: 'Welcome to my portfolio website',
-    tailwindCdn: "https://cdn.tailwindcss.com/3.4.16",
-    styles: generateStyles(),
+
+    // NOTE: The site uses the same Tailwind generated CSS the main page uses.
+    // The styles are overwritten by the generated Tailwind CSS file, 
+    // see how a new site is created in generate-html.
+    styles: defaultStyles(),
     children: [],
 };
 
@@ -184,7 +187,7 @@ const propsDescriptor: ObjectDesc = {
             ...longTextDesc,
             displayName: "Custom CSS styles",
             desc: "Custom CSS styles to include in a <style> in the website",
-            default: generateStyles(),
+            default: defaultStyles(),
         },
     }
 };

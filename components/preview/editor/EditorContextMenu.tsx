@@ -54,7 +54,7 @@ export function EditorContextMenu({
             <ContextMenuTrigger>{children}</ContextMenuTrigger>
             <ContextMenuContent className="w-48">
                 <ContextMenuItem className="flex flex-col items-center mb-2">
-                    <p>{component.name}</p>
+                    <p className="m-0">{component.name}</p>
                     <hr className="w-full mt-2" />
                 </ContextMenuItem>
                 {component.acceptsChildren && (

@@ -19,7 +19,7 @@ export function ComponentSelector({ onInsert, children }: ComponentSelectorProps
             <DropdownMenuTrigger asChild>
                 {children}
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="max-h-80 overflow-auto">
+            <DropdownMenuContent align="center" className="max-h-80 overflow-y-auto">
                 {ComponentContainer.getAvailableComponents().map(component => (
                     <DropdownMenuItem
                         key={component.type}

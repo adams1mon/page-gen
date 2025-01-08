@@ -1,12 +1,30 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { ReactElement, createElement } from "react";
-import { SITE_TYPE } from "../components/Site";
+import { SITE_TYPE, SiteProps } from "../components/Site";
 import { ComponentContainer } from "../components-meta/ComponentContainer";
 
+// Import all the generated CSS files used by the application,
+// use it for the generated site as well.
+
+// @ts-ignore
+import pageCss from '!!css-loader?{"sourceMap":false,"url":false,"exportType":"string"}!../../.next/static/css/app/page.css';
+
+// @ts-ignore
+import layoutCss from '!!css-loader?{"sourceMap":false,"url":false,"exportType":"string"}!../../.next/static/css/app/layout.css';
+
 export function newSite(): ComponentDescriptor {
-    return ComponentContainer.createInstance(SITE_TYPE);
-}
+
+    const site = ComponentContainer.createInstance(SITE_TYPE);
+
+    // initialize the Site props with the css
+
+    // merge the generated CSS files
+    const css = layoutCss + "\n" + pageCss;
+    (site.props as SiteProps).styles = css;
+
+    return site;
+} 
 
 export function createReactNode(comp: ComponentDescriptor): ReactElement {
 

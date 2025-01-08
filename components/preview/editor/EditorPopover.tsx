@@ -32,17 +32,17 @@ export function EditorPopover({ component, position, onClose, onChange }: Editor
     return (
         <div
             ref={editorRef}
-            className="fixed z-50 min-w-[300px] bg-background border rounded-lg shadow-lg overflow-y-auto"
+            className="fixed z-50 min-w-[400px] bg-background border rounded-lg shadow-lg overflow-y-auto"
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,
                 maxHeight: `${position.maxHeight}px`,
-                minHeight: "600px",
+                minHeight: "200px",
                 minWidth: "400px",
             }}
         >
             <div className="flex items-center justify-between p-2 border-b z-50 sticky top-0 bg-background">
-                <span className="font-medium capitalize text-sm">{component.name}</span>
+                <span className="font-medium capitalize text-sm my-0 px-2">{component.name}</span>
                 <Button variant="ghost" size="icon" onClick={onClose}>
                     <X className="h-4 w-4" />
                 </Button>

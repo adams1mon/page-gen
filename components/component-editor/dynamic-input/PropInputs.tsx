@@ -35,7 +35,6 @@ export function PropInputs(
     }
 
     const [isOpen, setIsOpen] = useState(true);
-
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
     const createInput = () => {

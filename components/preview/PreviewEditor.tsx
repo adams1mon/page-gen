@@ -1,5 +1,3 @@
-"use client";
-
 import { ComponentContainer, insertChild, removeChild, updateChild } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SITE_TYPE } from "@/lib/components/Site";
@@ -10,12 +8,13 @@ import { ComponentEditor } from "./editor/ComponentEditor";
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
 function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRemove?: CompFunc): ReactNode {
+
     if (comp.acceptsChildren) {
         comp.props = {
             ...comp.props,
             children: comp.childrenDescriptors.map(c => wrapTreeWithEditor(
-                c, 
-                updated => onChange(updateChild(comp, updated)), 
+                c,
+                updated => onChange(updateChild(comp, updated)),
                 toRemove => onChange(removeChild(comp, toRemove)),
             )),
         };
@@ -43,7 +42,7 @@ export default function PreviewEditor({ comp, onChange }: CompProps) {
         <div className="m-4">
             {comp.type === SITE_TYPE
                 ? comp.childrenDescriptors.map(d => wrapTreeWithEditor(
-                    d, 
+                    d,
                     updated => onChange(updateChild(comp, updated)), 
                     toRemove => onChange(removeChild(comp, toRemove)),
                 ))

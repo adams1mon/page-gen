@@ -8,6 +8,8 @@ import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
 import { ComponentSelector } from "./ComponentSelector";
 import { insertChild } from "@/lib/components-meta/ComponentContainer";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface ComponentEditorProps extends React.PropsWithChildren {
     component: ComponentDescriptor;
@@ -21,10 +23,10 @@ export interface EditorPosition {
     maxHeight: number;
 }
 
-export function ComponentEditor({ component, onChange, onRemove, children}: ComponentEditorProps) {
+export function ComponentEditor({ component, onChange, onRemove, children }: ComponentEditorProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
-    const [overlayEnabled, setOverlayEnabled] = useState(false); 
+    const [overlayEnabled, setOverlayEnabled] = useState(false);
     const [editorPosition, setEditorPosition] = useState<EditorPosition>({ x: 0, y: 0, maxHeight: 300 });
 
     const handleChildInsert = (newComponent: ComponentDescriptor) => {
@@ -46,7 +48,7 @@ export function ComponentEditor({ component, onChange, onRemove, children}: Comp
                 let y = e.clientY + 10;
 
                 // out on right
-                if (e.clientX + minWidth > window.innerWidth) { 
+                if (e.clientX + minWidth > window.innerWidth) {
                     x = window.innerWidth - minWidth;
                 }
 
@@ -95,7 +97,6 @@ export function ComponentEditor({ component, onChange, onRemove, children}: Comp
                     onRemove={onRemove}
                 />
 
-
                 {isEditing && (
                     <EditorPopover
                         component={component}
@@ -120,7 +121,17 @@ function EmptyState({ component, onInsert }: { component: ComponentDescriptor, o
                 <p className="text-lg font-medium text-muted-foreground">{component.name}</p>
                 <p className="text-sm text-muted-foreground/60">This component is empty.</p>
             </div>
-            <ComponentSelector onInsert={onInsert} />
+            <ComponentSelector onInsert={onInsert} >
+                <Button
+                    variant="outline"
+                    className="bg-background border-border"
+                >
+                    <div className="flex gap-2 text-muted-foreground">
+                        <Plus className="h-4 w-4" />
+                        <span>Add component</span>
+                    </div>
+                </Button>
+            </ComponentSelector>
         </div>
     );
 }

@@ -19,10 +19,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-              <ComponentClipboardProvider>
-                <SiteHeader/>
-                {children}
-              </ComponentClipboardProvider>
+                <ComponentClipboardProvider>
+                    <SiteHeader />
+                    {children}
+                </ComponentClipboardProvider>
             </body>
         </html>
     );

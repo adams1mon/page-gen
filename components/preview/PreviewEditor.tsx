@@ -37,7 +37,7 @@ interface CompProps {
 }
 
 
-export default function PreviewTest({ comp, onChange }: CompProps) {
+export default function PreviewEditor({ comp, onChange }: CompProps) {
 
     return (
         <div className="m-4">

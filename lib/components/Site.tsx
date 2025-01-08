@@ -3,6 +3,10 @@ import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-m
 import { DataType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { titleDesc, longTextDesc, textDesc, urlDesc } from "./common";
 
+// Import the Tailwind generated styles
+// @ts-ignore
+import css from '!!css-loader?{"sourceMap":false,"url":false,"exportType":"string"}!../generated/styles.css';
+
 export const SITE_TYPE = "Site";
 
 export interface SiteProps extends ComponentPropsWithChildren {
@@ -157,7 +161,8 @@ const defaultProps: SiteProps = {
     // NOTE: The site uses the same Tailwind generated CSS the main page uses.
     // The styles are overwritten by the generated Tailwind CSS file, 
     // see how a new site is created in generate-html.
-    styles: defaultStyles(),
+    //styles: defaultStyles(),
+    styles: css,
     children: [],
 };
 

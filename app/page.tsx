@@ -18,7 +18,7 @@ import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteSettings } from "@/components/site-editor/SiteSettings";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
-import PreviewTest from "@/components/preview/PreviewTest";
+import PreviewEditor from "@/components/preview/PreviewEditor";
 
 export default function Home() {
     const [previewHtml, setPreviewHtml] = useState<string>("");
@@ -42,8 +42,6 @@ export default function Home() {
         <DndProvider backend={HTML5Backend}>
             <div className="flex flex-col">
 
-                <PreviewTest comp={site} onChange={setSite} />
-
                 <OptionsMenu>
                     <PreviewToggle
                         enabled={previewEnabled}
@@ -52,6 +50,8 @@ export default function Home() {
                     <OpenInNewTab html={previewHtml} />
                     <GenerateSiteButton html={previewHtml} site={site} />
                 </OptionsMenu>
+
+                <PreviewEditor comp={site} onChange={setSite} />
 
                 <ResizablePanelGroup direction="horizontal" className="flex-1">
                     <ResizablePanel defaultSize={previewEnabled ? 50 : 100} minSize={10}>

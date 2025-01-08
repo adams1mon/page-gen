@@ -1,14 +1,13 @@
 "use client";
 
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { CompFunc } from "../PreviewTest";
+import { CompFunc } from "../PreviewEditor";
 import { EditorOverlay } from "./EditorOverlay";
 import { EditorPopover } from "./EditorPopover";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
 import { ComponentSelector } from "./ComponentSelector";
 import { insertChild } from "@/lib/components-meta/ComponentContainer";
-import "./styles.css"
 
 interface ComponentEditorProps extends React.PropsWithChildren {
     component: ComponentDescriptor;

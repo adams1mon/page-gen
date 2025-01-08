@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "predev": "pnpm exec tailwind -c ./lib/styles/tailwind.config.ts -i ./lib/styles/globals.css -o ./lib/generated/styles.css",
+    "dev": "pnpm exec next dev"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@monaco-editor/react": "^4.6.0",

@@ -2,8 +2,8 @@ import { ComponentContainer, insertChild, removeChild, updateChild } from "@/lib
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SITE_TYPE } from "@/lib/components/Site";
 import { ReactNode, createElement } from "react";
-import { ComponentDivider } from "../component-editor/component-input/ComponentDivider";
-import { ComponentEditor } from "./editor/ComponentEditor";
+import { ComponentDivider } from "../../component-editor/component-input/ComponentDivider";
+import { EditorContainer } from "./EditorContainer";
 
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
@@ -21,12 +21,12 @@ function wrapTreeWithEditor(comp: ComponentDescriptor, onChange: CompFunc, onRem
     }
 
     return (
-        <ComponentEditor key={comp.id} component={comp} onChange={onChange} onRemove={onRemove}>
+        <EditorContainer key={comp.id} component={comp} onChange={onChange} onRemove={onRemove}>
             {createElement(
                 ComponentContainer.getReactElement(comp.type),
                 { ...comp.props, key: comp.id },
             )}
-        </ComponentEditor>
+        </EditorContainer>
     );
 }
 
@@ -36,7 +36,7 @@ interface CompProps {
 }
 
 
-export default function PreviewEditor({ comp, onChange }: CompProps) {
+export function PreviewEditor({ comp, onChange }: CompProps) {
 
     return (
         <div className="m-4">

@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
-interface OpenInNewTabProps {
+interface OpenHtmlButtonProps {
   html: string,
 }
 
-export function OpenInNewTab({ html }: OpenInNewTabProps) {
+export function OpenHtmlButton({ html }: OpenHtmlButtonProps) {
   const handleOpenInNewTab = async () => {
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);

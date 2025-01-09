@@ -9,16 +9,16 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { SitePreview } from "@/components/preview/SitePreview";
-import { PreviewToggle } from "@/components/preview/PreviewToggle";
-import { OpenInNewTab } from "@/components/preview/OpenInNewTab";
+import { IframePreview } from "@/components/preview/IframePreview";
+import { ToggleButton } from "@/components/ToggleButton";
+import { OpenHtmlButton } from "@/components/OpenHtmlButton";
 import { generateHtml, newSite } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 import { OptionsMenu } from "@/components/options-menu/OptionsMenu";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteSettings } from "@/components/site-editor/SiteSettings";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
-import PreviewEditor from "@/components/preview/PreviewEditor";
+import { PreviewEditor } from "@/components/preview/editor/PreviewEditor";
 
 export default function Home() {
     const [previewHtml, setPreviewHtml] = useState<string>("");
@@ -42,11 +42,13 @@ export default function Home() {
         <DndProvider backend={HTML5Backend}>
             <div className="flex flex-col">
                 <OptionsMenu>
-                    <PreviewToggle
+                    <ToggleButton
+                        onText="Hide iframe Preview"
+                        offText="Show iframe Preview"
                         enabled={previewEnabled}
                         onToggle={() => setPreviewEnabled(!previewEnabled)}
                     />
-                    <OpenInNewTab html={previewHtml} />
+                    <OpenHtmlButton html={previewHtml} />
                     <GenerateSiteButton html={previewHtml} site={site} />
                 </OptionsMenu>
 
@@ -86,7 +88,7 @@ export default function Home() {
                         <>
                             <ResizableHandle withHandle />
                             <ResizablePanel defaultSize={50} minSize={10}>
-                                <SitePreview
+                                <IframePreview
                                     html={previewHtml}
                                     site={site}
                                 />

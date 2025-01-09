@@ -2,12 +2,12 @@ import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { SiteProps } from "@/lib/components/Site";
 
 
-interface SitePreviewProps {
+interface IframePreviewProps {
   site: ComponentDescriptor;
   html: string;
 }
 
-export function SitePreview({ site, html }: SitePreviewProps) {
+export function IframePreview({ site, html }: IframePreviewProps) {
   return (
     <div className="h-full bg-gray-50">
       <iframe

@@ -1,5 +1,5 @@
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { PropInputs } from "../component-editor/dynamic-input/PropInputs";
+import { PropInputs } from "../component-editor/prop-editor/PropInputs";
 import { CollapsibleSection } from "../ui/collapsible-section";
 
 interface SiteSettingsProps {

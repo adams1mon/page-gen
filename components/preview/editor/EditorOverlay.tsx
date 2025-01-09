@@ -1,7 +1,7 @@
 "use client";
 
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { ComponentSelector } from "./ComponentSelector";
+import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
 import { Copy, Edit, Plus, Trash2, Clipboard } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useComponentClipboard } from "@/lib/store/component-clipboard-context";

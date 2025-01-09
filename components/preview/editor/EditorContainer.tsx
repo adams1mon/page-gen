@@ -1,17 +1,17 @@
 "use client";
 
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { CompFunc } from "../PreviewEditor";
+import { CompFunc } from "./PreviewEditor";
 import { EditorOverlay } from "./EditorOverlay";
 import { EditorPopover } from "./EditorPopover";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
-import { ComponentSelector } from "./ComponentSelector";
+import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
 import { insertChild } from "@/lib/components-meta/ComponentContainer";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-interface ComponentEditorProps extends React.PropsWithChildren {
+interface EditorContainerProps extends React.PropsWithChildren {
     component: ComponentDescriptor;
     onChange: CompFunc;
     onRemove?: CompFunc;
@@ -23,7 +23,7 @@ export interface EditorPosition {
     maxHeight: number;
 }
 
-export function ComponentEditor({ component, onChange, onRemove, children }: ComponentEditorProps) {
+export function EditorContainer({ component, onChange, onRemove, children }: EditorContainerProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [overlayEnabled, setOverlayEnabled] = useState(false);

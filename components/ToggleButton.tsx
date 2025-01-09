@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 
-interface PreviewToggleProps {
+interface ToggleButtonProps {
+  onText: string;
+  offText: string;
   enabled: boolean;
   onToggle: () => void;
 }
 
-export function PreviewToggle({ enabled, onToggle }: PreviewToggleProps) {
+export function ToggleButton({ enabled, onToggle, onText, offText }: ToggleButtonProps) {
   return (
     <Button 
       variant="outline" 
@@ -17,12 +19,12 @@ export function PreviewToggle({ enabled, onToggle }: PreviewToggleProps) {
       {enabled ? (
         <>
           <EyeOff className="h-4 w-4" />
-          Hide Preview
+          {onText}
         </>
       ) : (
         <>
           <Eye className="h-4 w-4" />
-          Show Preview
+          {offText}
         </>
       )}
     </Button>

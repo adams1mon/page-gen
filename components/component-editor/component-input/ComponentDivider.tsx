@@ -1,15 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { Clipboard } from "lucide-react";
 import { useComponentClipboard } from '@/lib/store/component-clipboard-context';
+import { ComponentSelector } from "./ComponentSelector";
 
 interface ComponentDividerProps {
     onInsert: (component: ComponentDescriptor) => void;
@@ -26,7 +20,7 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
             </div>
             <div className="relative flex justify-center gap-x-2">
 
-                <ComponentSelectorDropdown onInsert={onInsert}>
+                <ComponentSelector onInsert={onInsert}>
                     <Button
                         variant="outline"
                         className="bg-background border-border"
@@ -36,7 +30,7 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                             <span>Add component</span>
                         </div>
                     </Button>
-                </ComponentSelectorDropdown>
+                </ComponentSelector>
 
                 {hasCopiedComponent() && (
                     <Button
@@ -59,37 +53,4 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
         </div>
     );
 }
-
-interface ComponentSelectorProps extends React.PropsWithChildren {
-    onInsert: (component: ComponentDescriptor) => void;
-}
-
-export function ComponentSelectorDropdown({ onInsert, children }: ComponentSelectorProps) {
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                {children}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="max-h-80 overflow-y-auto">
-                {
-                    ComponentContainer.getAvailableComponents().map(component => (
-                        <DropdownMenuItem
-                            key={component.type}
-                            onClick={() => {
-                                onInsert(ComponentContainer.createInstance(component.type))
-                            }}
-                            className="flex items-center gap-2"
-                        >
-                            {
-                                component.icon
-                            }
-                            <span>{component.type}</span>
-                        </DropdownMenuItem>
-                    ))
-                }
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-};
 

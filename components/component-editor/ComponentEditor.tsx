@@ -1,7 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
 import { useDrag, useDrop } from "react-dnd";
-import { PropInputs } from "./dynamic-input/PropInputs";
+import { PropInputs } from "./prop-editor/PropInputs";
 import { useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
@@ -34,7 +36,7 @@ export function ComponentEditor({
 }: ComponentEditorProps) {
     const ref = useRef<HTMLDivElement>(null);
     const dragHandleRef = useRef<HTMLDivElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const { copy } = useComponentClipboard();
 
     const [, drop] = useDrop({

@@ -1,12 +1,12 @@
 "use client";
 
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { PropInputs } from "../../component-editor/dynamic-input/PropInputs";
+import { PropInputs } from "../../component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "../../component-editor/component-input/ComponentInput";
 import { X } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useEffect, useRef } from "react";
-import { EditorPosition } from "./ComponentEditor";
+import { EditorPosition } from "./EditorContainer";
 
 interface EditorPopoverProps {
     component: ComponentDescriptor;

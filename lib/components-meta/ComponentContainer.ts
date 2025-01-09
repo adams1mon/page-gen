@@ -45,15 +45,31 @@ export function updateChild(comp: ComponentDescriptor, child: ComponentDescripto
     return updateChildren(comp, newDescriptors);
 };
 
-export function insertChild(comp: ComponentDescriptor, child: ComponentDescriptor): ComponentDescriptor {
-    return updateChildren(comp, [...comp.childrenDescriptors, child]);
+export function insertChild(comp: ComponentDescriptor, child: ComponentDescriptor, index?: number): ComponentDescriptor {
+    const newDescriptors = [...comp.childrenDescriptors];
+    if (typeof index === 'number') {
+        newDescriptors.splice(index, 0, child);
+    } else {
+        newDescriptors.push(child);
+    }
+    return updateChildren(comp, newDescriptors);
 };
 
-//export function mapFromTree(comp: ComponentDescriptor, m: {[key: string]: ComponentDescriptor} = {}) { 
-//    m[comp.id] = comp;
-//    comp.childrenDescriptors.forEach(c => mapFromTree(c, m));
-//    return m;
-//};
+export function findParentComponent(root: ComponentDescriptor, childId: string): ComponentDescriptor | null {
+    if (!root.acceptsChildren) return null;
+    
+    for (const child of root.childrenDescriptors) {
+        if (child.id === childId) return root;
+        const found = findParentComponent(child, childId);
+        if (found) return found;
+    }
+    
+    return null;
+}
+
+export function findComponentIndex(parent: ComponentDescriptor, childId: string): number {
+    return parent.childrenDescriptors.findIndex(child => child.id === childId);
+}
 
 // holds component descriptors and creates new component descriptors based on the templates
 export class ComponentContainer {
@@ -110,10 +126,8 @@ export class ComponentContainer {
     // Otherwise we could have nested Sites, 
     // because the Site is also a component.
     static getAvailableComponents(): ComponentDescriptor[] {
-
         // omit the Site
         const { [Site.type]: _, ...rest } = this.components;
-
         return Object.values(rest);
     }
 }

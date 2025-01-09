@@ -3,34 +3,61 @@
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { CompFunc } from "./PreviewEditor";
 import { EditorOverlay } from "./EditorOverlay";
-import { EditorPopover } from "./EditorPopover";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
 import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
 import { insertChild } from "@/lib/components-meta/ComponentContainer";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useSiteStore } from "@/lib/store/site-store";
+import { findParentComponent, findComponentIndex } from "@/lib/components-meta/ComponentContainer";
 
 interface EditorContainerProps extends React.PropsWithChildren {
     component: ComponentDescriptor;
     onChange: CompFunc;
     onRemove?: CompFunc;
+    onSelect?: (component: ComponentDescriptor) => void;
 }
 
-export interface EditorPosition {
-    x: number;
-    y: number;
-    maxHeight: number;
-}
-
-export function EditorContainer({ component, onChange, onRemove, children }: EditorContainerProps) {
-    const [isEditing, setIsEditing] = useState(false);
+export function EditorContainer({ 
+    component, 
+    onChange, 
+    onRemove, 
+    onSelect,
+    children 
+}: EditorContainerProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [overlayEnabled, setOverlayEnabled] = useState(false);
-    const [editorPosition, setEditorPosition] = useState<EditorPosition>({ x: 0, y: 0, maxHeight: 300 });
+    const { site, setSite } = useSiteStore();
 
-    const handleChildInsert = (newComponent: ComponentDescriptor) => {
-        onChange(insertChild(component, newComponent));
+    const handleChildInsert = (newComponent: ComponentDescriptor, position?: 'before' | 'after') => {
+        if (position) {
+            const parent = findParentComponent(site, component.id);
+            if (parent) {
+                const index = findComponentIndex(parent, component.id);
+                const insertIndex = position === 'before' ? index : index + 1;
+                const updatedParent = insertChild(parent, newComponent, insertIndex);
+                
+                // Update the site tree with the modified parent
+                const updateComponentInTree = (comp: ComponentDescriptor): ComponentDescriptor => {
+                    if (comp.id === parent.id) {
+                        return updatedParent;
+                    }
+                    if (comp.acceptsChildren) {
+                        return {
+                            ...comp,
+                            childrenDescriptors: comp.childrenDescriptors.map(updateComponentInTree)
+                        };
+                    }
+                    return comp;
+                };
+                
+                setSite(updateComponentInTree(site));
+            }
+        } else {
+            // Add inside the component as before
+            onChange(insertChild(component, newComponent));
+        }
     };
 
     const isEmpty = component.acceptsChildren && component.childrenDescriptors.length === 0;
@@ -40,30 +67,7 @@ export function EditorContainer({ component, onChange, onRemove, children }: Edi
             component={component}
             overlayEnabled={overlayEnabled}
             onOverlayToggle={() => setOverlayEnabled(prev => !prev)}
-            onEdit={(e) => {
-                const minWidth = 400;
-                const minHeight = 600;
-
-                let x = Math.max(10, e.clientX - minWidth / 2);
-                let y = e.clientY + 10;
-
-                // out on right
-                if (e.clientX + minWidth > window.innerWidth) {
-                    x = window.innerWidth - minWidth;
-                }
-
-                // out on the bottom
-                if (e.clientY + minHeight > window.innerHeight) {
-                    y = window.innerHeight - minHeight;
-                }
-
-                setEditorPosition({
-                    x,
-                    y,
-                    maxHeight: window.innerHeight * 0.9,
-                });
-                setIsEditing(true);
-            }}
+            onEdit={() => onSelect?.(component)}
             onInsert={handleChildInsert}
             onRemove={onRemove}
         >
@@ -79,32 +83,14 @@ export function EditorContainer({ component, onChange, onRemove, children }: Edi
                 }}
                 onClick={e => e.stopPropagation()}
             >
-
                 <EditorOverlay
                     controlsEnabled={overlayEnabled}
                     isHovered={isHovered}
                     component={component}
-                    onEdit={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        setEditorPosition({
-                            x: rect.left / 2,
-                            y: rect.height * 1.4,
-                            maxHeight: (window.innerHeight - e.clientY) * 0.9,
-                        });
-                        setIsEditing(true);
-                    }}
+                    onEdit={() => onSelect?.(component)}
                     onInsert={handleChildInsert}
                     onRemove={onRemove}
                 />
-
-                {isEditing && (
-                    <EditorPopover
-                        component={component}
-                        position={editorPosition}
-                        onClose={() => setIsEditing(false)}
-                        onChange={onChange}
-                    />
-                )}
 
                 {children}
 

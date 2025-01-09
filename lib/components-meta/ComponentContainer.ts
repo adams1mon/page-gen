@@ -71,6 +71,22 @@ export function findComponentIndex(parent: ComponentDescriptor, childId: string)
     return parent.childrenDescriptors.findIndex(child => child.id === childId);
 }
 
+export function removeChildrenProps(comp: ComponentDescriptor): ComponentDescriptor {
+
+    if (comp.acceptsChildren) {
+        const compWithoutChildrenProps: ComponentDescriptor = {
+            ...comp,
+            childrenDescriptors: comp.childrenDescriptors.map(removeChildrenProps),
+        };
+        delete compWithoutChildrenProps.props.children;
+        return compWithoutChildrenProps;
+    }
+
+    return {
+        ...comp
+    };
+}
+
 // holds component descriptors and creates new component descriptors based on the templates
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};

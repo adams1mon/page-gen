@@ -23,7 +23,7 @@ interface EditorPreferences {
 }
 
 const DEFAULT_POSITION: EditorPosition = {
-  x: window.innerWidth / 4,
+  x: 10,
   y: 100,
 };
 

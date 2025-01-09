@@ -16,12 +16,10 @@ import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 export default function EditorPage() {
   const { site, setSite } = useSiteStore();
   const {
-    showSidebar,
     selectedComponent,
     isFloating,
     selectComponent,
     closeEditor,
-    toggleSidebar,
     switchToFloating,
     switchToDocked,
   } = useComponentSelection();
@@ -32,6 +30,7 @@ export default function EditorPage() {
   const previewDebounceMillis = 100;
 
   const updateComponent = (updatedComponent: ComponentDescriptor) => {
+      
     const updateComponentInTree = (comp: ComponentDescriptor): ComponentDescriptor => {
       if (comp.id === updatedComponent.id) {
         return updatedComponent;
@@ -61,14 +60,14 @@ export default function EditorPage() {
     <div className="h-screen flex flex-col">
       <div className="sticky top-0 left-0 right-0 z-50 bg-background">
         <EditorToolbar 
-          onToggleSettings={toggleSidebar}
+          onToggleSettings={() => selectComponent(site)}
           activeView={activeView}
           onViewChange={setActiveView}
         />
       </div>
 
       <ResizablePanelGroup direction="horizontal" className="h-full">
-        <ResizablePanel defaultSize={80} minSize={30}>
+        <ResizablePanel id="preview" order={0} minSize={30}>
           <div className="h-full overflow-auto">
             {activeView === "editor" ? (
               <div className="h-full bg-accent/50">
@@ -86,14 +85,12 @@ export default function EditorPage() {
           </div>
         </ResizablePanel>
 
-        {showSidebar && !isFloating && 
+        {selectedComponent && !isFloating && 
           <>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={40} minSize={15}>
+            <ResizablePanel id="editor-sidebar" order={1} defaultSize={40} minSize={15}>
               <EditorSidebar
-                selectedComponent={selectedComponent}
-                site={site}
-                onSiteUpdate={setSite}
+                component={selectedComponent}
                 onComponentUpdate={updateComponent}
                 onPopOut={switchToFloating}
                 onClose={closeEditor}
@@ -106,7 +103,7 @@ export default function EditorPage() {
       {selectedComponent && isFloating && (
         <FloatingEditor
           component={selectedComponent}
-          onChange={updateComponent}
+          onComponentUpdate={updateComponent}
           onClose={closeEditor}
           onDock={switchToDocked}
         />

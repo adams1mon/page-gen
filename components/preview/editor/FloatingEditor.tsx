@@ -11,7 +11,7 @@ import { useEditorPreferences } from "@/lib/store/editor-preferences";
 interface FloatingEditorProps {
   component: ComponentDescriptor;
   onClose: () => void;
-  onChange: (component: ComponentDescriptor) => void;
+  onComponentUpdate: (component: ComponentDescriptor) => void;
   onDock: () => void;
 }
 
@@ -43,7 +43,7 @@ function constrainSize(width: number, height: number, x: number, y: number) {
 export function FloatingEditor({ 
   component, 
   onClose, 
-  onChange,
+  onComponentUpdate,
   onDock,
 }: FloatingEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -184,12 +184,12 @@ export function FloatingEditor({
         <PropInputs
           propsDescriptor={component.propsDescriptor}
           props={component.props}
-          onChange={newProps => onChange({ ...component, props: newProps })}
+          onChange={newProps => onComponentUpdate({ ...component, props: newProps })}
         />
         {component.acceptsChildren && (
           <ComponentInput
             components={component.childrenDescriptors}
-            onChange={components => onChange({
+            onChange={components => onComponentUpdate({
               ...component,
               childrenDescriptors: components
             })}

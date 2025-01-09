@@ -9,7 +9,7 @@ interface IframePreviewProps {
 
 export function IframePreview({ site, html }: IframePreviewProps) {
   return (
-    <div className="h-full bg-gray-50">
+    <div className="h-full bg-gray-50 m-4">
       <iframe
         srcDoc={html}
         className="w-full h-full border-0"

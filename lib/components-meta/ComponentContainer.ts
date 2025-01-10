@@ -182,4 +182,6 @@ ComponentContainer.save(Projects);
 ComponentContainer.save(Gallery);
 
 
+import Button from "../components/Button"
+ComponentContainer.save(Button);
 

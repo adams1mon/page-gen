@@ -13,17 +13,22 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
+import { ShadowTest } from "./ShadowTest";
+import { useEditorPreferences } from "@/lib/store/editor-preferences";
 
 export default function EditorPage() {
     const { site, setSite } = useSiteStore();
     const {
         selectedComponent,
-        isFloating,
         selectComponent,
         closeEditor,
+    } = useComponentSelection();
+
+    const {
+        isFloating,
         switchToFloating,
         switchToDocked,
-    } = useComponentSelection();
+    } = useEditorPreferences();
 
     const [activeView, setActiveView] = useState<"editor" | "preview">("editor");
     const [previewHtml, setPreviewHtml] = useState("");
@@ -53,16 +58,30 @@ export default function EditorPage() {
                 />
             </div>
 
+
             <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel id="preview" order={0} minSize={30}>
+
+
+
                     <div className="h-full overflow-auto p-4">
                         {activeView === "editor" ? (
-                            <PreviewEditor
-                                comp={site}
-                                onChange={setSite}
-                            />
+                            <>
+                            {
+                                <ShadowTest comp={site} onChange={setSite} />
+                            }
+                                <PreviewEditor
+                                    comp={site}
+                                    onChange={setSite}
+                                />
+                            </>
                         ) : (
-                            <IframePreview html={previewHtml} site={site} />
+                            <>
+                            {
+                                <ShadowTest comp={site} onChange={setSite} />
+                            }
+                                <IframePreview html={previewHtml} site={site} />
+                            </>
                         )}
                     </div>
                 </ResizablePanel>

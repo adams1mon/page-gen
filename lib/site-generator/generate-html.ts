@@ -1,12 +1,16 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
-import { ReactElement, createElement } from "react";
+import { DOMElement, ReactElement, createElement } from "react";
 import { SITE_TYPE } from "../components/Site";
 import { ComponentContainer } from "../components-meta/ComponentContainer";
 
 export function newSite(): ComponentDescriptor {
     return ComponentContainer.createInstance(SITE_TYPE);
 } 
+
+export function createDOMTree(comp: ComponentDescriptor): DOMElement {
+
+}
 
 export function createReactNode(comp: ComponentDescriptor): ReactElement {
 

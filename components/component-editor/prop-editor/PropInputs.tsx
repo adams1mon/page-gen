@@ -85,21 +85,19 @@ export function PropInputs(
         >
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger asChild>
-                    <CollapsibleTrigger asChild>
-                        <div className="flex items-center justify-between border-b cursor-pointer">
-                            <PropInputHeader
-                                displayName={propsDescriptor.displayName}
-                                description={propsDescriptor.desc}
-                                breadcrumbsPath={path}
-                            />
-                            <Button variant="ghost" size="icon">
-                                <ChevronDown className={cn(
-                                    "h-4 w-4 transition-transform duration-200",
-                                    isOpen ? "rotate-180" : ""
-                                )} />
-                            </Button>
-                        </div>
-                    </CollapsibleTrigger>
+                    <div className="flex items-center justify-between border-b cursor-pointer">
+                        <PropInputHeader
+                            displayName={propsDescriptor.displayName}
+                            description={propsDescriptor.desc}
+                            breadcrumbsPath={path}
+                        />
+                        <Button variant="ghost" size="icon">
+                            <ChevronDown className={cn(
+                                "h-4 w-4 transition-transform duration-200",
+                                isOpen ? "rotate-180" : ""
+                            )} />
+                        </Button>
+                    </div>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>

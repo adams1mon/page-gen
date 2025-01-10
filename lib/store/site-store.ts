@@ -4,7 +4,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ComponentDescriptor } from '../components-meta/ComponentDescriptor';
 import { newSite } from '../site-generator/generate-html';
-import { LogIn } from 'lucide-react';
 import { removeChildrenProps } from '../components-meta/ComponentContainer';
 
 interface SiteStore {

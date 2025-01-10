@@ -1,13 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
-import { useDrag, useDrop } from "react-dnd";
+import { ChevronDown, Trash2 } from "lucide-react";
 import { PropInputs } from "./prop-editor/PropInputs";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
-import { updateProps } from "@/lib/components-meta/ComponentContainer";
 import { ComponentInput } from "./component-input/ComponentInput";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { Copy } from "lucide-react";
@@ -15,81 +13,23 @@ import { useComponentClipboard } from '@/lib/store/component-clipboard-context';
 
 interface ComponentEditorProps {
     component: ComponentDescriptor;
-    index: number;
     onUpdate: (component: ComponentDescriptor) => void;
-    moveComponent: (dragIndex: number, hoverIndex: number) => void;
     onDelete: ((id: string) => void) | null;
-}
-
-interface DragItem {
-    index: number;
-    id: string;
-    type: string;
 }
 
 export function ComponentEditor({
     component,
-    index,
     onUpdate,
-    moveComponent,
     onDelete,
 }: ComponentEditorProps) {
-    const ref = useRef<HTMLDivElement>(null);
-    const dragHandleRef = useRef<HTMLDivElement>(null);
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const { copy } = useComponentClipboard();
 
-    const [, drop] = useDrop({
-        accept: "portfolio-component-sort",
-        collect(monitor) {
-            return {
-                handlerId: monitor.getHandlerId(),
-            };
-        },
-        hover(item: DragItem, monitor) {
-            if (!ref.current) {
-                return;
-            }
-
-            const dragIndex = item.index;
-            const hoverIndex = index;
-
-            if (dragIndex === hoverIndex) {
-                return;
-            }
-
-            const hoverBoundingRect = ref.current?.getBoundingClientRect();
-            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-            const clientOffset = monitor.getClientOffset();
-            const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
-
-            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-                return;
-            }
-            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-                return;
-            }
-
-            moveComponent(dragIndex, hoverIndex);
-            item.index = hoverIndex;
-        },
-    });
-
-    const [{ isDragging }, drag] = useDrag({
-        type: "portfolio-component-sort",
-        item: () => ({ id: component.id, index }),
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-        }),
-    });
-
-    const opacity = isDragging ? 0.5 : 1;
-
-    drag(dragHandleRef);
-    drop(ref);
-
     const updateComponentProps = (newProps: any) => {
-        onUpdate(updateProps(component, newProps))
+        onUpdate({
+            ...component,
+            props: newProps,
+        });
     };
 
     const updateChildrenDescriptors = (descriptors: ComponentDescriptor[]) => {
@@ -97,12 +37,11 @@ export function ComponentEditor({
     };
 
     return (
-        <div ref={ref} style={{ opacity }} className="group relative bg-background border rounded-lg">
+        <div className="group relative bg-background border rounded-lg">
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger asChild>
                     <div className="flex items-center justify-between py-2 px-3 border-b cursor-pointer">
-                        <div ref={dragHandleRef} className="cursor-move flex items-center gap-2 text-muted-foreground">
-                            <GripVertical className="w-4 h-4" />
+                        <div className="cursor-move flex items-center gap-2 text-muted-foreground">
                             <span className="font-medium capitalize text-sm">{component.type}</span>
                         </div>
                         <div className="flex items-center gap-1">

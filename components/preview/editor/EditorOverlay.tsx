@@ -17,12 +17,12 @@ interface EditorOverlayProps {
     onRemove?: (component: ComponentDescriptor) => void;
 }
 
-export function EditorOverlay({ 
-    isHovered, 
-    component, 
-    controlsEnabled, 
-    onEdit, 
-    onInsert, 
+export function EditorOverlay({
+    isHovered,
+    component,
+    controlsEnabled,
+    onEdit,
+    onInsert,
     onRemove,
 }: EditorOverlayProps) {
     const { copy, paste, hasCopiedComponent } = useComponentClipboard();

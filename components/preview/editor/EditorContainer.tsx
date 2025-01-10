@@ -1,62 +1,53 @@
 "use client";
 
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { CompFunc } from "./PreviewEditor";
 import { EditorOverlay } from "./EditorOverlay";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
 import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
-import { insertChild } from "@/lib/components-meta/ComponentContainer";
+import { insertChild, removeChild } from "@/lib/components-meta/ComponentContainer";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useSiteStore } from "@/lib/store/site-store";
 import { findParentComponent, findComponentIndex } from "@/lib/components-meta/ComponentContainer";
+import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
+import { useComponentSelection } from "@/app/editor/hooks/useComponentSelection";
 
 interface EditorContainerProps extends React.PropsWithChildren {
     component: ComponentDescriptor;
-    onChange: CompFunc;
-    onRemove?: CompFunc;
-    onSelect?: (component: ComponentDescriptor) => void;
 }
 
 export function EditorContainer({ 
     component, 
-    onChange, 
-    onRemove, 
-    onSelect,
     children 
 }: EditorContainerProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [overlayEnabled, setOverlayEnabled] = useState(false);
     const { site, setSite } = useSiteStore();
 
+    const { selectComponent } = useComponentSelection();
+
+    const handleRemove  = (comp: ComponentDescriptor) => {
+        const parent = findParentComponent(site, comp);
+        if (parent) {
+            const updatedParent = removeChild(parent, comp);
+            setSite(updateComponentInTree(site, updatedParent));
+        }
+    };
+
     const handleChildInsert = (newComponent: ComponentDescriptor, position?: 'before' | 'after') => {
         if (position) {
-            const parent = findParentComponent(site, component.id);
+            const parent = findParentComponent(site, component);
             if (parent) {
-                const index = findComponentIndex(parent, component.id);
+                const index = findComponentIndex(parent, component);
                 const insertIndex = position === 'before' ? index : index + 1;
                 const updatedParent = insertChild(parent, newComponent, insertIndex);
-                
-                // Update the site tree with the modified parent
-                const updateComponentInTree = (comp: ComponentDescriptor): ComponentDescriptor => {
-                    if (comp.id === parent.id) {
-                        return updatedParent;
-                    }
-                    if (comp.acceptsChildren) {
-                        return {
-                            ...comp,
-                            childrenDescriptors: comp.childrenDescriptors.map(updateComponentInTree)
-                        };
-                    }
-                    return comp;
-                };
-                
-                setSite(updateComponentInTree(site));
+                setSite(updateComponentInTree(site, updatedParent));
             }
         } else {
             // Add inside the component as before
-            onChange(insertChild(component, newComponent));
+            const updatedComp = insertChild(component, newComponent);
+            setSite(updateComponentInTree(site, updatedComp));
         }
     };
 
@@ -67,9 +58,9 @@ export function EditorContainer({
             component={component}
             overlayEnabled={overlayEnabled}
             onOverlayToggle={() => setOverlayEnabled(prev => !prev)}
-            onEdit={() => onSelect?.(component)}
+            onEdit={() => selectComponent(component)}
             onInsert={handleChildInsert}
-            onRemove={onRemove}
+            onRemove={handleRemove}
         >
             <div
                 className="relative"
@@ -87,9 +78,9 @@ export function EditorContainer({
                     controlsEnabled={overlayEnabled}
                     isHovered={isHovered}
                     component={component}
-                    onEdit={() => onSelect?.(component)}
+                    onEdit={() => selectComponent(component)}
                     onInsert={handleChildInsert}
-                    onRemove={onRemove}
+                    onRemove={handleRemove}
                 />
 
                 {children}

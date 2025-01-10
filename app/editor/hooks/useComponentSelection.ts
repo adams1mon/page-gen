@@ -1,33 +1,31 @@
 "use client";
 
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { useEditorPreferences } from "@/lib/store/editor-preferences";
-import { useState } from "react";
+import { ComponentDescriptor } from '@/lib/components-meta/ComponentDescriptor';
+import { useEditorPreferences } from '@/lib/store/editor-preferences';
+import { create } from 'zustand';
 
-export function useComponentSelection() {
-  const [selectedComponent, setSelectedComponent] = useState<ComponentDescriptor | null>(null);
-  const { isFloating, setIsFloating } = useEditorPreferences();
-
-  const selectComponent = setSelectedComponent;
-
-  const closeEditor = () => {
-    setSelectedComponent(null);
-  };
-
-  const switchToFloating = () => {
-    setIsFloating(true);
-  };
-
-  const switchToDocked = () => {
-    setIsFloating(false);
-  };
-
-  return {
-    selectedComponent,
-    isFloating,
-    selectComponent,
-    closeEditor,
-    switchToFloating,
-    switchToDocked,
-  };
+interface ComponentSelection {
+    selectedComponent: ComponentDescriptor | null;
+    isFloating: boolean;
+    selectComponent: (comp: ComponentDescriptor) => void;
+    closeEditor: () => void;
+    switchToFloating: () => void;
+    switchToDocked: () => void;
 }
+
+export const useComponentSelection = create<ComponentSelection>(
+    (set) => {
+
+        const { isFloating, setIsFloating } = useEditorPreferences.getState();
+
+        return {
+            selectedComponent: null,
+            isFloating: isFloating,
+            selectComponent: (comp) => set(() => ({selectedComponent: comp})),
+            closeEditor: () => set(() => ({selectedComponent: null})),
+            switchToFloating: () => setIsFloating(true),
+            switchToDocked: () => setIsFloating(false),
+        }
+    }
+);
+

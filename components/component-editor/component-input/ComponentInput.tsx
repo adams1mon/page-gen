@@ -1,6 +1,14 @@
+"use client";
+
 import { ComponentDivider } from "./ComponentDivider";
 import { ComponentEditor } from "../ComponentEditor";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { CollapsibleContent } from "@radix-ui/react-collapsible";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 
 interface ComponentInputProps {
@@ -18,7 +26,8 @@ export function ComponentInput(
         onChange,
     }: ComponentInputProps
 ) {
-  
+    const [isOpen, setIsOpen] = useState(false);
+
     const addComponent = (component: ComponentDescriptor, index?: number) => {
         const newComponents = [...components];
         if (typeof index === 'number') {
@@ -34,51 +43,58 @@ export function ComponentInput(
         onChange(newComponents);
     };
 
-    const moveComponent = (dragIndex: number, hoverIndex: number) => {
-        const newComponents = [...components];
-        const draggedComponent = newComponents[dragIndex];
-        newComponents.splice(dragIndex, 1);
-        newComponents.splice(hoverIndex, 0, draggedComponent);
-        onChange(newComponents);
-    };
-
     const deleteComponent = (id: string) => {
         const newComponents = components.filter(component => component.id !== id)
         onChange(newComponents);
     };
 
-
     return (
-        <div className="z-50">
-            <label className="text-sm font-medium">Children</label>
-            <p className="text-sm font-medium">Nested children to add to the component</p>
-            <div className="space-y-4">
-                {components.length === 0 ? (
-                    <ComponentDivider onInsert={(comp) => addComponent(comp, 0)} />
-                ) : (
-                    components.map((component, index) => (
-                        <div key={component.id}>
-                            <ComponentDivider
-                                onInsert={(comp) => addComponent(comp, index)}
-                            />
-
-                            {/* Render the editors of the child components recursively */}
-                            <ComponentEditor
-                                index={index}
-                                component={component}
-                                onUpdate={handleComponentUpdate}
-                                moveComponent={moveComponent}
-                                onDelete={deleteComponent}
-                            />
-                            {index === components.length - 1 && (
-                                <ComponentDivider
-                                    onInsert={(comp) => addComponent(comp, index + 1)}
-                                />
-                            )}
+        <div className="mt-2">
+            <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+                <CollapsibleTrigger asChild>
+                    <div className="flex items-center justify-between border-b cursor-pointer pb-4">
+                        <div>
+                            <label className="text-sm font-medium py-1">Children</label>
+                            <p className="text-sm text-muted-foreground my-0">Add or view the nested components of this element</p>
                         </div>
-                    ))
-                )}
-            </div>
-        </div>
+
+                        <Button variant="ghost" size="icon">
+                            <ChevronDown className={cn(
+                                "h-4 w-4 transition-transform duration-200",
+                                isOpen ? "rotate-180" : ""
+                            )} />
+                        </Button>
+                    </div>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                    <div className="space-y-4">
+                        {components.length === 0 ? (
+                            <ComponentDivider onInsert={(comp) => addComponent(comp, 0)} />
+                        ) : (
+                            components.map((component, index) => (
+                                <div key={component.id}>
+                                    <ComponentDivider
+                                        onInsert={(comp) => addComponent(comp, index)}
+                                    />
+
+                                    {/* Render the editors of the child components recursively */}
+                                    <ComponentEditor
+                                        component={component}
+                                        onUpdate={handleComponentUpdate}
+                                        onDelete={deleteComponent}
+                                    />
+                                    {index === components.length - 1 && (
+                                        <ComponentDivider
+                                            onInsert={(comp) => addComponent(comp, index + 1)}
+                                        />
+                                    )}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </CollapsibleContent>
+            </Collapsible >
+        </div >
     );
 }

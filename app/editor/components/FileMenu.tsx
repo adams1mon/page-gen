@@ -150,11 +150,11 @@ export function FileMenu() {
           </DropdownMenuSub>
 
           <DropdownMenuItem onClick={handleImport}>
-            <Upload className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4 mr-2" />
             Import
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
+            <Upload className="h-4 w-4 mr-2" />
             Export
           </DropdownMenuItem>
 

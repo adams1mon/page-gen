@@ -16,59 +16,62 @@ import Gallery from "../components/Gallery";
 import Site from "../components/Site";
 
 import { ComponentDescriptor } from "./ComponentDescriptor";
+import { CompilerNameValues } from "next/dist/shared/lib/constants";
 
-export function updateProps(comp: ComponentDescriptor, props: any): ComponentDescriptor {
-    return {
-        ...comp,
-        props,
+
+// utility methods, they mutate the passed in component
+
+export function insertChild(comp: ComponentDescriptor, child: ComponentDescriptor, index?: number): ComponentDescriptor {
+    const newDescriptors = [...comp.childrenDescriptors];
+    if (index) {
+        newDescriptors.splice(index, 0, child);
+    } else {
+        newDescriptors.push(child);
     }
-}
-
-export function updateChildren(comp: ComponentDescriptor, children: ComponentDescriptor[]): ComponentDescriptor {
-    return {
-        ...comp,
-        childrenDescriptors: children,
-    };
+    comp.childrenDescriptors = newDescriptors;
+    return comp;
 };
 
 export function removeChild(comp: ComponentDescriptor, child: ComponentDescriptor): ComponentDescriptor {
-    return updateChildren(
-        comp,
-        comp.childrenDescriptors.filter(c => c.id !== child.id),
-    );
+    comp.childrenDescriptors = comp.childrenDescriptors.filter(c => c.id !== child.id);
+    return comp;
 };
 
 export function updateChild(comp: ComponentDescriptor, child: ComponentDescriptor): ComponentDescriptor {
     const newDescriptors = comp.childrenDescriptors.map(old =>
         old.id === child.id ? child : old
     );
-    return updateChildren(comp, newDescriptors);
+    comp.childrenDescriptors = newDescriptors;
+    return comp;
 };
 
-export function insertChild(comp: ComponentDescriptor, child: ComponentDescriptor, index?: number): ComponentDescriptor {
-    const newDescriptors = [...comp.childrenDescriptors];
-    if (typeof index === 'number') {
-        newDescriptors.splice(index, 0, child);
-    } else {
-        newDescriptors.push(child);
+export function updateComponentInTree(comp: ComponentDescriptor, toUpdate: ComponentDescriptor): ComponentDescriptor {
+    if (comp.id == toUpdate.id) {
+        return toUpdate;
     }
-    return updateChildren(comp, newDescriptors);
-};
+    if (comp.acceptsChildren) {
+        return {
+            ...comp,
+            childrenDescriptors: comp.childrenDescriptors.map((c) => updateComponentInTree(c, toUpdate)),
+        };
+    }
+    return comp;
+}
 
-export function findParentComponent(root: ComponentDescriptor, childId: string): ComponentDescriptor | null {
+export function findParentComponent(root: ComponentDescriptor, comp: ComponentDescriptor): ComponentDescriptor | null {
     if (!root.acceptsChildren) return null;
-    
+
     for (const child of root.childrenDescriptors) {
-        if (child.id === childId) return root;
-        const found = findParentComponent(child, childId);
+        if (child.id === comp.id) return root;
+        const found = findParentComponent(child, comp);
         if (found) return found;
     }
-    
+
     return null;
 }
 
-export function findComponentIndex(parent: ComponentDescriptor, childId: string): number {
-    return parent.childrenDescriptors.findIndex(child => child.id === childId);
+export function findComponentIndex(parent: ComponentDescriptor, comp: ComponentDescriptor): number {
+    return parent.childrenDescriptors.findIndex(child => child.id === comp.id);
 }
 
 export function removeChildrenProps(comp: ComponentDescriptor): ComponentDescriptor {
@@ -177,3 +180,6 @@ ComponentContainer.save(Hero);
 ComponentContainer.save(Markdown);
 ComponentContainer.save(Projects);
 ComponentContainer.save(Gallery);
+
+
+

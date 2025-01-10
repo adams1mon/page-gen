@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileMenu } from "./FileMenu";
+import { OpenHtmlButton } from "@/components/OpenHtmlButton";
+import { GenerateSiteButton } from "@/components/GenerateSiteButton";
 
 interface EditorToolbarProps {
   onToggleSettings: () => void;
@@ -25,6 +27,8 @@ export function EditorToolbar({ onToggleSettings, activeView, onViewChange }: Ed
             <Settings className="h-4 w-4" />
             Site Settings
           </Button>
+          <OpenHtmlButton />
+          <GenerateSiteButton />
         </div>
 
         <Tabs value={activeView} onValueChange={onViewChange as (v: string) => void} className="border-none">

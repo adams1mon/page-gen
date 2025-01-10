@@ -1,22 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { hasChildren } from "@/lib/site-generator/generate-html";
+import { generateHtml } from "@/lib/site-generator/generate-html";
+import { useSiteStore } from "@/lib/store/site-store";
 import { Download } from "lucide-react";
 import { useState } from "react";
 
-interface GenerateSiteButtonProps {
-    site: ComponentDescriptor,
-    html: string;
-}
-
-export function GenerateSiteButton({ site, html }: GenerateSiteButtonProps) {
+export function GenerateSiteButton() {
     const [isGenerating, setIsGenerating] = useState(false);
 
+    const { site } = useSiteStore();
+
     const generateSite = async () => {
+
         try {
             setIsGenerating(true);
+
+            const html = await generateHtml(site);
 
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });
@@ -26,9 +26,9 @@ export function GenerateSiteButton({ site, html }: GenerateSiteButtonProps) {
             const a = document.createElement('a');
             a.href = url;
             a.download = 'portfolio.html';
-            document.body.appendChild(a);
+            //document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a);
+            //document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error generating site:', error);
@@ -41,7 +41,7 @@ export function GenerateSiteButton({ site, html }: GenerateSiteButtonProps) {
         <div className="flex items-center gap-2">
             <Button
                 onClick={generateSite}
-                disabled={isGenerating || !hasChildren(site) }
+                disabled={isGenerating}
                 className="gap-2"
             >
                 <Download className="w-4 h-4" />

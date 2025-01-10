@@ -1,4 +1,3 @@
-// lib/components/Gallery.tsx
 import { Images } from "lucide-react";
 import { ComponentExport } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";

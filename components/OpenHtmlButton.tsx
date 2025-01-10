@@ -1,12 +1,18 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { generateHtml } from "@/lib/site-generator/generate-html";
+import { useSiteStore } from "@/lib/store/site-store";
 import { ExternalLink } from "lucide-react";
 
-interface OpenHtmlButtonProps {
-  html: string,
-}
+export function OpenHtmlButton() {
 
-export function OpenHtmlButton({ html }: OpenHtmlButtonProps) {
+  const { site } = useSiteStore();  
+
   const handleOpenInNewTab = async () => {
+
+    const html = await generateHtml(site);
+
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DOMElement, ReactElement, createElement } from "react";
-import { SITE_TYPE, createHtmlSkeleton, upsertHtmlNode, setBodyHtml, tailwindTag } from "../components/Site";
+import { SITE_TYPE, createHtmlSkeleton, setBodyHtml } from "../components/Site";
 import { ComponentContainer } from "../components-meta/ComponentContainer";
 
 export function newSite(): ComponentDescriptor {
@@ -24,9 +24,6 @@ export function createHtml(comp: ComponentDescriptor): HTMLElement {
     }
 
     setBodyHtml(html, htmlStr);
-
-    html.querySelector("head")?.appendChild(tailwindTag());
-
     return html;
 }
 

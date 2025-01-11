@@ -5,11 +5,8 @@ import { titleDesc, longTextDesc, textDesc } from "./common";
 
 // Import the Tailwind generated styles
 // @ts-ignore
-//import css from '!!raw-loader!../generated/styles.css';
-//
-import globals_css from '!!raw-loader!../styles/globals.css';
-import tailwind_js from '!!raw-loader!../styles/tailwind_3.4.16.js';
-import tailwind_config from '!!raw-loader!../styles/tailwind.config.js';
+import css from '!!raw-loader!../generated/styles.css';
+
 
 export const SITE_TYPE = "Site";
 
@@ -37,15 +34,14 @@ export function createHtmlSkeleton(): HTMLElement {
     head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
     head.appendChild(tag("meta", { name: "description", content: "desc" }));
 
-    //<script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
-    //const tailwind_tag = tag("script", {"src": "https://cdn.tailwindcss.com"});
-    //tailwind_tag.innerText = tailwind_js;
-    //head.appendChild(tailwindTag());
-
     const styles = tag("style");
-    styles.textContent = globals_css;
+    styles.textContent = css;
 
     head.appendChild(styles);
+
+    const script = tag("script");
+    script.textContent = "console.log('tailwind js works')";
+    head.appendChild(script);
 
     html.appendChild(head);
     html.appendChild(body);
@@ -53,12 +49,6 @@ export function createHtmlSkeleton(): HTMLElement {
     console.log(html.outerHTML);
 
     return html;
-}
-
-export function tailwindTag() {
-    const tailwind_tag = tag("script");
-    tailwind_tag.textContent = tailwind_js;
-    return tailwind_tag;
 }
 
 export function setBodyHtml(root: HTMLElement, htmlStr: string) {
@@ -106,7 +96,7 @@ const defaultProps: SiteProps = {
     // NOTE: The site uses the same Tailwind generated CSS the main page uses.
     // The styles are overwritten by the generated Tailwind CSS file, 
     // see how a new site is created in generate-html.
-    //styles: css,
+    styles: css,
     children: [],
 };
 
@@ -130,7 +120,7 @@ const propsDescriptor: ObjectDesc = {
             ...longTextDesc,
             displayName: "Custom CSS styles",
             desc: "Custom CSS styles to include in a <style> in the website",
-            //default: css,
+            default: css,
             default: "",
         },
     }

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "predev": "./curl_file.sh https://cdn.tailwindcss.com/3.4.16 ./lib/styles/tailwind_3.4.16.js",
+    "predev": "pnpm exec tailwind -c ./lib/styles/tailwind.config.ts -i ./lib/styles/globals.css -o ./lib/generated/styles.css",
     "dev": "pnpm exec next dev"
   },
   "dependencies": {

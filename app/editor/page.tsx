@@ -8,15 +8,13 @@ import { EditorSidebar } from "./components/EditorSidebar";
 import { PreviewEditor } from "@/components/preview/editor/PreviewEditor";
 import { IframePreview } from "@/components/preview/IframePreview";
 import { useEffect, useState } from "react";
-import { createHtml, createReactNode, generateHtml } from "@/lib/site-generator/generate-html";
+import { createHtml } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
 import { ShadowTest } from "./ShadowTest";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
-import { createHtmlSkeleton } from "@/lib/components/Site";
-import { renderToStaticMarkup } from "react-dom/server";
 
 export default function EditorPage() {
     const { site, setSite } = useSiteStore();
@@ -44,16 +42,17 @@ export default function EditorPage() {
     useEffect(() => {
         if (activeView != "preview") return;
 
-        //debounce(async () => {
-        //    const html = await generateHtml(site);
-        //    setPreviewHtml(html);
-        //}, previewDebounceMillis);
+        debounce(async () => {
+            //const html = await generateHtml(site);
+            //setPreviewHtml(html);
 
-        const html = createHtml(site);
-        setPreviewHtml(html.outerHTML);
+            const html = createHtml(site);
+            setPreviewHtml(html.outerHTML);
 
-        console.log("preview HTML");
-        console.log(html.outerHTML);
+            console.log("preview HTML");
+            console.log(html.outerHTML);
+
+        }, previewDebounceMillis);
 
     }, [site, activeView]);
 

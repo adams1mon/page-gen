@@ -1,6 +1,6 @@
 import { ComponentContainer, insertChild } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { SITE_TYPE, createHtmlSkeleton, upsertHtmlNode, setBodyHtml } from "@/lib/components/Site";
+import { SITE_TYPE, createHtmlSkeleton, upsertHtmlNode, setBodyHtml, processTailwindCSS } from "@/lib/components/Site";
 import { ReactNode, createElement, useEffect, useRef, useState } from "react";
 import { EditorContainer } from "../../components/preview/editor/EditorContainer";
 import { createPortal } from "react-dom";
@@ -51,11 +51,6 @@ export function ShadowTest({ comp, onChange }: CompProps) {
             if (!ref.current.shadowRoot) {
                 const shadow = ref.current.attachShadow({ mode: "open" });
 
-                const span = document.createElement("span");
-                span.textContent = "I'm in the shadow DOM";
-                span.classList.add("bg-red-500");
-                shadow.appendChild(span);
-
                 console.log("attached shadow");
 
                 if (comp.type == SITE_TYPE) {
@@ -64,10 +59,6 @@ export function ShadowTest({ comp, onChange }: CompProps) {
                     shadow.adoptedStyleSheets = [sheet];
                     console.log("added styles");
                 }
-
-                //const root = createRoot(ref.current.shadowRoot);
-                //setRoot(root);
-                //
             }
 
             const html = createHtml(comp);
@@ -99,7 +90,6 @@ export function ShadowTest({ comp, onChange }: CompProps) {
     return (
         <div className="m-4 border-2 border-red-500" ref={ref}>
             {
-
                 //ref.current && ref.current.shadowRoot &&
                     
                 //createPortal(

@@ -13,10 +13,11 @@ import Projects from "../components/Projects";
 import Row from "../components/Row";
 import Text from "../components/Text";
 import Gallery from "../components/Gallery";
-import Site from "../components/Site";
+import Site, { createHtmlNode } from "../components/Site";
 
 import { ComponentDescriptor } from "./ComponentDescriptor";
-import { CompilerNameValues } from "next/dist/shared/lib/constants";
+import { createElement } from "react";
+import { renderToHtml } from "../site-generator/generate-html";
 
 
 // utility methods, they mutate the passed in component
@@ -77,12 +78,15 @@ export function findComponentIndex(parent: ComponentDescriptor, comp: ComponentD
 export function removeChildrenProps(comp: ComponentDescriptor): ComponentDescriptor {
 
     if (comp.acceptsChildren) {
-        const compWithoutChildrenProps: ComponentDescriptor = {
+        const newComp: ComponentDescriptor = {
             ...comp,
             childrenDescriptors: comp.childrenDescriptors.map(removeChildrenProps),
         };
-        delete compWithoutChildrenProps.props.children;
-        return compWithoutChildrenProps;
+        delete newComp.props.children;
+        delete newComp.domNode;
+        delete newComp.addChild;
+        delete newComp.removeChild;
+        return newComp;
     }
 
     return {
@@ -90,21 +94,23 @@ export function removeChildrenProps(comp: ComponentDescriptor): ComponentDescrip
     };
 }
 
+export type ToHtmlFunc = (props?: object) => HTMLElement;
+
 // holds component descriptors and creates new component descriptors based on the templates
 export class ComponentContainer {
     static components: { [type: string]: ComponentDescriptor } = {};
-    static jsxFuncs: { [type: string]: React.FunctionComponent<any> } = {};
+    static htmlFuncs: { [type: string]: ToHtmlFunc } = {};
 
     static save(
-        config: ComponentExport,
+        config: ComponentExport
     ) {
         this.components[config.type] = config.descriptor;
-        this.jsxFuncs[config.type] = config.node;
+        this.htmlFuncs[config.type] = config.createHtmlNode;
     }
 
-    static getReactElement(type: string): React.FunctionComponent<any> {
-        return this.jsxFuncs[type];
-    }
+    //static getReactElement(type: string): React.FunctionComponent<any> {
+    //    return this.jsxFuncs[type];
+    //}
 
     static createId(type: string): string {
         return `${type}-${Date.now()}`;
@@ -117,10 +123,38 @@ export class ComponentContainer {
             throw new Error(`Component of type ${type} does not exist`);
         }
 
+        //const div = document.createElement("div");
+        //div.innerHTML = renderToHtml(this.components[type]);
+        //
+        //DOM_NODES[type] = div;
+        //
         return {
             ...desc,
             id: this.createId(type),
+            domNode: this.htmlFuncs[type](desc.props),
         }
+    }
+
+    static addChild(parent: ComponentDescriptor, child: ComponentDescriptor) {
+        if (!parent.domNode) throw new Error("parent has no DOM node");
+        if (!child.domNode) throw new Error("child has no DOM node");
+
+        const node = parent.domNode.querySelector(`#${child.id}`);
+        if (node) {
+            parent.domNode.replaceChild(child.domNode, parent.domNode);
+        } else {
+            parent.domNode.appendChild(child.domNode);
+        }
+        console.log("DOM: added child", child, " to parent", parent);
+
+        const i = parent.childrenDescriptors.findIndex(c => c.id == child.id);
+        if (i) {
+            parent.childrenDescriptors[i] = child;
+        } else {
+            parent.childrenDescriptors.push(child);
+        }
+
+        console.log("descriptor: added child", child, " to parent", parent);
     }
 
     static clone(component: ComponentDescriptor): ComponentDescriptor {
@@ -152,36 +186,40 @@ export class ComponentContainer {
 }
 
 export interface ComponentExport {
-    type: string,
-    descriptor: ComponentDescriptor,
-    node: React.FunctionComponent<any>,
+    type: string;
+    descriptor: ComponentDescriptor;
+    createHtmlNode: ToHtmlFunc;
 };
+
+//export const DOM_NODES: {[key: string]: HTMLElement } = {};
 
 // register the components
 ComponentContainer.save(Site);
 
 // container components 
-ComponentContainer.save(Container);
-ComponentContainer.save(Column);
-ComponentContainer.save(Row);
-ComponentContainer.save(List);
+//ComponentContainer.save(Container);
+//ComponentContainer.save(Column);
+//ComponentContainer.save(Row);
+//ComponentContainer.save(List);
 
 // basic components
-ComponentContainer.save(Text);
+//ComponentContainer.save(Text);
 ComponentContainer.save(Heading);
-ComponentContainer.save(Link);
-ComponentContainer.save(Image);
+//ComponentContainer.save(Link);
+//ComponentContainer.save(Image);
 
 // composite components
-ComponentContainer.save(About);
-ComponentContainer.save(Footer);
-ComponentContainer.save(Header);
-ComponentContainer.save(Hero);
-ComponentContainer.save(Markdown);
-ComponentContainer.save(Projects);
-ComponentContainer.save(Gallery);
+//ComponentContainer.save(About);
+//ComponentContainer.save(Footer);
+//ComponentContainer.save(Header);
+//ComponentContainer.save(Hero);
+//ComponentContainer.save(Markdown);
+//ComponentContainer.save(Projects);
+//ComponentContainer.save(Gallery);
 
 
-import Button from "../components/Button"
-ComponentContainer.save(Button);
+//import Button from "../components/Button"
+//ComponentContainer.save(Button);
+
+//console.log(DOM_NODES);
 

@@ -46,7 +46,28 @@ export function createHtmlSkeleton(): HTMLElement {
     html.appendChild(head);
     html.appendChild(body);
 
-    console.log(html.outerHTML);
+    return html;
+}
+
+export function createHtmlNode(): HTMLElement {
+    const html = document.createElement("html");
+    const head = document.createElement("head");
+    const body = document.createElement("body");
+
+    head.appendChild(tag("meta", { charSet: "UTF-8" }));
+    head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
+    head.appendChild(tag("meta", { name: "description", content: "desc" }));
+
+    const styles = tag("style");
+    styles.textContent = css;
+    head.appendChild(styles);
+
+    const script = tag("script");
+    script.textContent = "console.log('script tag works')";
+    head.appendChild(script);
+
+    html.appendChild(head);
+    html.appendChild(body);
 
     return html;
 }
@@ -58,36 +79,36 @@ export function setBodyHtml(root: HTMLElement, htmlStr: string) {
     }
 }
 
-export function upsertHtmlNode(root: HTMLElement, html: HTMLElement) {
-    const prevHtml = root.querySelector("html");
-    if (prevHtml) {
-        root.replaceChild(html, prevHtml);
+export function upsertNode(query: string, root: HTMLElement | ShadowRoot, newNode: HTMLElement) {
+    const prev = root.querySelector(query);
+    if (prev) {
+        root.replaceChild(newNode, prev);
     } else {
-        root.appendChild(html);
+        root.appendChild(newNode);
     }
 }
 
-function Node(props: SiteProps) {
-    return (
-        <html lang="en">
-            <head>
-                <meta charSet="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <meta name="description" content={props.description} />
-                {props.styles && <style dangerouslySetInnerHTML={{
-                    __html: props.styles
-                }}
-                ></style>}
-                <title>{props.title}</title>
-            </head>
-            <body>
-                {
-                    props.children
-                }
-            </body>
-        </html>
-    );
-}
+//function Node(props: SiteProps) {
+//    return (
+//        <html lang="en">
+//            <head>
+//                <meta charSet="UTF-8" />
+//                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+//                <meta name="description" content={props.description} />
+//                {props.styles && <style dangerouslySetInnerHTML={{
+//                    __html: props.styles
+//                }}
+//                ></style>}
+//                <title>{props.title}</title>
+//            </head>
+//            <body>
+//                {
+//                    props.children
+//                }
+//            </body>
+//        </html>
+//    );
+//}
 
 const defaultProps: SiteProps = {
     title: 'My Portfolio',
@@ -121,7 +142,6 @@ const propsDescriptor: ObjectDesc = {
             displayName: "Custom CSS styles",
             desc: "Custom CSS styles to include in a <style> in the website",
             default: css,
-            default: "",
         },
     }
 };
@@ -135,10 +155,17 @@ const desc: ComponentDescriptor = {
     icon: null,
     acceptsChildren: true,
     childrenDescriptors: [],
+    //addChild: (node: HTMLElement, c: HTMLElement) => {
+    //
+    //    //const n = node.querySelector(`#${c.id}`);
+    //    node.appendChild(c);
+    //
+    //    console.log("added to site", c, node);
+    //},
 }
 
 export default {
     type: SITE_TYPE,
     descriptor: desc,
-    node: Node,
+    createHtmlNode,
 } as ComponentExport;

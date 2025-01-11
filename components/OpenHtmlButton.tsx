@@ -1,35 +1,37 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { generateHtml } from "@/lib/site-generator/generate-html";
+import { createHtml } from "@/lib/site-generator/generate-html";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ExternalLink } from "lucide-react";
 
 export function OpenHtmlButton() {
 
-  const { site } = useSiteStore();  
+    const { site } = useSiteStore();
 
-  const handleOpenInNewTab = async () => {
+    const handleOpenInNewTab = async () => {
 
-    const html = await generateHtml(site);
+        //const html = await generateHtml(site);
 
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+        const html = createHtml(site).outerHTML;
 
-    // Clean up the URL object after the window is opened
-    URL.revokeObjectURL(url);
-  };
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
 
-  return (
-    <Button 
-      variant="outline" 
-      size="sm"
-      onClick={handleOpenInNewTab}
-      className="gap-2"
-    >
-      <ExternalLink className="h-4 w-4" />
-      Open in New Tab
-    </Button>
-  );
+        // Clean up the URL object after the window is opened
+        URL.revokeObjectURL(url);
+    };
+
+    return (
+        <Button
+            variant="outline"
+            size="sm"
+            onClick={handleOpenInNewTab}
+            className="gap-2"
+        >
+            <ExternalLink className="h-4 w-4" />
+            Open in New Tab
+        </Button>
+    );
 }

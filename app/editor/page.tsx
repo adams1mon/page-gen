@@ -80,7 +80,8 @@ export default function EditorPage() {
                                 }
                                 <PreviewEditor
                                     comp={site}
-                                    onChange={setSite}
+                                    //onChange={setSite}
+                                    onChange={() => console.log("add")}
                                 />
                             </>
                         ) : (

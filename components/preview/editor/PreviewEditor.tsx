@@ -22,10 +22,12 @@ function wrapTreeWithEditor(
       key={comp.id} 
       component={comp} 
     >
-      {createElement(
-        ComponentContainer.getReactElement(comp.type),
-        { ...comp.props, key: comp.id },
-      )}
+      {
+      //    createElement(
+      //  ComponentContainer.getReactElement(comp.type),
+      //  { ...comp.props, key: comp.id },
+      //)
+      }
     </EditorContainer>
   );
 }
@@ -46,7 +48,19 @@ export function PreviewEditor({ comp, onChange }: CompProps) {
       {comp.acceptsChildren && (
         <div className="p-4">
           <ComponentDivider
-            onInsert={c => onChange(insertChild(comp, c))}
+            onInsert={c => { 
+
+                console.log("inserting", c, "into", comp);
+                
+                if (!comp.addChild) {
+                    console.log("no addchild");
+                }
+
+                ComponentContainer.addChild(comp, c);
+                //
+                //comp.addChild?.(c);
+            }}
+            //onInsert={c => onChange(insertChild(comp, c))}
           />
         </div>
       )}

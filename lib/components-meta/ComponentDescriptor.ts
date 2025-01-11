@@ -7,6 +7,10 @@ export interface ComponentDescriptor {
     name: string;
     icon: ReactNode;
 
+    domNode?: HTMLElement;
+    addChild?: (comp: ComponentDescriptor) => void;
+    removeChild?: (comp: ComponentDescriptor) => void;
+
     // if true, childrenDescriptors is populated,
     // and 'props' will have 'children' populated with the rendered components
     // when the component is rendered to HTML

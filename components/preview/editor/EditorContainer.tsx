@@ -36,18 +36,23 @@ export function EditorContainer({
     };
 
     const handleChildInsert = (newComponent: ComponentDescriptor, position?: 'before' | 'after') => {
+
         if (position) {
             const parent = findParentComponent(site, component);
             if (parent) {
-                const index = findComponentIndex(parent, component);
-                const insertIndex = position === 'before' ? index : index + 1;
-                const updatedParent = insertChild(parent, newComponent, insertIndex);
-                setSite(updateComponentInTree(site, updatedParent));
+                parent.addChild?.(newComponent) || console.log("no function");
+                
+                //const index = findComponentIndex(parent, component);
+                //const insertIndex = position === 'before' ? index : index + 1;
+                //const updatedParent = insertChild(parent, newComponent, insertIndex);
+                //setSite(updateComponentInTree(site, updatedParent));
             }
         } else {
+            component.addChild?.(newComponent) || console.log("no function");
+
             // Add inside the component as before
-            const updatedComp = insertChild(component, newComponent);
-            setSite(updateComponentInTree(site, updatedComp));
+            //const updatedComp = insertChild(component, newComponent);
+            //setSite(updateComponentInTree(site, updatedComp));
         }
     };
 

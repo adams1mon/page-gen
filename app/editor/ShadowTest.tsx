@@ -1,6 +1,6 @@
 import { ComponentContainer, insertChild } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { SITE_TYPE, createHtmlSkeleton, upsertHtmlNode, setBodyHtml, processTailwindCSS } from "@/lib/components/Site";
+import { SITE_TYPE, createHtmlSkeleton, upsertNode, setBodyHtml, processTailwindCSS } from "@/lib/components/Site";
 import { ReactNode, createElement, useEffect, useRef, useState } from "react";
 import { EditorContainer } from "../../components/preview/editor/EditorContainer";
 import { createPortal } from "react-dom";
@@ -24,10 +24,12 @@ function wrapTreeWithEditor(
             key={comp.id}
             component={comp}
         >
-            {createElement(
-                ComponentContainer.getReactElement(comp.type),
-                { ...comp.props, key: comp.id },
-            )}
+            {
+            //    createElement(
+            //    ComponentContainer.getReactElement(comp.type),
+            //    { ...comp.props, key: comp.id },
+            //)
+            }
         </EditorContainer>
     );
 }
@@ -40,58 +42,63 @@ interface CompProps {
 export function ShadowTest({ comp, onChange }: CompProps) {
 
     const ref = useRef(null);
-    const [root, setRoot] = useState();
-
-    console.log("rendering shadow test");
 
     useEffect(() => {
 
-        if (ref.current) {
+        if (!ref.current) return;
 
-            if (!ref.current.shadowRoot) {
-                const shadow = ref.current.attachShadow({ mode: "open" });
-
-                console.log("attached shadow");
-
-                if (comp.type == SITE_TYPE) {
-                    const sheet = new CSSStyleSheet();
-                    sheet.replaceSync(comp.props.styles);
-                    shadow.adoptedStyleSheets = [sheet];
-                    console.log("added styles");
-                }
-            }
-
-            const html = createHtml(comp);
-
-            upsertHtmlNode(ref.current.shadowRoot, html);
-            
-            console.log("shadow exists");
-
-            // Create a container for your React app inside the shadow DOM
-            //const reactContainer = document.createElement("div");
-            //shadow.appendChild(reactContainer);
-            //
-
-            //if (root) {
-            //    root.render(
-            //        <>
-            //            {comp.type === SITE_TYPE
-            //                ? comp.childrenDescriptors.map(createReactNode)
-            //                : createReactNode(comp)
-            //            }
-            //        </>
-            //    );
-            //}
+        if (!ref.current.shadowRoot) {
+            ref.current.attachShadow({ mode: "open" });
+            console.log("attached shadow");
         }
 
-    }, [comp, root]);
+        const shadow = ref.current.shadowRoot as ShadowRoot;
+
+        if (comp.type == SITE_TYPE) {
+            if (comp.props.styles) {
+                const sheet = new CSSStyleSheet();
+                sheet.replaceSync(comp.props.styles);
+                shadow.adoptedStyleSheets = [sheet];
+                console.log("added styles");
+            }
+        }
+
+        //const html = createHtml(comp);
+        //upsertHtmlNode(shadow, html);
+        //
+        //
+        console.log(comp.domNode);
+
+        if (!comp.domNode) {
+            console.log("no DOM node", comp);
+        } else {
+            upsertNode("html", shadow, comp.domNode);
+        }
+
+        // Create a container for your React app inside the shadow DOM
+        //const reactContainer = document.createElement("div");
+        //shadow.appendChild(reactContainer);
+        //
+
+        //if (root) {
+        //    root.render(
+        //        <>
+        //            {comp.type === SITE_TYPE
+        //                ? comp.childrenDescriptors.map(createReactNode)
+        //                : createReactNode(comp)
+        //            }
+        //        </>
+        //    );
+        //}
+
+    }, [comp]);
 
 
     return (
         <div className="m-4 border-2 border-red-500" ref={ref}>
             {
                 //ref.current && ref.current.shadowRoot &&
-                    
+
                 //createPortal(
                 //    <>
                 //        {comp.type === SITE_TYPE

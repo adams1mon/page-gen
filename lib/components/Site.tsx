@@ -5,8 +5,11 @@ import { titleDesc, longTextDesc, textDesc } from "./common";
 
 // Import the Tailwind generated styles
 // @ts-ignore
-import css from '!!raw-loader!../generated/styles.css';
-import { DOMElement, useEffect, useRef } from "react";
+//import css from '!!raw-loader!../generated/styles.css';
+//
+import globals_css from '!!raw-loader!../styles/globals.css';
+import tailwind_js from '!!raw-loader!../styles/tailwind_3.4.16.js';
+import tailwind_config from '!!raw-loader!../styles/tailwind.config.js';
 
 export const SITE_TYPE = "Site";
 
@@ -16,37 +19,62 @@ export interface SiteProps extends ComponentPropsWithChildren {
     styles?: string;
 }
 
-export function buildPageInto(root: HTMLElement): HTMLElement {
-   
-   const html = document.createElement("html"); 
-   const head = document.createElement("head");
-   const body = document.createElement("body");
+const tag = (name: string, obj?: { [key: string]: string }) => {
+    const m = document.createElement(name);
+    for (const key in obj) {
+        m.setAttribute(key, obj[key]);
+    }
+    return m;
+}
 
-   const meta = (obj) => {
-       const m =document.createElement("meta");
-       for (const key in obj) {
-           m.setAttribute(key, obj[key]);
-       }
-       return m;
-   }
+export function createHtmlSkeleton(): HTMLElement {
 
-   const tag = (name: string) => document.createElement(name);
+    const html = document.createElement("html");
+    const head = document.createElement("head");
+    const body = document.createElement("body");
 
-   head.appendChild(meta({ charSet: "UTF-8"}));
-   head.appendChild(meta({ name: "viewport", content: "width=device-width, initial-scale=1.0"}));
-   head.appendChild(meta({ name: "description", content: "desc"}));
+    head.appendChild(tag("meta", { charSet: "UTF-8" }));
+    head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
+    head.appendChild(tag("meta", { name: "description", content: "desc" }));
 
-   const styles = tag("style");
-   styles.innerText = css;
+    //<script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+    //const tailwind_tag = tag("script", {"src": "https://cdn.tailwindcss.com"});
+    //tailwind_tag.innerText = tailwind_js;
+    //head.appendChild(tailwindTag());
 
-   head.appendChild(styles);
+    const styles = tag("style");
+    styles.textContent = globals_css;
 
-   html.appendChild(head);
-   html.appendChild(body);
+    head.appendChild(styles);
 
-   root.appendChild(html);
+    html.appendChild(head);
+    html.appendChild(body);
 
-   return root;
+    console.log(html.outerHTML);
+
+    return html;
+}
+
+export function tailwindTag() {
+    const tailwind_tag = tag("script");
+    tailwind_tag.textContent = tailwind_js;
+    return tailwind_tag;
+}
+
+export function setBodyHtml(root: HTMLElement, htmlStr: string) {
+    const body = root.querySelector("body");
+    if (body) {
+        body.innerHTML = htmlStr;
+    }
+}
+
+export function upsertHtmlNode(root: HTMLElement, html: HTMLElement) {
+    const prevHtml = root.querySelector("html");
+    if (prevHtml) {
+        root.replaceChild(html, prevHtml);
+    } else {
+        root.appendChild(html);
+    }
 }
 
 function Node(props: SiteProps) {
@@ -78,7 +106,7 @@ const defaultProps: SiteProps = {
     // NOTE: The site uses the same Tailwind generated CSS the main page uses.
     // The styles are overwritten by the generated Tailwind CSS file, 
     // see how a new site is created in generate-html.
-    styles: css,
+    //styles: css,
     children: [],
 };
 
@@ -102,7 +130,8 @@ const propsDescriptor: ObjectDesc = {
             ...longTextDesc,
             displayName: "Custom CSS styles",
             desc: "Custom CSS styles to include in a <style> in the website",
-            default: css,
+            //default: css,
+            default: "",
         },
     }
 };

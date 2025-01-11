@@ -1,10 +1,10 @@
 import { ComponentContainer, insertChild } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { SITE_TYPE, buildPageInto } from "@/lib/components/Site";
+import { SITE_TYPE, createHtmlSkeleton, upsertHtmlNode, setBodyHtml } from "@/lib/components/Site";
 import { ReactNode, createElement, useEffect, useRef, useState } from "react";
 import { EditorContainer } from "../../components/preview/editor/EditorContainer";
 import { createPortal } from "react-dom";
-import { createReactNode } from "@/lib/site-generator/generate-html";
+import { createHtml, createReactNode } from "@/lib/site-generator/generate-html";
 import { renderToStaticMarkup } from "react-dom/server";
 
 export type CompFunc = (comp: ComponentDescriptor) => void;
@@ -53,6 +53,7 @@ export function ShadowTest({ comp, onChange }: CompProps) {
 
                 const span = document.createElement("span");
                 span.textContent = "I'm in the shadow DOM";
+                span.classList.add("bg-red-500");
                 shadow.appendChild(span);
 
                 console.log("attached shadow");
@@ -67,20 +68,12 @@ export function ShadowTest({ comp, onChange }: CompProps) {
                 //const root = createRoot(ref.current.shadowRoot);
                 //setRoot(root);
                 //
-
-                buildPageInto(shadow);
             }
 
-            const body = ref.current.shadowRoot.querySelector("body");
+            const html = createHtml(comp);
+
+            upsertHtmlNode(ref.current.shadowRoot, html);
             
-            if (body) {
-                const children = comp.childrenDescriptors.map(createReactNode)
-                const htmlStr = children.map(renderToStaticMarkup).join("\n");
-                body.innerHTML = htmlStr;
-
-                console.log(htmlStr);
-            }
-
             console.log("shadow exists");
 
             // Create a container for your React app inside the shadow DOM

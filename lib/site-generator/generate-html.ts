@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DOMElement, ReactElement, createElement } from "react";
-import { SITE_TYPE } from "../components/Site";
+import { SITE_TYPE, createHtmlSkeleton, upsertHtmlNode, setBodyHtml, tailwindTag } from "../components/Site";
 import { ComponentContainer } from "../components-meta/ComponentContainer";
 
 export function newSite(): ComponentDescriptor {
@@ -10,6 +10,24 @@ export function newSite(): ComponentDescriptor {
 
 export function createDOMTree(comp: ComponentDescriptor): DOMElement {
 
+}
+
+export function createHtml(comp: ComponentDescriptor): HTMLElement {
+    const html = createHtmlSkeleton();
+
+    let htmlStr;
+    if (comp.acceptsChildren) {
+        const children = comp.childrenDescriptors.map(createReactNode)
+        htmlStr = children.map(renderToStaticMarkup).join("\n");
+    } else {
+        htmlStr = renderToStaticMarkup(createReactNode(comp));
+    }
+
+    setBodyHtml(html, htmlStr);
+
+    html.querySelector("head")?.appendChild(tailwindTag());
+
+    return html;
 }
 
 export function createReactNode(comp: ComponentDescriptor): ReactElement {

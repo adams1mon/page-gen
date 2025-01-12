@@ -8,7 +8,6 @@ import { EditorSidebar } from "./components/EditorSidebar";
 import { PreviewEditor } from "@/components/preview/editor/PreviewEditor";
 import { IframePreview } from "@/components/preview/IframePreview";
 import { useEffect, useState } from "react";
-import { createHtml } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
@@ -46,11 +45,16 @@ export default function EditorPage() {
             //const html = await generateHtml(site);
             //setPreviewHtml(html);
 
-            const html = createHtml(site);
-            setPreviewHtml(html.outerHTML);
+            const html = site.domNode?.outerHTML;
+            if (!html) {
+                console.warn("no site DOM node found when trying to get HTML");
+                return;
+            }
+
+            setPreviewHtml(html);
 
             console.log("preview HTML");
-            console.log(html.outerHTML);
+            console.log(html);
 
         }, previewDebounceMillis);
 
@@ -80,8 +84,8 @@ export default function EditorPage() {
                                 }
                                 <PreviewEditor
                                     comp={site}
-                                    //onChange={setSite}
-                                    onChange={() => console.log("add")}
+                                    onChange={setSite}
+                                    //onChange={() => console.log("add")}
                                 />
                             </>
                         ) : (

@@ -23,9 +23,33 @@ export function tag(name: string, obj?: { [key: string]: string }) {
     }
     return m;
 }
+//
+//export function createHtmlSkeleton(): HTMLElement {
+//
+//    const html = document.createElement("html");
+//    const head = document.createElement("head");
+//    const body = document.createElement("body");
+//
+//    head.appendChild(tag("meta", { charSet: "UTF-8" }));
+//    head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
+//    head.appendChild(tag("meta", { name: "description", content: "desc" }));
+//
+//    const styles = tag("style");
+//    styles.textContent = css;
+//
+//    head.appendChild(styles);
+//
+//    const script = tag("script");
+//    script.textContent = "console.log('tailwind js works')";
+//    head.appendChild(script);
+//
+//    html.appendChild(head);
+//    html.appendChild(body);
+//
+//    return html;
+//}
 
-export function createHtmlSkeleton(): HTMLElement {
-
+export function createSiteNode(): HTMLElement {
     const html = document.createElement("html");
     const head = document.createElement("head");
     const body = document.createElement("body");
@@ -36,40 +60,16 @@ export function createHtmlSkeleton(): HTMLElement {
 
     const styles = tag("style");
     styles.textContent = css;
-
     head.appendChild(styles);
 
-    const script = tag("script");
-    script.textContent = "console.log('tailwind js works')";
-    head.appendChild(script);
+    //const script = tag("script");
+    //script.textContent = "console.log('script tag works')";
+    //head.appendChild(script);
 
     html.appendChild(head);
     html.appendChild(body);
 
-    return html;
-}
-
-export function createHtmlNode(): HTMLElement {
-    const html = document.createElement("html");
-    const head = document.createElement("head");
-    const body = document.createElement("body");
-
-    head.appendChild(tag("meta", { charSet: "UTF-8" }));
-    head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
-    head.appendChild(tag("meta", { name: "description", content: "desc" }));
-
-    const styles = tag("style");
-    styles.textContent = css;
-    head.appendChild(styles);
-
-    const script = tag("script");
-    script.textContent = "console.log('script tag works')";
-    head.appendChild(script);
-
-    html.appendChild(head);
-    html.appendChild(body);
-
-    return html;
+    return body;
 }
 
 export function setBodyHtml(root: HTMLElement, htmlStr: string) {
@@ -167,5 +167,5 @@ const desc: ComponentDescriptor = {
 export default {
     type: SITE_TYPE,
     descriptor: desc,
-    createHtmlNode,
+    createHtmlNode: createSiteNode,
 } as ComponentExport;

@@ -50,15 +50,13 @@ export function PreviewEditor({ comp, onChange }: CompProps) {
           <ComponentDivider
             onInsert={c => { 
 
-                console.log("inserting", c, "into", comp);
-                
                 if (!comp.addChild) {
                     console.log("no addchild");
                 }
 
-                ComponentContainer.addChild(comp, c);
-                //
-                //comp.addChild?.(c);
+                ComponentContainer.addOrUpdateChild(comp, c);
+                onChange(comp);
+                //onChange({...comp});
             }}
             //onInsert={c => onChange(insertChild(comp, c))}
           />

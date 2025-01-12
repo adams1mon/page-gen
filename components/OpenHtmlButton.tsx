@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { createHtml } from "@/lib/site-generator/generate-html";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ExternalLink } from "lucide-react";
 
@@ -13,7 +12,11 @@ export function OpenHtmlButton() {
 
         //const html = await generateHtml(site);
 
-        const html = createHtml(site).outerHTML;
+        const html = site.domNode?.outerHTML;
+        if (!html) {
+            console.warn("no site DOM node found when trying to get HTML");
+            return;
+        }
 
         const blob = new Blob([html], { type: 'text/html' });
         const url = URL.createObjectURL(blob);

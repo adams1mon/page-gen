@@ -7,33 +7,10 @@ import { createPortal } from "react-dom";
 import { createHtml, createReactNode } from "@/lib/site-generator/generate-html";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ShadowEditorContainer } from "./ShadowEditorContainer";
+import { EditorContextMenu } from "@/components/preview/editor/EditorContextMenu";
 
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
-function wrapTreeWithEditor(
-    comp: ComponentDescriptor,
-): ReactNode {
-    if (comp.acceptsChildren) {
-        comp.props = {
-            ...comp.props,
-            children: comp.childrenDescriptors.map(wrapTreeWithEditor),
-        };
-    }
-
-    return (
-        <EditorContainer
-            key={comp.id}
-            component={comp}
-        >
-            {
-                //    createElement(
-                //    ComponentContainer.getReactElement(comp.type),
-                //    { ...comp.props, key: comp.id },
-                //)
-            }
-        </EditorContainer>
-    );
-}
 
 interface CompProps {
     comp: ComponentDescriptor;
@@ -64,10 +41,6 @@ export function ShadowTest({ comp, onChange }: CompProps) {
             }
         }
 
-        //const html = createHtml(comp);
-        //upsertHtmlNode(shadow, html);
-        //
-        //
         console.log(comp.domNode);
 
         if (!comp.domNode) {
@@ -76,69 +49,27 @@ export function ShadowTest({ comp, onChange }: CompProps) {
             upsertNode("html", shadow, comp.domNode);
         }
 
-        // Create a container for your React app inside the shadow DOM
-        //const reactContainer = document.createElement("div");
-        //shadow.appendChild(reactContainer);
-        //
-
-        //if (root) {
-        //    root.render(
-        //        <>
-        //            {comp.type === SITE_TYPE
-        //                ? comp.childrenDescriptors.map(createReactNode)
-        //                : createReactNode(comp)
-        //            }
-        //        </>
-        //    );
-        //}
-
     }, [comp, ref.current]);
 
+    console.log("render shadowtest", comp);
 
     return (
         <>
-            <div className="m-4 border-2 border-red-500" ref={ref}>
-                {
-                    //ref.current && ref.current.shadowRoot &&
+            <ShadowEditorContainer comp={comp} />
 
-                    //createPortal(
-                    //    <>
-                    //        {comp.type === SITE_TYPE
-                    //            //? comp.childrenDescriptors.map(createReactNode)
-                    //            //: createReactNode(comp)
-                    //            ? comp.childrenDescriptors.map(wrapTreeWithEditor)
-                    //            : wrapTreeWithEditor(comp)
-                    //        }
-                    //    </>,
-                    //    ref.current.shadowRoot,
-                    //)
+            <EditorContextMenu
+                component={comp}
+                overlayEnabled={false}
+                onOverlayToggle={() => console.log("toggle overlay")}
 
-                    //createPortal(
-                    //    <>
-                    //        {comp.type === SITE_TYPE
-                    //            //? comp.childrenDescriptors.map(createReactNode)
-                    //            //: createReactNode(comp)
-                    //            ? comp.childrenDescriptors.map(wrapTreeWithEditor)
-                    //            : wrapTreeWithEditor(comp)
-                    //        }
-                    //    </>,
-                    //    ref.current.shadowRoot,
-                    //)
+                //onEdit={() => selectComponent(c)}
+                onEdit={() => console.log("edit")}
 
-                    //{comp.type === SITE_TYPE
-                    //  ? comp.childrenDescriptors.map(wrapTreeWithEditor)
-                    //  : wrapTreeWithEditor(comp)
-                    //}
-                    //{comp.acceptsChildren && (
-                    //  <div className="p-4">
-                    //    <ComponentDivider
-                    //      onInsert={c => onChange(insertChild(comp, c))}
-                    //    />
-                    //  </div>
-                    //)}
-                }
-            </div>
-            <ShadowEditorContainer comp={comp} containerRef={ref}/> 
+                onInsert={() => console.log("insert")}
+                onRemove={() => console.log("remove")}
+            >
+                <div className="m-4 border-2 border-red-500" ref={ref}></div>
+            </EditorContextMenu>
         </>
     );
 }

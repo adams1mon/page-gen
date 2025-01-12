@@ -5,7 +5,7 @@ import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 //import { EditorContextMenu } from "./EditorContextMenu";
 import { useEffect, useRef, useState } from "react";
 //import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
-import { insertChild, removeChild } from "@/lib/components-meta/ComponentContainer";
+import { ComponentContainer, insertChild, removeChild } from "@/lib/components-meta/ComponentContainer";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useSiteStore } from "@/lib/store/site-store";
@@ -13,192 +13,168 @@ import { findParentComponent, findComponentIndex } from "@/lib/components-meta/C
 import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
 import { useComponentSelection } from "@/app/editor/hooks/useComponentSelection";
 import { tag } from "@/lib/components/Site";
+import { EditorContextMenu } from "@/components/preview/editor/EditorContextMenu";
+import { createPortal } from "react-dom";
 
 interface ShadowEditorContainerProps extends React.PropsWithChildren {
     comp: ComponentDescriptor;
 }
 
-const overlayState: {[key: string]: any} = {};
+function getAllElementsFromTree(comp: ComponentDescriptor, arr: ComponentDescriptor[] = []): ComponentDescriptor[] {
+
+    arr.push(comp);
+
+    if (comp.acceptsChildren) {
+        comp.childrenDescriptors.map(c => getAllElementsFromTree(c, arr));
+    }
+
+    return arr;
+}
+
+//export function ShadowEditorContainer({ comp }: ShadowEditorContainerProps) {
+//
+//    const ref = useRef(null);
+//
+//    const { site, setSite } = useSiteStore();
+//
+//    const { selectComponent } = useComponentSelection();
+
+//useEffect(() => {
+//    if (!ref.current) return;
+//
+//    console.log("adding listeners");
+//
+//    getAllElementsFromTree(comp).forEach(addMouseHandlers);
+//    return () => getAllElementsFromTree(comp).forEach(removeMouseHandlers);
+//
+//    //createMouseHandlers(component);
+//    //return () => removeMouseHandlers();
+//
+//}, [comp, ref.current]);
+
+//if (ref.current) {
+//console.log("adding listeners");
+
+//getAllElementsFromTree(comp).forEach(addMouseHandlers);
+//}
+
+//function addMouseHandlers(component: ComponentDescriptor) {
+//    console.log("adding mouse handlers");
+//
+//    if (!component.domNode) {
+//        console.warn("no DOM node on ", component.type);
+//        return;
+//    }
+//
+//    component.domNode.onmouseenter = () => addOverlay(component);
+//    component.domNode.onmouseleave = () => removeOverlay(component);
+//}
+//
+//function removeMouseHandlers(component: ComponentDescriptor) {
+//    console.log("removing mouse handlers");
+//
+//    if (!component.domNode) {
+//        console.warn("no DOM node on ", component.type);
+//        return;
+//    }
+//
+//    component.domNode.onmouseover = null;
+//    component.domNode.onmouseleave = null;
+//}
+//
+//function addOverlay(component: ComponentDescriptor) {
+//    const node = component.domNode!;
+//
+//    const rect = node.getBoundingClientRect();
+//
+//    const outlineDiv = tag("div", { id: `outline-${component.id}` });
+//    outlineDiv.style.position = "absolute";
+//    outlineDiv.style.left = rect.x + window.scrollX + 'px';
+//    outlineDiv.style.top = rect.y + window.scrollY + 'px';
+//    outlineDiv.style.width = rect.width + 'px';
+//    outlineDiv.style.height = rect.height + 'px';
+//    outlineDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+//    outlineDiv.style.outline = "solid 1px red";
+//    outlineDiv.style.pointerEvents = "none";
+//
+//    //outlineDiv.classList.add(..."outline outline-2 outline-primary/20 rounded-sm".split(" "));
+//
+//    //console.log("outline div", outlineDiv);
+//
+//    ref.current!.appendChild(outlineDiv);
+//
+//    // create a little tab with the name of the component
+//    const tab = tag("p", {id: `tab-${component.id}`});
+//
+//    const cls = "bg-background backdrop-blur-sm px-2 py-1 text-xs font-medium"
+//    tab.classList.add(...cls.split(" "));
+//    tab.innerText = component.name;
+//
+//    tab.style.position = "absolute";
+//    tab.style.zIndex = '10';
+//    tab.style.left = '0px';
+//
+//    // get the height and displace the tab
+//    tab.style.visibility = "hidden";
+//    outlineDiv.appendChild(tab);
+//
+//    tab.style.top = -tab.getBoundingClientRect().height  + 'px';
+//    tab.style.visibility = "visible";
+//}
+//
+//function removeOverlay(component: ComponentDescriptor) {
+//
+//    const node = component.domNode!;
+//    node.style.outline = "none";
+//
+//    const tab = ref.current!.querySelector(`#tab-${component.id}`);
+//    if (!tab) {
+//        console.warn("overlay tab not found on ", component);
+//    } else {
+//        tab.remove();
+//    }
+//
+//    const outlineDiv = ref.current!.querySelector(`#outline-${component.id}`);
+//    if (!outlineDiv) {
+//        console.warn("overlay tab not found on ", component);
+//    } else {
+//        outlineDiv.remove();
+//    }
+//}
+//
+
 
 export function ShadowEditorContainer({ comp }: ShadowEditorContainerProps) {
 
-    const ref = useRef(null);
-
-    const [isHovered, setIsHovered] = useState(false);
-    const [overlayEnabled, setOverlayEnabled] = useState(false);
     const { site, setSite } = useSiteStore();
 
     const { selectComponent } = useComponentSelection();
 
-    const handleRemove = (comp: ComponentDescriptor) => {
-        const parent = findParentComponent(site, comp);
-        if (parent) {
-            const updatedParent = removeChild(parent, comp);
-            setSite(updateComponentInTree(site, updatedParent));
-        }
-    };
-
-    const handleChildInsert = (newComponent: ComponentDescriptor, position?: 'before' | 'after') => {
-
-        if (position) {
-            const parent = findParentComponent(site, component);
-            if (parent) {
-                parent.addChild?.(newComponent) || console.log("no function");
-
-                //const index = findComponentIndex(parent, component);
-                //const insertIndex = position === 'before' ? index : index + 1;
-                //const updatedParent = insertChild(parent, newComponent, insertIndex);
-                //setSite(updateComponentInTree(site, updatedParent));
-            }
-        } else {
-            component.addChild?.(newComponent) || console.log("no function");
-
-            // Add inside the component as before
-            //const updatedComp = insertChild(component, newComponent);
-            //setSite(updateComponentInTree(site, updatedComp));
-        }
-    };
-
-    //const isEmpty = component.acceptsChildren && component.childrenDescriptors.length === 0;
-
-    useEffect(() => {
-        if (!ref.current) return;
-
-        createMouseHandlers();
-        return () => removeMouseHandlers();
-
-    }, [comp, ref.current]);
-
-    function createMouseHandlers() {
-        console.log("adding mouser handlers");
-
-        if (!comp.domNode) {
-            console.warn("no DOM node on ", comp.type);
-            return;
-        }
-
-        comp.domNode.onmouseenter = addOverlay;
-        comp.domNode.onmouseleave = removeOverlay;
-    }
-
-    function addOverlay() {
-        const node = comp.domNode!;
-
-        //node.rect
-        //node.style.outline = "dashed red";
-        const rect = node.getBoundingClientRect();
-        console.log("enter", overlayState);
-        
-        const outlineDiv = tag("div", { id: `outline-${comp.id}` });
-        outlineDiv.style.position = "absolute";
-        outlineDiv.style.left = rect.x + 'px';
-        outlineDiv.style.top = rect.y + 'px';
-        outlineDiv.style.width = rect.width + 'px';
-        outlineDiv.style.height = rect.height + 'px';
-        outlineDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
-        outlineDiv.style.outline = "solid 1px red";
-        outlineDiv.style.pointerEvents = "none";
-
-        //console.log("outline div", outlineDiv);
-
-        ref.current!.appendChild(outlineDiv);
-
-        // create a little tab
-        const tab = tag("p", {id: `tab-${comp.id}`});
-
-        //const cls = "absolute inset-0 z-10 pointer-events-none";
-        const cls = "bg-background backdrop-blur-sm px-2 py-1 text-xs font-medium rounded-br-sm"
-        tab.classList.add(...cls.split(" "));
-        tab.innerText = comp.name
-
-        tab.style.position = "absolute";
-        tab.style.left = '0px';
-        tab.style.height = '1rem';
-        tab.style.top = '-1rem';
-        outlineDiv.appendChild(tab);
-
-        //ref.current!.appendChild(tab);
-
-        //{isHovered && (
-        //    <div className="absolute inset-0 z-10 pointer-events-none">
-        //        <div className="absolute inset-0 outline outline-2 outline-primary/20 rounded-sm" />
-        //        <div className="absolute top-0 left-0 bg-background backdrop-blur-sm px-2 py-1 text-xs font-medium rounded-br-sm">
-        //            {component.name}
-        //        </div>
-        //    </div>
-        //)}
-    }
-
-    function removeOverlay() {
-        console.log("leave", overlayState);
-        
-        const node = comp.domNode!;
-        node.style.outline = "none";
-
-        const tab = ref.current!.querySelector(`#tab-${comp.id}`);
-        if (!tab) {
-            console.warn("overlay tab not found on ", comp);
-        } else {
-            tab.remove();
-        }
-
-        const outlineDiv = ref.current!.querySelector(`#outline-${comp.id}`);
-        if (!outlineDiv) {
-            console.warn("overlay tab not found on ", comp);
-        } else {
-            outlineDiv.remove();
-        }
-    }
-
-    function removeMouseHandlers() {
-        console.log("removing mouse handlers");
-
-        if (!comp.domNode) {
-            console.warn("no DOM node on ", comp.type);
-            return;
-        }
-
-        comp.domNode.onmouseover = null;
-        comp.domNode.onmouseleave = null;
-    }
-
     return (
-        <div ref={ref}></div>
-        //<EditorContextMenu
-        //    component={component}
-        //    overlayEnabled={overlayEnabled}
-        //    onOverlayToggle={() => setOverlayEnabled(prev => !prev)}
-        //    onEdit={() => selectComponent(component)}
-        //    onInsert={handleChildInsert}
-        //    onRemove={handleRemove}
-        //>
-        //    <div
-        //        className="relative"
-        //        onMouseEnter={(e) => {
-        //            e.stopPropagation();
-        //            setIsHovered(true);
-        //        }}
-        //        onMouseLeave={(e) => {
-        //            e.stopPropagation();
-        //            setIsHovered(false);
-        //        }}
-        //        onClick={e => e.stopPropagation()}
-        //    >
-        //        <EditorOverlay
-        //            controlsEnabled={overlayEnabled}
-        //            isHovered={isHovered}
-        //            component={component}
-        //            onEdit={() => selectComponent(component)}
-        //            onInsert={handleChildInsert}
-        //            onRemove={handleRemove}
-        //        />
-        //
-        //        {children}
-        //
-        //        {isEmpty && <EmptyState component={component} onInsert={handleChildInsert} />}
-        //    </div>
-        //</EditorContextMenu>
+        <div>
+            {
+                //ref.current != null && getAllElementsFromTree(comp).map(c =>
+                //
+                //    createPortal(
+                //        <EditorContextMenu
+                //            component={c}
+                //            overlayEnabled={false}
+                //            onOverlayToggle={() => console.log("toggle overlay")}
+                //
+                //            onEdit={() => selectComponent(c)}
+                //
+                //            onInsert={handleChildInsert}
+                //            onRemove={handleRemove}
+                //        />,
+                //        ref.current,
+                //    )
+                //)
+            }
+        </div>
     );
+    //{children}
+    //
+    //{isEmpty && <EmptyState component={component} onInsert={handleChildInsert} />}
 }
 
 function EmptyState({ component, onInsert }: { component: ComponentDescriptor, onInsert: (comp: ComponentDescriptor) => void }) {

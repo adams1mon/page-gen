@@ -13,11 +13,12 @@ import Projects from "../components/Projects";
 import Row from "../components/Row";
 import Text from "../components/Text";
 import Gallery from "../components/Gallery";
-import Site, { createHtmlNode } from "../components/Site";
+import Site, { createSiteNode, tag } from "../components/Site";
 
 import { ComponentDescriptor } from "./ComponentDescriptor";
 import { createElement } from "react";
 import { renderToHtml } from "../site-generator/generate-html";
+import { createPortal } from "react-dom";
 
 
 // utility methods, they mutate the passed in component
@@ -135,7 +136,7 @@ export class ComponentContainer {
         }
     }
 
-    static addChild(parent: ComponentDescriptor, child: ComponentDescriptor) {
+    static addOrUpdateChild(parent: ComponentDescriptor, child: ComponentDescriptor) {
         if (!parent.domNode) throw new Error("parent has no DOM node");
         if (!child.domNode) throw new Error("child has no DOM node");
 
@@ -148,14 +149,22 @@ export class ComponentContainer {
         console.log("DOM: added child", child, " to parent", parent);
 
         const i = parent.childrenDescriptors.findIndex(c => c.id == child.id);
-        if (i) {
+        if (i > -1) {
             parent.childrenDescriptors[i] = child;
         } else {
             parent.childrenDescriptors.push(child);
         }
 
-        console.log("descriptor: added child", child, " to parent", parent);
+        //console.log("descriptor: added child", child, " to parent", parent);
+        //
+        addMouseHandlers(child);
     }
+
+    static removeChild(parent: ComponentDescriptor, child: ComponentDescriptor) {
+        parent.childrenDescriptors = parent.childrenDescriptors.filter(c => c.id !== child.id);
+        child.domNode?.remove();
+        removeOverlay(child);
+    };
 
     static clone(component: ComponentDescriptor): ComponentDescriptor {
         // Clone children recursively if they exist
@@ -182,6 +191,115 @@ export class ComponentContainer {
         // omit the Site
         const { [Site.type]: _, ...rest } = this.components;
         return Object.values(rest);
+    }
+}
+
+function addMouseHandlers(component: ComponentDescriptor) {
+    console.log("adding mouse handlers");
+
+    if (!component.domNode) {
+        console.warn("no DOM node on ", component.type);
+        return;
+    }
+
+    component.domNode.onmouseenter = () => addOverlay(component);
+    component.domNode.onmouseleave = () => removeOverlay(component);
+    component.domNode.onmousedown = (e) => addPopover(e, component);
+}
+
+let popoverOpen = false;
+
+function addPopover(e: MouseEvent, component: ComponentDescriptor): HTMLElement {
+    const node = component.domNode!;
+
+    const div = tag("div");
+    popoverOpen = true;
+
+    div.innerText = "POPOVERRRRR";
+
+    document.querySelector("body")!.appendChild(div);
+
+    document.addEventListener("mousedown", () => {
+        if (popoverOpen) {
+            console.log("closing popover from", component);
+        }
+    });
+
+    return div;
+
+    //function handleClickOutside(event: MouseEvent) {
+    //    if (isOpen && !(event.target as Element).closest('[role="menu"]')) {
+    //        setIsOpen(false);
+    //    }
+    //}
+    //
+    //if (isOpen) {
+    //    document.addEventListener('mousedown', handleClickOutside);
+    //    return () => document.removeEventListener('mousedown', handleClickOutside);
+    //}
+    //
+}
+
+function addOverlay(component: ComponentDescriptor) {
+    const node = component.domNode!;
+
+    const rect = node.getBoundingClientRect();
+
+    const outlineDiv = tag("div", { id: `outline-${component.id}` });
+    outlineDiv.style.position = "absolute";
+    outlineDiv.style.left = rect.x + window.scrollX + 'px';
+    outlineDiv.style.top = rect.y + window.scrollY + 'px';
+    outlineDiv.style.width = rect.width + 'px';
+    outlineDiv.style.height = rect.height + 'px';
+    outlineDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+    outlineDiv.style.outline = "solid 1px red";
+    outlineDiv.style.pointerEvents = "none";
+
+    //outlineDiv.classList.add(..."outline outline-2 outline-primary/20 rounded-sm".split(" "));
+
+    //console.log("outline div", outlineDiv);
+
+
+    const body = document.querySelector("body");
+    body.appendChild(outlineDiv);
+
+    // create a little tab with the name of the component
+    const tab = tag("p", { id: `tab-${component.id}` });
+
+    const cls = "bg-background backdrop-blur-sm px-2 py-1 text-xs font-medium"
+    tab.classList.add(...cls.split(" "));
+    tab.innerText = component.name;
+
+    tab.style.position = "absolute";
+    tab.style.zIndex = '10';
+    tab.style.left = '0px';
+
+    // get the height and displace the tab
+    tab.style.visibility = "hidden";
+    outlineDiv.appendChild(tab);
+
+    tab.style.top = -tab.getBoundingClientRect().height + 'px';
+    tab.style.visibility = "visible";
+}
+
+function removeOverlay(component: ComponentDescriptor) {
+
+    const node = component.domNode!;
+    node.style.outline = "none";
+
+    const body = document.querySelector("body");
+    const tab = body.querySelector(`#tab-${component.id}`);
+    if (!tab) {
+        console.warn("overlay tab not found on ", component);
+    } else {
+        tab.remove();
+    }
+
+    const outlineDiv = body.querySelector(`#outline-${component.id}`);
+    if (!outlineDiv) {
+        console.warn("overlay tab not found on ", component);
+    } else {
+        outlineDiv.remove();
     }
 }
 

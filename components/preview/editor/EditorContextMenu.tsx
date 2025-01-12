@@ -35,7 +35,7 @@ export function EditorContextMenu({
     children,
 }: EditorContextMenuProps) {
     const { copy, paste, hasCopiedComponent } = useComponentClipboard();
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {

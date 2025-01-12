@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { createHtml, generateHtml } from "@/lib/site-generator/generate-html";
 import { useSiteStore } from "@/lib/store/site-store";
 import { Download } from "lucide-react";
 import { useState } from "react";
@@ -16,8 +15,11 @@ export function GenerateSiteButton() {
         try {
             setIsGenerating(true);
 
-            //const html = await generateHtml(site);
-            const html = createHtml(site).outerHTML;
+            const html = site.domNode?.outerHTML;
+            if (!html) {
+                console.warn("no site DOM node found when trying to get HTML");
+                return;
+            }
 
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });

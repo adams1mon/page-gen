@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { ReactElement, createElement } from "react";
-import { SITE_TYPE, createHtmlSkeleton, setBodyHtml } from "../components/Site";
+import { SITE_TYPE } from "../components/Site";
 import { ComponentContainer } from "../components-meta/ComponentContainer";
 
 export function newSite(): ComponentDescriptor {
@@ -9,11 +9,11 @@ export function newSite(): ComponentDescriptor {
 } 
 
 
-export function createHtml(comp: ComponentDescriptor): HTMLElement {
-    const html = createHtmlSkeleton();
-    setBodyHtml(html, renderToHtml(comp));
-    return html;
-}
+//export function createHtml(comp: ComponentDescriptor): HTMLElement {
+//    //const html = createHtmlSkeleton();
+//    //setBodyHtml(html, renderToHtml(comp));
+//    //return html;
+//}
 
 export function renderToHtml(comp: ComponentDescriptor): string {
     return ComponentContainer.htmlFuncs[comp.type](comp.props).outerHTML;

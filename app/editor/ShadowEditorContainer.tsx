@@ -18,7 +18,9 @@ interface ShadowEditorContainerProps extends React.PropsWithChildren {
     comp: ComponentDescriptor;
 }
 
-export function ShadowEditorContainer({ comp}: ShadowEditorContainerProps) {
+const overlayState: {[key: string]: any} = {};
+
+export function ShadowEditorContainer({ comp }: ShadowEditorContainerProps) {
 
     const ref = useRef(null);
 
@@ -61,39 +63,61 @@ export function ShadowEditorContainer({ comp}: ShadowEditorContainerProps) {
 
     useEffect(() => {
         if (!ref.current) return;
-        
-        createHoverHandlers(comp);
-        return () => removeHoverHandlers(comp);
+
+        createMouseHandlers();
+        return () => removeMouseHandlers();
 
     }, [comp, ref.current]);
 
-    function createHoverHandlers(comp: ComponentDescriptor) {
-        console.log("adding outline event listener");
-        
+    function createMouseHandlers() {
+        console.log("adding mouser handlers");
+
         if (!comp.domNode) {
             console.warn("no DOM node on ", comp.type);
             return;
         }
 
-        comp.domNode.onmouseenter = addOverlay; 
-        comp.domNode.onmouseleave = removeOverlay; 
+        comp.domNode.onmouseenter = addOverlay;
+        comp.domNode.onmouseleave = removeOverlay;
     }
 
     function addOverlay() {
         const node = comp.domNode!;
-        node.style.outline = "dashed red";
+
+        //node.rect
+        //node.style.outline = "dashed red";
+        const rect = node.getBoundingClientRect();
+        console.log("enter", overlayState);
+        
+        const outlineDiv = tag("div", { id: `outline-${comp.id}` });
+        outlineDiv.style.position = "absolute";
+        outlineDiv.style.left = rect.x + 'px';
+        outlineDiv.style.top = rect.y + 'px';
+        outlineDiv.style.width = rect.width + 'px';
+        outlineDiv.style.height = rect.height + 'px';
+        outlineDiv.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
+        outlineDiv.style.outline = "solid 1px red";
+        outlineDiv.style.pointerEvents = "none";
+
+        //console.log("outline div", outlineDiv);
+
+        ref.current!.appendChild(outlineDiv);
 
         // create a little tab
-        const tab = tag("p");
+        const tab = tag("p", {id: `tab-${comp.id}`});
 
         //const cls = "absolute inset-0 z-10 pointer-events-none";
-        const cls = "absolute top-0 left-0 bg-background backdrop-blur-sm px-2 py-1 text-xs font-medium rounded-br-sm"
+        const cls = "bg-background backdrop-blur-sm px-2 py-1 text-xs font-medium rounded-br-sm"
         tab.classList.add(...cls.split(" "));
-        tab.setAttribute("id", `tab-${comp.id}`);
+        tab.innerText = comp.name
 
-        tab.innerText = comp.name;
+        tab.style.position = "absolute";
+        tab.style.left = '0px';
+        tab.style.height = '1rem';
+        tab.style.top = '-1rem';
+        outlineDiv.appendChild(tab);
 
-        ref.current?.appendChild(tab);
+        //ref.current!.appendChild(tab);
 
         //{isHovered && (
         //    <div className="absolute inset-0 z-10 pointer-events-none">
@@ -106,28 +130,36 @@ export function ShadowEditorContainer({ comp}: ShadowEditorContainerProps) {
     }
 
     function removeOverlay() {
+        console.log("leave", overlayState);
+        
         const node = comp.domNode!;
         node.style.outline = "none";
 
-        const tab = ref.current?.querySelector(`#tab-${comp.id}`);
+        const tab = ref.current!.querySelector(`#tab-${comp.id}`);
         if (!tab) {
             console.warn("overlay tab not found on ", comp);
-            return;
+        } else {
+            tab.remove();
         }
 
-        tab.remove();
+        const outlineDiv = ref.current!.querySelector(`#outline-${comp.id}`);
+        if (!outlineDiv) {
+            console.warn("overlay tab not found on ", comp);
+        } else {
+            outlineDiv.remove();
+        }
     }
 
-    function removeHoverHandlers(site: ComponentDescriptor) {
-        console.log("removing outline event listener");
+    function removeMouseHandlers() {
+        console.log("removing mouse handlers");
 
         if (!comp.domNode) {
             console.warn("no DOM node on ", comp.type);
             return;
         }
 
-        comp.domNode.onmouseover = null; 
-        comp.domNode.onmouseleave = null; 
+        comp.domNode.onmouseover = null;
+        comp.domNode.onmouseleave = null;
     }
 
     return (

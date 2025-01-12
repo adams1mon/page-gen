@@ -16,7 +16,7 @@ export interface SiteProps extends ComponentPropsWithChildren {
     styles?: string;
 }
 
-const tag = (name: string, obj?: { [key: string]: string }) => {
+export function tag(name: string, obj?: { [key: string]: string }) {
     const m = document.createElement(name);
     for (const key in obj) {
         m.setAttribute(key, obj[key]);

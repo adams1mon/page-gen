@@ -6,6 +6,7 @@ import { EditorContainer } from "../../components/preview/editor/EditorContainer
 import { createPortal } from "react-dom";
 import { createHtml, createReactNode } from "@/lib/site-generator/generate-html";
 import { renderToStaticMarkup } from "react-dom/server";
+import { ShadowEditorContainer } from "./ShadowEditorContainer";
 
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
@@ -25,10 +26,10 @@ function wrapTreeWithEditor(
             component={comp}
         >
             {
-            //    createElement(
-            //    ComponentContainer.getReactElement(comp.type),
-            //    { ...comp.props, key: comp.id },
-            //)
+                //    createElement(
+                //    ComponentContainer.getReactElement(comp.type),
+                //    { ...comp.props, key: comp.id },
+                //)
             }
         </EditorContainer>
     );
@@ -91,50 +92,53 @@ export function ShadowTest({ comp, onChange }: CompProps) {
         //    );
         //}
 
-    }, [comp]);
+    }, [comp, ref.current]);
 
 
     return (
-        <div className="m-4 border-2 border-red-500" ref={ref}>
-            {
-                //ref.current && ref.current.shadowRoot &&
+        <>
+            <div className="m-4 border-2 border-red-500" ref={ref}>
+                {
+                    //ref.current && ref.current.shadowRoot &&
 
-                //createPortal(
-                //    <>
-                //        {comp.type === SITE_TYPE
-                //            //? comp.childrenDescriptors.map(createReactNode)
-                //            //: createReactNode(comp)
-                //            ? comp.childrenDescriptors.map(wrapTreeWithEditor)
-                //            : wrapTreeWithEditor(comp)
-                //        }
-                //    </>,
-                //    ref.current.shadowRoot,
-                //)
+                    //createPortal(
+                    //    <>
+                    //        {comp.type === SITE_TYPE
+                    //            //? comp.childrenDescriptors.map(createReactNode)
+                    //            //: createReactNode(comp)
+                    //            ? comp.childrenDescriptors.map(wrapTreeWithEditor)
+                    //            : wrapTreeWithEditor(comp)
+                    //        }
+                    //    </>,
+                    //    ref.current.shadowRoot,
+                    //)
 
-                //createPortal(
-                //    <>
-                //        {comp.type === SITE_TYPE
-                //            //? comp.childrenDescriptors.map(createReactNode)
-                //            //: createReactNode(comp)
-                //            ? comp.childrenDescriptors.map(wrapTreeWithEditor)
-                //            : wrapTreeWithEditor(comp)
-                //        }
-                //    </>,
-                //    ref.current.shadowRoot,
-                //)
+                    //createPortal(
+                    //    <>
+                    //        {comp.type === SITE_TYPE
+                    //            //? comp.childrenDescriptors.map(createReactNode)
+                    //            //: createReactNode(comp)
+                    //            ? comp.childrenDescriptors.map(wrapTreeWithEditor)
+                    //            : wrapTreeWithEditor(comp)
+                    //        }
+                    //    </>,
+                    //    ref.current.shadowRoot,
+                    //)
 
-                //{comp.type === SITE_TYPE
-                //  ? comp.childrenDescriptors.map(wrapTreeWithEditor)
-                //  : wrapTreeWithEditor(comp)
-                //}
-                //{comp.acceptsChildren && (
-                //  <div className="p-4">
-                //    <ComponentDivider
-                //      onInsert={c => onChange(insertChild(comp, c))}
-                //    />
-                //  </div>
-                //)}
-            }
-        </div>
+                    //{comp.type === SITE_TYPE
+                    //  ? comp.childrenDescriptors.map(wrapTreeWithEditor)
+                    //  : wrapTreeWithEditor(comp)
+                    //}
+                    //{comp.acceptsChildren && (
+                    //  <div className="p-4">
+                    //    <ComponentDivider
+                    //      onInsert={c => onChange(insertChild(comp, c))}
+                    //    />
+                    //  </div>
+                    //)}
+                }
+            </div>
+            <ShadowEditorContainer comp={comp} containerRef={ref}/> 
+        </>
     );
 }

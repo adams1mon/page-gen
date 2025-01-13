@@ -86,6 +86,20 @@ export function removeUnsavableAttributes(comp: ComponentDescriptor): ComponentD
     };
 }
 
+export function findByIdInTree(root: ComponentDescriptor, id: string): ComponentDescriptor | null {
+
+    if (root.id == id) return root;
+
+    if (root.acceptsChildren) {
+        for (const child of root.childrenDescriptors) {
+            const node = findByIdInTree(child, id);
+            if (node) return node;
+        }
+    }
+
+    return null;
+}
+
 export type ToHtmlFunc = (props?: object) => HTMLElement;
 
 // holds component descriptors and creates new component descriptors based on the templates
@@ -115,10 +129,14 @@ export class ComponentContainer {
             throw new Error(`Component of type ${type} does not exist`);
         }
 
+        const id = this.createId(type);
+        const domNode = this.htmlFuncs[type](desc.props);
+        domNode.setAttribute("data-id", id);
+
         return {
             ...desc,
-            id: this.createId(type),
-            domNode: this.htmlFuncs[type](desc.props),
+            id,
+            domNode,
         }
     }
 

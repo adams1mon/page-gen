@@ -157,7 +157,7 @@ export class ComponentContainer {
 
         //console.log("descriptor: added child", child, " to parent", parent);
         //
-        addMouseHandlers(child);
+        //addMouseHandlers(child);
     }
 
     static removeChild(parent: ComponentDescriptor, child: ComponentDescriptor) {
@@ -204,40 +204,6 @@ function addMouseHandlers(component: ComponentDescriptor) {
 
     component.domNode.onmouseenter = () => addOverlay(component);
     component.domNode.onmouseleave = () => removeOverlay(component);
-    component.domNode.onmousedown = (e) => addPopover(e, component);
-}
-
-let popoverOpen = false;
-
-function addPopover(e: MouseEvent, component: ComponentDescriptor): HTMLElement {
-    const node = component.domNode!;
-
-    const div = tag("div");
-    popoverOpen = true;
-
-    div.innerText = "POPOVERRRRR";
-
-    document.querySelector("body")!.appendChild(div);
-
-    document.addEventListener("mousedown", () => {
-        if (popoverOpen) {
-            console.log("closing popover from", component);
-        }
-    });
-
-    return div;
-
-    //function handleClickOutside(event: MouseEvent) {
-    //    if (isOpen && !(event.target as Element).closest('[role="menu"]')) {
-    //        setIsOpen(false);
-    //    }
-    //}
-    //
-    //if (isOpen) {
-    //    document.addEventListener('mousedown', handleClickOutside);
-    //    return () => document.removeEventListener('mousedown', handleClickOutside);
-    //}
-    //
 }
 
 function addOverlay(component: ComponentDescriptor) {
@@ -258,7 +224,6 @@ function addOverlay(component: ComponentDescriptor) {
     //outlineDiv.classList.add(..."outline outline-2 outline-primary/20 rounded-sm".split(" "));
 
     //console.log("outline div", outlineDiv);
-
 
     const body = document.querySelector("body");
     body.appendChild(outlineDiv);

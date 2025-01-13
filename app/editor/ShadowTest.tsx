@@ -1,23 +1,32 @@
-import { ComponentContainer, insertChild } from "@/lib/components-meta/ComponentContainer";
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { SITE_TYPE, createHtmlSkeleton, upsertNode, setBodyHtml, processTailwindCSS } from "@/lib/components/Site";
-import { ReactNode, createElement, useEffect, useRef, useState } from "react";
-import { EditorContainer } from "../../components/preview/editor/EditorContainer";
-import { createPortal } from "react-dom";
-import { createHtml, createReactNode } from "@/lib/site-generator/generate-html";
-import { renderToStaticMarkup } from "react-dom/server";
+import { SITE_TYPE,upsertNode } from "@/lib/components/Site";
+import { ReactNode, useEffect, useRef } from "react";
 import { ShadowEditorContainer } from "./ShadowEditorContainer";
-import { EditorContextMenu } from "@/components/preview/editor/EditorContextMenu";
-
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
+function wrapWithEditorContainer(
+    comp: ComponentDescriptor,
+): ReactNode {
+
+    if (comp.acceptsChildren) {
+        return (
+            <>
+                {comp.childrenDescriptors.map(wrapWithEditorContainer)}
+            </>
+        );
+    }
+
+    return (
+        <ShadowEditorContainer key={comp.id} component={comp} />
+    );
+}
 
 interface CompProps {
     comp: ComponentDescriptor;
     onChange: CompFunc;
 }
 
-export function ShadowTest({ comp, onChange }: CompProps) {
+export function ShadowTest({ comp} : CompProps) {
 
     const ref = useRef(null);
 
@@ -55,21 +64,14 @@ export function ShadowTest({ comp, onChange }: CompProps) {
 
     return (
         <>
-            <ShadowEditorContainer comp={comp} />
+            <div className="m-4 border-2 border-red-500" ref={ref}></div>
+            {
+                comp.type == SITE_TYPE ?
+                    comp.childrenDescriptors.map(wrapWithEditorContainer)
+                    :
+                    wrapWithEditorContainer(comp)
+            }
 
-            <EditorContextMenu
-                component={comp}
-                overlayEnabled={false}
-                onOverlayToggle={() => console.log("toggle overlay")}
-
-                //onEdit={() => selectComponent(c)}
-                onEdit={() => console.log("edit")}
-
-                onInsert={() => console.log("insert")}
-                onRemove={() => console.log("remove")}
-            >
-                <div className="m-4 border-2 border-red-500" ref={ref}></div>
-            </EditorContextMenu>
         </>
     );
 }

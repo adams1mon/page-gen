@@ -1,6 +1,6 @@
 import { Layout } from "lucide-react";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
-import { ComponentExport } from "../components-meta/ComponentContainer";
+import { ComponentExport, createHtmlNodeFromReact } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { htmlIdDesc } from "./common";
 
@@ -96,5 +96,5 @@ const desc: ComponentDescriptor = {
 export default {
     type: HERO_TYPE,
     descriptor: desc,
-    node: Node,
+    createHtmlNode: (props) => createHtmlNodeFromReact("section", Node, props),
 } as ComponentExport;

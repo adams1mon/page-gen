@@ -1,5 +1,5 @@
 import { LayoutGrid } from "lucide-react";
-import { ComponentExport } from "../components-meta/ComponentContainer";
+import { ComponentExport, createHtmlNodeFromReact } from "../components-meta/ComponentContainer";
 import { ComponentDescriptor, ComponentPropsWithChildren } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc } from "../components-meta/PropsDescriptor";
 import { cn } from "@/lib/utils";
@@ -89,6 +89,6 @@ const desc: ComponentDescriptor = {
 export default {
     type: ROW_TYPE,
     descriptor: desc,
-    node: Node,
+    createHtmlNode: (props) => createHtmlNodeFromReact("div", Node, props)
 } as ComponentExport;
 

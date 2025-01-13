@@ -54,7 +54,7 @@ export function PreviewEditor({ comp, onChange }: CompProps) {
                     console.log("no addchild");
                 }
 
-                ComponentContainer.addOrUpdateChild(comp, c);
+                ComponentContainer.addChild(comp, c);
                 onChange(comp);
                 //onChange({...comp});
             }}

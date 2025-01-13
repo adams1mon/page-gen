@@ -5,11 +5,11 @@ import { EditorOverlay } from "./EditorOverlay";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { useState } from "react";
 import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
-import { insertChild, removeChild } from "@/lib/components-meta/ComponentContainer";
+import { removeChild } from "@/lib/components-meta/ComponentContainer";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useSiteStore } from "@/lib/store/site-store";
-import { findParentComponent, findComponentIndex } from "@/lib/components-meta/ComponentContainer";
+import { findParentComponent } from "@/lib/components-meta/ComponentContainer";
 import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
 import { useComponentSelection } from "@/app/editor/hooks/useComponentSelection";
 

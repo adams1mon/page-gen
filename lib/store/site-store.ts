@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ComponentDescriptor } from '../components-meta/ComponentDescriptor';
 import { newSite } from '../site-generator/generate-html';
-import { removeChildrenProps } from '../components-meta/ComponentContainer';
+import { removeUnsavableAttributes } from '../components-meta/ComponentContainer';
 
 interface SiteStore {
     // Site state

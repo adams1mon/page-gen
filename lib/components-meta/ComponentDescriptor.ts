@@ -8,14 +8,14 @@ export interface ComponentDescriptor {
     icon: ReactNode;
 
     domNode?: HTMLElement;
-    addChild?: (comp: ComponentDescriptor) => void;
-    removeChild?: (comp: ComponentDescriptor) => void;
 
     // if true, childrenDescriptors is populated,
     // and 'props' will have 'children' populated with the rendered components
     // when the component is rendered to HTML
     acceptsChildren: boolean;
     childrenDescriptors: ComponentDescriptor[];
+
+    parent?: ComponentDescriptor;
 
     // Props that will be passed in to the React node once created.
     //

@@ -81,12 +81,12 @@ export default function EditorPage() {
                             <>
                                 {
                                     <ShadowTest comp={site} onChange={setSite} />
+                                //<PreviewEditor
+                                //    comp={site}
+                                //    onChange={setSite}
+                                //    //onChange={() => console.log("add")}
+                                ///>
                                 }
-                                <PreviewEditor
-                                    comp={site}
-                                    onChange={setSite}
-                                    //onChange={() => console.log("add")}
-                                />
                             </>
                         ) : (
                             <>

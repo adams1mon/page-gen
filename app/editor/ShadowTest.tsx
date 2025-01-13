@@ -1,18 +1,20 @@
 import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { SITE_TYPE,upsertNode } from "@/lib/components/Site";
+import { SITE_TYPE, upsertNode } from "@/lib/components/Site";
 import { ReactNode, useEffect, useRef } from "react";
 import { ShadowEditorContainer } from "./ShadowEditorContainer";
+import { ComponentDivider } from "@/components/component-editor/component-input/ComponentDivider";
+import { ComponentContainer } from "@/lib/components-meta/ComponentContainer";
 export type CompFunc = (comp: ComponentDescriptor) => void;
 
-function wrapWithEditorContainer(
+function createEditorContainers(
     comp: ComponentDescriptor,
 ): ReactNode {
 
     if (comp.acceptsChildren) {
         return (
-            <>
-                {comp.childrenDescriptors.map(wrapWithEditorContainer)}
-            </>
+            <ShadowEditorContainer key={comp.id} component={comp}>
+                {comp.childrenDescriptors.map(createEditorContainers)}
+            </ShadowEditorContainer>
         );
     }
 
@@ -26,7 +28,7 @@ interface CompProps {
     onChange: CompFunc;
 }
 
-export function ShadowTest({ comp} : CompProps) {
+export function ShadowTest({ comp, onChange }: CompProps) {
 
     const ref = useRef(null);
 
@@ -50,10 +52,8 @@ export function ShadowTest({ comp} : CompProps) {
             }
         }
 
-        console.log(comp.domNode);
-
         if (!comp.domNode) {
-            console.log("no DOM node", comp);
+            console.warn("no DOM node", comp);
         } else {
             upsertNode("html", shadow, comp.domNode);
         }
@@ -67,10 +67,21 @@ export function ShadowTest({ comp} : CompProps) {
             <div className="m-4 border-2 border-red-500" ref={ref}></div>
             {
                 comp.type == SITE_TYPE ?
-                    comp.childrenDescriptors.map(wrapWithEditorContainer)
+                    comp.childrenDescriptors.map(createEditorContainers)
                     :
-                    wrapWithEditorContainer(comp)
+                    createEditorContainers(comp)
             }
+
+            {comp.acceptsChildren && (
+                <div className="p-4">
+                    <ComponentDivider
+                        onInsert={c => {
+                            ComponentContainer.addChild(comp, c);
+                            onChange(comp);
+                        }}
+                    />
+                </div>
+            )}
 
         </>
     );

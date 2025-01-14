@@ -76,11 +76,11 @@ export default function EditorPage() {
 
 
 
-                    <div className="h-full overflow-auto p-4">
+                    <div className="h-full overflow-hidden p-4">
                         {activeView === "editor" ? (
                             <>
                                 {
-                                    <ShadowTest comp={site} onChange={setSite} />
+                                    <ShadowTest />
                                 //<PreviewEditor
                                 //    comp={site}
                                 //    onChange={setSite}
@@ -89,12 +89,7 @@ export default function EditorPage() {
                                 }
                             </>
                         ) : (
-                            <>
-                                {
-                                    <ShadowTest comp={site} onChange={setSite} />
-                                }
-                                <IframePreview html={previewHtml} site={site} />
-                            </>
+                            <IframePreview html={previewHtml} site={site} />
                         )}
                     </div>
                 </ResizablePanel>

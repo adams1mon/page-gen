@@ -169,7 +169,7 @@ export class ComponentContainer {
         } 
         
         // update descriptors
-        if (index && index > 0) {  
+        if (index !== undefined && index !== -1) {  
             parent!.childrenDescriptors.splice(index, 0, child);
         }
 

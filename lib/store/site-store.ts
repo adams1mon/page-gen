@@ -3,18 +3,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ComponentDescriptor } from '../components-meta/ComponentDescriptor';
-import { newSite } from '../site-generator/generate-html';
+import { newPage, newSite } from '../site-generator/generate-html';
 import { removeUnsavableAttributes } from '../components-meta/ComponentContainer';
+import { Page } from '../newcomps/Page';
 
 interface SiteStore {
     // Site state
-    site: ComponentDescriptor;
+    //site: ComponentDescriptor;
+    site: Page;
     autoSave: boolean;
-    savedSites: { [key: string]: ComponentDescriptor };
+    savedSites: { [key: string]: Page };
     lastSaved: string | null;
 
     // Actions
-    setSite: (site: ComponentDescriptor) => void;
+    setSite: (site: Page) => void;
     setAutoSave: (enabled: boolean) => void;
     saveSite: (name?: string) => void;
     loadSite: (name: string) => void;
@@ -87,7 +89,7 @@ interface SiteStore {
 
 export const useSiteStore = create<SiteStore>()(
     (set, get) => ({
-        site: newSite(),
+        site: newPage(),
         autoSave: true,
         savedSites: {},
         lastSaved: null,
@@ -120,7 +122,7 @@ export const useSiteStore = create<SiteStore>()(
             }
         },
 
-        resetSite: () => set({ site: newSite() }),
+        resetSite: () => set({ site: newPage() }),
 
         deleteSavedSite: (name) => {
             set((state) => {

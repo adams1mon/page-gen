@@ -215,12 +215,12 @@ export class ComponentContainer {
     }
 }
 
-export function createHtmlNodeFromReact(node: FunctionComponent<any>, props: any) {
+export function createHtmlNodeFromReact(node: FunctionComponent<any>, props: any): HTMLElement {
     const doc = Document.parseHTMLUnsafe(
         renderToStaticMarkup(createElement(node, props)),
     );
     
-    return doc.querySelector('*');
+    return doc.querySelector('body *');
 }
 
 export interface ComponentExport {

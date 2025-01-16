@@ -5,13 +5,15 @@ import { ComponentDivider } from "@/components/component-editor/component-input/
 import { ComponentContainer, findByIdInTree } from "@/lib/components-meta/ComponentContainer";
 import { Clipboard, Copy, Edit, Plus, Trash2 } from "lucide-react";
 import { ComponentSelector } from "@/components/component-editor/component-input/ComponentSelector";
-import { useComponentClipboard } from "@/lib/store/component-clipboard-context";
 import { useComponentSelection } from "./hooks/useComponentSelection";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from "@/components/ui/context-menu";
 import { useRClickedComponent } from "./useRClickComponent";
+import { findByIdInComp, findByIdInPage } from "@/lib/newcomps/utils";
+import { Component } from "@/lib/newcomps/Heading";
+import { useComponentClipboard } from "./hooks/useComponentClipboard";
 
-type CompFunc = (comp: ComponentDescriptor) => void;
+type CompFunc = (comp: Component) => void;
 
 interface OverlayState {
     id: string;
@@ -43,20 +45,18 @@ export function ShadowTest() {
 
         const shadow = ref.current.shadowRoot as ShadowRoot;
 
-        if (site.type == SITE_TYPE) {
-            if (site.props.styles) {
-                const sheet = new CSSStyleSheet();
-                sheet.replaceSync(site.props.styles);
-                shadow.adoptedStyleSheets = [sheet];
-                console.log("added styles");
-            }
+        if (site.props.styles) {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(site.props.styles);
+            shadow.adoptedStyleSheets = [sheet];
+            console.log("added styles");
         }
 
-        if (!site.domNode) {
-            console.warn("no DOM node", site);
-            return;
+        const html = shadow.querySelector("html");
+        if (html) {
+            shadow.replaceChild(site.htmlRoot, html);
         } else {
-            upsertNode("html", shadow, site.domNode);
+            shadow.appendChild(site.htmlRoot);
         }
 
         const handleMouseOver = (e: Event) => {
@@ -70,13 +70,13 @@ export function ShadowTest() {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const rect = componentRoot.getBoundingClientRect();
-                const componentDescriptor = findByIdInTree(site, id);
-                if (!componentDescriptor) {
-                    console.warn("no component descriptor for id", id);
+                const component = findByIdInPage(site, id);
+                if (!component) {
+                    console.warn("no component for id in site", id);
                     return;
                 }
 
+                const rect = componentRoot.getBoundingClientRect();
                 setOverlay({
                     id,
                     rect: {
@@ -101,13 +101,14 @@ export function ShadowTest() {
             if (componentRoot && !componentRoot.dataset.id.startsWith('Site')) {
 
                 const id = componentRoot.dataset.id;
-                const componentDescriptor = findByIdInTree(site, id);
-                if (!componentDescriptor) {
-                    console.warn("no component descriptor for id", id);
+
+                const component = findByIdInPage(site, id);
+                if (!component) {
+                    console.warn("no component for id in site", id);
                     return;
                 }
 
-                rClickComponent(componentDescriptor);
+                rClickComponent(component);
             }
         };
 
@@ -123,20 +124,23 @@ export function ShadowTest() {
 
     }, [site, ref.current]);
 
-    const handleRemove = (comp: ComponentDescriptor) => {
-        ComponentContainer.removeChild(comp);
+    const handleRemove = (comp: Component) => {
+        site.removeChild(comp);
         setSite(site);
     };
 
-    const handleSiblingInsert = (reference: ComponentDescriptor | null, newComponent: ComponentDescriptor, position: 'before' | 'after') => {
-        if (!reference) return;
-        ComponentContainer.addSibling(reference, newComponent, position);
-        setSite(site);
+    const handleSiblingInsert = (reference: Component | null, newComponent: Component, position: 'before' | 'after') => {
+        console.log("sibling insert", position);
+        //if (!reference) return;
+        //ComponentContainer.addSibling(reference, newComponent, position);
+        //setSite(site);
     };
 
-    const handleInsert = (newComponent: ComponentDescriptor) => {
-        ComponentContainer.addChild(site, newComponent);
-        setSite(site);
+    const handleInsert = (newComponent: Component) => {
+        site.addChild(newComponent);
+        console.log("add comp", newComponent);
+        
+        setSite(site.clone());
     };
 
     return (
@@ -173,13 +177,11 @@ export function ShadowTest() {
                 )}
             </ComponentContextMenu>
 
-            {site.acceptsChildren && (
-                <div className="p-4">
-                    <ComponentDivider
-                        onInsert={handleInsert}
-                    />
-                </div>
-            )}
+            <div className="p-4">
+                <ComponentDivider
+                    onInsert={handleInsert}
+                />
+            </div>
         </div>
     );
 }
@@ -241,7 +243,7 @@ function ComponentContextMenu({
             {rClickedComponent &&
                 <ContextMenuContent className="w-48">
                     <ContextMenuItem className="flex flex-col items-center mb-2">
-                        <p className="m-0">{rClickedComponent.name}</p>
+                        <p className="m-0">{rClickedComponent.type}</p>
                         <hr className="w-full mt-2" />
                     </ContextMenuItem>
 
@@ -286,7 +288,7 @@ function ComponentContextMenu({
                     </ContextMenuSub>
 
                     {/* Add Inside (if component accepts children) */}
-                    {rClickedComponent.acceptsChildren && (
+                    {"children" in rClickedComponent && (
                         <ContextMenuSub>
                             <ContextMenuSubTrigger className="flex items-center">
                                 <Plus className="h-4 w-4 mr-2" />

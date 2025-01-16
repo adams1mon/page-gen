@@ -6,20 +6,12 @@ import { ComponentContainer, findByIdInTree } from "@/lib/components-meta/Compon
 import { Clipboard, Copy, Edit, Plus, Trash2 } from "lucide-react";
 import { ComponentSelector } from "@/components/component-editor/component-input/ComponentSelector";
 import { useComponentClipboard } from "@/lib/store/component-clipboard-context";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useComponentSelection } from "./hooks/useComponentSelection";
 import { useSiteStore } from "@/lib/store/site-store";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from "@/components/ui/context-menu";
+import { useRClickedComponent } from "./useRClickComponent";
 
 type CompFunc = (comp: ComponentDescriptor) => void;
-
-interface ContextMenuState {
-    component: ComponentDescriptor;
-    rect: RectState;
-    position: {
-        x: number;
-        y: number;
-    };
-}
 
 interface OverlayState {
     id: string;
@@ -36,11 +28,9 @@ interface RectState {
 export function ShadowTest() {
 
     const ref = useRef(null);
-
-    const { site, setSite } = useSiteStore();
-
     const [overlay, setOverlay] = useState<OverlayState | null>(null);
-    const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+    const { site, setSite } = useSiteStore();
+    const { rClickedComponent, rClickComponent } = useRClickedComponent();
 
     useEffect(() => {
 
@@ -64,13 +54,13 @@ export function ShadowTest() {
 
         if (!site.domNode) {
             console.warn("no DOM node", site);
+            return;
         } else {
             upsertNode("html", shadow, site.domNode);
         }
 
         const handleMouseOver = (e: Event) => {
             const target = e.target as HTMLElement;
-
             if (!target) return;
 
             const componentRoot = target.closest('[data-id]');
@@ -81,6 +71,12 @@ export function ShadowTest() {
                 e.stopPropagation();
 
                 const rect = componentRoot.getBoundingClientRect();
+                const componentDescriptor = findByIdInTree(site, id);
+                if (!componentDescriptor) {
+                    console.warn("no component descriptor for id", id);
+                    return;
+                }
+
                 setOverlay({
                     id,
                     rect: {
@@ -104,9 +100,6 @@ export function ShadowTest() {
             const componentRoot = target.closest('[data-id]');
             if (componentRoot && !componentRoot.dataset.id.startsWith('Site')) {
 
-                e.preventDefault();
-                e.stopPropagation();
-
                 const id = componentRoot.dataset.id;
                 const componentDescriptor = findByIdInTree(site, id);
                 if (!componentDescriptor) {
@@ -114,15 +107,7 @@ export function ShadowTest() {
                     return;
                 }
 
-                const rect = componentRoot.getBoundingClientRect();
-                setContextMenu({
-                    component: componentDescriptor,
-                    position: {
-                        x: e.pageX,
-                        y: e.pageY,
-                    },
-                    rect,
-                });
+                rClickComponent(componentDescriptor);
             }
         };
 
@@ -143,7 +128,8 @@ export function ShadowTest() {
         setSite(site);
     };
 
-    const handleSiblingInsert = (reference: ComponentDescriptor, newComponent: ComponentDescriptor, position: 'before' | 'after') => {
+    const handleSiblingInsert = (reference: ComponentDescriptor | null, newComponent: ComponentDescriptor, position: 'before' | 'after') => {
+        if (!reference) return;
         ComponentContainer.addSibling(reference, newComponent, position);
         setSite(site);
     };
@@ -154,10 +140,38 @@ export function ShadowTest() {
     };
 
     return (
-
         <div className="h-full overflow-auto">
+            <ComponentContextMenu
+                onInsert={handleInsert}
+                onInsertBefore={c => {
+                    handleSiblingInsert(rClickedComponent, c, 'before');
+                }}
+                onInsertAfter={c => {
+                    handleSiblingInsert(rClickedComponent, c, 'after');
+                }}
+                onRemove={handleRemove}
+            >
 
-            <div className="m-4 border-2 border-red-500" ref={ref}></div>
+                {/* shadow host for the preview */}
+                <div
+                    className="m-4 border-2 border-red-500"
+                    ref={ref}
+                ></div>
+
+                {overlay && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            left: overlay.rect.x + window.scrollX + 'px',
+                            top: overlay.rect.y + window.scrollY + 'px',
+                            width: overlay.rect.width + 'px',
+                            height: overlay.rect.height + 'px',
+                            border: '2px solid blue',
+                            pointerEvents: 'none',
+                        }}
+                    />
+                )}
+            </ComponentContextMenu>
 
             {site.acceptsChildren && (
                 <div className="p-4">
@@ -166,222 +180,180 @@ export function ShadowTest() {
                     />
                 </div>
             )}
-
-            {overlay && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        left: overlay.rect.x + window.scrollX + 'px',
-                        top: overlay.rect.y + window.scrollY + 'px',
-                        width: overlay.rect.width + 'px',
-                        height: overlay.rect.height + 'px',
-                        border: '2px solid blue',
-                        pointerEvents: 'none',
-                    }}
-                />
-            )}
-
-            {contextMenu && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        left: contextMenu.position.x + 'px',
-                        top: contextMenu.position.y + 'px',
-                    }}
-                >
-                    <ComponentContextMenu
-                        component={contextMenu.component}
-                        onInsert={handleInsert}
-                        onInsertBefore={c => {
-                            handleSiblingInsert(contextMenu.component, c, 'before');
-                        }}
-                        onInsertAfter={c => {
-                            handleSiblingInsert(contextMenu.component, c, 'after');
-                        }}
-                        onRemove={handleRemove}
-                        onClickOutside={() => setContextMenu(null)}
-                    />
-                </div>
-            )}
         </div>
     );
 }
 
-interface ComponentContextMenuProps {
-    component: ComponentDescriptor;
+interface ComponentContextMenuProps extends React.PropsWithChildren {
     onInsert: CompFunc;
     onInsertBefore: CompFunc;
     onInsertAfter: CompFunc;
     onRemove: CompFunc;
-    onClickOutside: () => void;
 }
 
 function ComponentContextMenu({
-    component,
     onInsert,
     onInsertBefore,
     onInsertAfter,
     onRemove,
-    onClickOutside,
+    children,
 }: ComponentContextMenuProps) {
 
     const { copy, paste, hasCopiedComponent } = useComponentClipboard();
     const { selectComponent } = useComponentSelection();
 
+    const [isOpen, setIsOpen] = useState(true);
+
+    const { rClickedComponent } = useRClickedComponent();
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
             // don't close when the click is on the menu itself
-            if (!(event.target as Element).closest('[role="menu"]')) {
-                onClickOutside();
+            if (isOpen && !(event.target as Element).closest('[role="menu"]')) {
+                setIsOpen(false);
             }
         }
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isOpen]);
+
+    function pasteMenuItem() {
+        return hasCopiedComponent() && (
+            <ContextMenuItem onClick={() => {
+                const comp = paste();
+                if (comp) onInsertAfter(comp);
+                setIsOpen(false);
+            }}>
+                <Clipboard className="h-4 w-4 mr-2" />
+                Paste Component
+            </ContextMenuItem>
+        );
+    }
 
     return (
-        <DropdownMenu open={true}>
-            {/* dummy trigger - needed for the component to show up */}
-            <DropdownMenuTrigger />
-            <DropdownMenuContent className="w-48">
-                <DropdownMenuItem className="flex flex-col items-center mb-2">
-                    <p className="m-0">{component.name}</p>
-                    <hr className="w-full mt-2" />
-                </DropdownMenuItem>
+        <ContextMenu open={isOpen} onOpenChange={setIsOpen}>
+            <ContextMenuTrigger>
+                {children}
+            </ContextMenuTrigger>
+            {rClickedComponent &&
+                <ContextMenuContent className="w-48">
+                    <ContextMenuItem className="flex flex-col items-center mb-2">
+                        <p className="m-0">{rClickedComponent.name}</p>
+                        <hr className="w-full mt-2" />
+                    </ContextMenuItem>
 
-                {/* Insert Above */}
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="flex items-center">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Insert Above
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                        <ComponentSelector onInsert={(c) => {
-                            onInsertBefore(c);
-                            onClickOutside();
-                        }}>
-                            <DropdownMenuItem>
-                                Add Component
-                            </DropdownMenuItem>
-                        </ComponentSelector>
-                        {
-                            hasCopiedComponent() && (
-                                <DropdownMenuItem onClick={() => {
-                                    const comp = paste();
-                                    if (comp) onInsertBefore(comp);
-                                    onClickOutside();
-                                }}>
-                                    <Clipboard className="h-4 w-4 mr-2" />
-                                    Paste Component
-                                </DropdownMenuItem>
-                            )
-                        }
-                    </DropdownMenuSubContent>
-                </DropdownMenuSub>
-
-                {/* Insert Below */}
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="flex items-center">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Insert Below
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                        <ComponentSelector onInsert={(c) => {
-                            onInsertAfter(c);
-                            onClickOutside();
-                        }}>
-                            <DropdownMenuItem>
-                                Add Component
-                            </DropdownMenuItem>
-                        </ComponentSelector>
-                        {
-                            hasCopiedComponent() && (
-                                <DropdownMenuItem onClick={() => {
-                                    const comp = paste();
-                                    if (comp) onInsertAfter(comp);
-                                    onClickOutside();
-                                }}>
-                                    <Clipboard className="h-4 w-4 mr-2" />
-                                    Paste Component
-                                </DropdownMenuItem>
-                            )
-                        }
-                    </DropdownMenuSubContent>
-                </DropdownMenuSub>
-
-                {/* Add Inside (if component accepts children) */}
-                {component.acceptsChildren && (
-                    <DropdownMenuSub>
-                        <DropdownMenuSubTrigger className="flex items-center">
+                    {/* Insert Above */}
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger className="flex items-center">
                             <Plus className="h-4 w-4 mr-2" />
-                            Add Inside
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent>
+                            Insert Above
+                        </ContextMenuSubTrigger>
+                        <ContextMenuSubContent>
                             <ComponentSelector onInsert={(c) => {
-                                onInsert(c);
-                                onClickOutside();
+                                onInsertBefore(c);
+                                setIsOpen(false);
+                                console.log("set is open to false");
+
                             }}>
-                                <DropdownMenuItem>
+                                <ContextMenuItem>
                                     Add Component
-                                </DropdownMenuItem>
+                                </ContextMenuItem>
                             </ComponentSelector>
-                            {
-                                hasCopiedComponent() && (
-                                    <DropdownMenuItem onClick={() => {
-                                        const comp = paste();
-                                        if (comp) onInsert(comp);
-                                        onClickOutside();
-                                    }}>
-                                        <Clipboard className="h-4 w-4 mr-2" />
-                                        Paste Component
-                                    </DropdownMenuItem>
-                                )
-                            }
-                        </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                )}
+                            {pasteMenuItem()}
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
 
-                <DropdownMenuItem
-                    onClick={() => {
-                        selectComponent(component);
-                        onClickOutside();
-                    }}
-                    className="flex items-center"
-                >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit properties
-                </DropdownMenuItem>
+                    {/* Insert Below */}
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger className="flex items-center">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Insert Below
+                        </ContextMenuSubTrigger>
+                        <ContextMenuSubContent>
+                            <ComponentSelector onInsert={(c) => {
+                                onInsertAfter(c);
+                                setIsOpen(false);
+                            }}>
+                                <ContextMenuItem>
+                                    Add Component
+                                </ContextMenuItem>
+                            </ComponentSelector>
+                            {pasteMenuItem()}
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
 
-                <DropdownMenuItem
-                    onClick={() => {
-                        copy(component);
-                        onClickOutside();
-                    }}
-                    className="flex items-center"
-                >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy component
-                </DropdownMenuItem>
+                    {/* Add Inside (if component accepts children) */}
+                    {rClickedComponent.acceptsChildren && (
+                        <ContextMenuSub>
+                            <ContextMenuSubTrigger className="flex items-center">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Inside
+                            </ContextMenuSubTrigger>
+                            <ContextMenuSubContent>
+                                <ComponentSelector onInsert={(c) => {
+                                    onInsert(c);
+                                    setIsOpen(false);
+                                }}>
+                                    <ContextMenuItem>
+                                        Add Component
+                                    </ContextMenuItem>
+                                </ComponentSelector>
+                                {
+                                    hasCopiedComponent() && (
+                                        <ContextMenuItem onClick={() => {
+                                            const comp = paste();
+                                            if (comp) onInsert(comp);
+                                            setIsOpen(false);
+                                        }}>
+                                            <Clipboard className="h-4 w-4 mr-2" />
+                                            Paste Component
+                                        </ContextMenuItem>
+                                    )
+                                }
+                            </ContextMenuSubContent>
+                        </ContextMenuSub>
+                    )}
 
-                {onRemove && (
-                    <DropdownMenuItem
+                    <ContextMenuItem
                         onClick={() => {
-                            onRemove(component);
-                            onClickOutside();
+                            selectComponent(rClickedComponent);
+                            setIsOpen(false);
                         }}
-                        className="flex items-center text-destructive"
+                        className="flex items-center"
                     >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete component
-                    </DropdownMenuItem>
-                )}
-            </DropdownMenuContent>
-        </DropdownMenu>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit properties
+                    </ContextMenuItem>
+
+                    <ContextMenuItem
+                        onClick={() => {
+                            copy(rClickedComponent);
+                            setIsOpen(false);
+                        }}
+                        className="flex items-center"
+                    >
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy component
+                    </ContextMenuItem>
+
+                    {onRemove && (
+                        <ContextMenuItem
+                            onClick={() => {
+                                onRemove(rClickedComponent);
+                                setIsOpen(false);
+                            }}
+                            className="flex items-center text-destructive"
+                        >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete component
+                        </ContextMenuItem>
+                    )}
+                </ContextMenuContent>
+            }
+        </ContextMenu>
     );
 }
 

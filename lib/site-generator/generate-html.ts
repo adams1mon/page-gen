@@ -19,6 +19,15 @@ export function renderToHtml(comp: ComponentDescriptor): string {
     return ComponentContainer.htmlFuncs[comp.type](comp.props).outerHTML;
 }
 
+
+export function tag(name: string, obj?: { [key: string]: string }) {
+    const m = document.createElement(name);
+    for (const key in obj) {
+        m.setAttribute(key, obj[key]);
+    }
+    return m;
+}
+
 //export function renderToHtml(comp: ComponentDescriptor): string {
 //    if (comp.acceptsChildren) {
 //        const children = comp.childrenDescriptors.map(createReactNode);

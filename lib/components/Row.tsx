@@ -89,6 +89,6 @@ const desc: ComponentDescriptor = {
 export default {
     type: ROW_TYPE,
     descriptor: desc,
-    createHtmlNode: (props) => createHtmlNodeFromReact("div", Node, props)
+    createHtmlNode: (props) => createHtmlNodeFromReact(Node, props)
 } as ComponentExport;
 

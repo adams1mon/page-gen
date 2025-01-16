@@ -13,7 +13,7 @@ import Projects from "../components/Projects";
 import Row from "../components/Row";
 import Text from "../components/Text";
 import Gallery from "../components/Gallery";
-import Site, { createSiteNode, tag } from "../components/Site";
+import Site, { tag } from "../components/Site";
 
 import { ComponentDescriptor } from "./ComponentDescriptor";
 import { FunctionComponent, createElement } from "react";
@@ -131,6 +131,7 @@ export class ComponentContainer {
 
         const id = this.createId(type);
         const domNode = this.htmlFuncs[type](desc.props);
+
         domNode.setAttribute("data-id", id);
 
         return {
@@ -214,12 +215,12 @@ export class ComponentContainer {
     }
 }
 
-export function createHtmlNodeFromReact(topLevelTag: string, node: FunctionComponent<any>, props: any) {
+export function createHtmlNodeFromReact(node: FunctionComponent<any>, props: any) {
     const doc = Document.parseHTMLUnsafe(
         renderToStaticMarkup(createElement(node, props)),
     );
     
-    return doc.querySelector(topLevelTag);
+    return doc.querySelector('*');
 }
 
 export interface ComponentExport {

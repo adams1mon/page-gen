@@ -23,60 +23,29 @@ export function tag(name: string, obj?: { [key: string]: string }) {
     }
     return m;
 }
-//
-//export function createHtmlSkeleton(): HTMLElement {
-//
-//    const html = document.createElement("html");
-//    const head = document.createElement("head");
-//    const body = document.createElement("body");
-//
-//    head.appendChild(tag("meta", { charSet: "UTF-8" }));
-//    head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
-//    head.appendChild(tag("meta", { name: "description", content: "desc" }));
-//
-//    const styles = tag("style");
-//    styles.textContent = css;
-//
-//    head.appendChild(styles);
-//
-//    const script = tag("script");
-//    script.textContent = "console.log('tailwind js works')";
-//    head.appendChild(script);
-//
-//    html.appendChild(head);
-//    html.appendChild(body);
-//
-//    return html;
-//}
 
-export function createSiteNode(): HTMLElement {
-    const html = document.createElement("html");
-    const head = document.createElement("head");
-    const body = document.createElement("body");
+export function createSiteSkeleton(props: SiteProps = defaultProps): HTMLElement {
+    const html = tag("html");
 
+    const head = tag("head");
     head.appendChild(tag("meta", { charSet: "UTF-8" }));
     head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
-    head.appendChild(tag("meta", { name: "description", content: "desc" }));
+    head.appendChild(tag("meta", { name: "description", content: props.description }));
+
+    const title = tag("title");
+    title.textContent = props.title;
+    head.appendChild(title);
 
     const styles = tag("style");
-    styles.textContent = css;
+    styles.textContent = props.styles ?? css;
     head.appendChild(styles);
 
-    //const script = tag("script");
-    //script.textContent = "console.log('script tag works')";
-    //head.appendChild(script);
-
     html.appendChild(head);
+
+    const body = tag("body");
     html.appendChild(body);
 
     return body;
-}
-
-export function setBodyHtml(root: HTMLElement, htmlStr: string) {
-    const body = root.querySelector("body");
-    if (body) {
-        body.innerHTML = htmlStr;
-    }
 }
 
 export function upsertNode(query: string, root: HTMLElement | ShadowRoot, newNode: HTMLElement) {
@@ -155,17 +124,10 @@ const desc: ComponentDescriptor = {
     icon: null,
     acceptsChildren: true,
     childrenDescriptors: [],
-    //addChild: (node: HTMLElement, c: HTMLElement) => {
-    //
-    //    //const n = node.querySelector(`#${c.id}`);
-    //    node.appendChild(c);
-    //
-    //    console.log("added to site", c, node);
-    //},
 }
 
 export default {
     type: SITE_TYPE,
     descriptor: desc,
-    createHtmlNode: createSiteNode,
+    createHtmlNode: createSiteSkeleton,
 } as ComponentExport;

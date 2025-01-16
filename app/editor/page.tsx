@@ -14,6 +14,8 @@ import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
 import { ShadowTest } from "./ShadowTest";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
+import { createNavigationMenuScope } from "@radix-ui/react-navigation-menu";
+import { createSiteSkeleton } from "@/lib/components/Site";
 
 export default function EditorPage() {
     const { site, setSite } = useSiteStore();
@@ -45,16 +47,22 @@ export default function EditorPage() {
             //const html = await generateHtml(site);
             //setPreviewHtml(html);
 
-            const html = site.domNode?.outerHTML;
+            // TODO: clone the site dom node?
+            let body = createSiteSkeleton(site.props);
+            let html = body.closest("html");
+            body.replaceWith(site.domNode); // replaces the shadow root parent...
+            
+            //let html = site.domNode?.closest("html")?.outerHTML;
             if (!html) {
-                console.warn("no site DOM node found when trying to get HTML");
+                console.warn("no closest HTML node found when trying to get HTML from the site");
                 return;
             }
+            const htmlStr = "<!DOCTYPE html>\n" + html.outerHTML;
 
-            setPreviewHtml(html);
+            setPreviewHtml(htmlStr);
 
             console.log("preview HTML");
-            console.log(html);
+            console.log(htmlStr);
 
         }, previewDebounceMillis);
 
@@ -76,7 +84,7 @@ export default function EditorPage() {
 
 
 
-                    <div className="h-full overflow-hidden p-4">
+                    <div className="h-full overflow-hidden">
                         {activeView === "editor" ? (
                             <>
                                 {

@@ -96,5 +96,5 @@ const desc: ComponentDescriptor = {
 export default {
     type: HERO_TYPE,
     descriptor: desc,
-    createHtmlNode: (props) => createHtmlNodeFromReact("section", Node, props),
+    createHtmlNode: (props) => createHtmlNodeFromReact(Node, props),
 } as ComponentExport;

@@ -65,10 +65,6 @@ export function findParentComponent(root: ComponentDescriptor, comp: ComponentDe
     return null;
 }
 
-export function findComponentIndex(parent: ComponentDescriptor, comp: ComponentDescriptor): number {
-    return parent.childrenDescriptors.findIndex(child => child.id === comp.id);
-}
-
 export function removeUnsavableAttributes(comp: ComponentDescriptor): ComponentDescriptor {
 
     if (comp.acceptsChildren) {

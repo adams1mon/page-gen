@@ -1,20 +1,19 @@
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { PictureInPicture2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
-import { Component } from "@/lib/newcomps/Heading";
-import { Page } from "@/lib/newcomps/Page";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 
 interface EditorSidebarProps {
-    component: Component | Page;
-    onChange: () => void;
+    component: ComponentDescriptor;
+    onComponentUpdate: (component: ComponentDescriptor) => void;
     onPopOut: () => void;
     onClose: () => void;
 }
 
 export function EditorSidebar({
     component,
-    onChange,
+    onComponentUpdate,
     onPopOut,
     onClose,
 }: EditorSidebarProps) {
@@ -23,7 +22,7 @@ export function EditorSidebar({
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold capitalize">
-                        {component.type} Settings
+                        {component.name} Settings
                     </h2>
                     <div className="flex items-center gap-1">
                         <Button
@@ -48,16 +47,20 @@ export function EditorSidebar({
                 <PropInputs
                     propsDescriptor={component.propsDescriptor}
                     props={component.props}
-                    onChange={(newProps) => {
-                        component.update(newProps);
-                        onChange();
-                    }}
+                    onChange=
+                    //onChange={(newProps) => onComponentUpdate({
+                    //    ...component,
+                    //    props: newProps
+                    //})}
                 />
 
-                {"children" in component && (
+                {component.acceptsChildren && (
                     <ComponentInput
-                        parent={component}
-                        onChange={onChange}
+                        components={component.childrenDescriptors}
+                        onChange={(components) => onComponentUpdate({
+                            ...component,
+                            childrenDescriptors: components
+                        })}
                     />
                 )}
             </div>

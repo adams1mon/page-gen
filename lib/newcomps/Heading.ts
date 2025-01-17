@@ -2,6 +2,7 @@ import { DataType, InputType, ObjectDesc, PropsDesc } from "../components-meta/P
 import { classNameDesc } from "../components/common";
 import { tag } from "../site-generator/generate-html";
 import { ChildrenContainer, createId } from "./Page";
+import { addSibling, updateComp } from "./utils";
 
 export const HEADING_TYPE = "Heading";
 
@@ -49,6 +50,7 @@ const propsDescriptor: ObjectDesc = {
 };
 
 export interface Component {
+
     // static 
     type: string;
     propsDescriptor: PropsDesc;
@@ -61,11 +63,11 @@ export interface Component {
     // set by a ChildrenContainer when this element is added
     parent?: ChildrenContainer;
 
-    update: (props: any) => HTMLElement;
+    update: (props: any) => void;
     createHtml: () => HTMLElement;
-    clone: () => Component;
+    clone: () => any;
+    addSibling: (child: Component, position: 'before' | 'after') => void;
 };
-
 
 export class Heading implements Component {
 
@@ -83,7 +85,7 @@ export class Heading implements Component {
         this.domNode = this.createHtml();
     }
 
-    clone(): Component { 
+    clone(): Heading { 
         return new Heading(this.props);
     }
 
@@ -112,16 +114,22 @@ export class Heading implements Component {
             alignmentClasses[this.props.textAlign as keyof typeof alignmentClasses || 'left'],
         );
 
-        this.props.className && h.classList.add(...this.props.className.split(" "));
+        if (this.props.className) {
+            const classes = this.props.className.split(" ").filter(s => s.trim() !== "")
+            h.classList.add(...classes);
+        }
+
         h.innerText = this.props.content;
 
         return h;
     }
 
-    update(props: HeadingProps): HTMLElement { 
-        this.props = props;
-        this.domNode = this.createHtml();
-        return this.domNode;
+    update(props: HeadingProps) { 
+        updateComp(this, props);
+    }
+
+    addSibling(child: Component, position: "before" | "after") {
+        addSibling(this, child, position);
     }
 }
 

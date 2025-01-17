@@ -5,6 +5,8 @@ import { tag } from '../site-generator/generate-html';
 import { DataType, ObjectDesc, PropsDesc } from '../components-meta/PropsDescriptor';
 import { titleDesc, textDesc, longTextDesc } from '../components/common';
 import { Component } from './Heading';
+import { addChild, addSibling, findByIdInPage, updateComp } from './utils';
+import Heading from '../components/Heading';
 
 // a single static webpage
 
@@ -27,7 +29,7 @@ const defaultProps: PageProps = {
 
 const propsDescriptor: ObjectDesc = {
     type: DataType.OBJECT,
-    displayName: "Site settings",
+    displayName: "Page settings",
     child: {
         title: {
             ...titleDesc,
@@ -48,34 +50,26 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-//class Site {
-//
-//    id: string;
-//    pages: Page[];
-//
-//    constructor(pages: Page[] = []) {
-//        this.pages = pages;
-//        this.id = createId("site");
-//    }
-//}
-
 export function createId(type: string): string {
     return `${type}-${Date.now()}`;
 }
 
 export interface ChildrenContainer {
+    domNode: HTMLElement;
     children: Component[];
     isEmpty: () => boolean;
-    addChild: (child: Component) => void;
+    addChild: (child: Component, index?: number) => void;
     removeChild: (child: Component) => void;
-    addSibling: (reference: Component, child: Component, position: 'before' | 'after') => void;
+    findChildById: (id: string) => Component | null;
 };
+
+export type ComponentWithChildren = Component & ChildrenContainer;
 
 
 export class Page implements ChildrenContainer {
 
-    static type: string = "Page";
-    static propsDescriptor: PropsDesc = propsDescriptor;
+    type: string = "Page";
+    propsDescriptor: PropsDesc = propsDescriptor;
 
     id: string;
     props: PageProps;
@@ -83,28 +77,35 @@ export class Page implements ChildrenContainer {
     children: Component[];
 
     htmlRoot: HTMLElement;
+    domNode: HTMLElement;
 
-    constructor(props: PageProps = defaultProps, children: Component[] = [], html?: HTMLElement) {
-        this.id = createId(Page.type);
-        this.props = props;
+    constructor(
+        props: PageProps = defaultProps,
+        children: Component[] = [],
+        html?: HTMLElement,
+        domNode?: HTMLElement,
+    ) {
+        this.id = createId(this.type);
         this.children = children;
-        this.htmlRoot = html ?? this.createHtml(props);
+        this.props = props;
+        this.htmlRoot = html ?? this.createHtml();
+        this.domNode = domNode ?? this.htmlRoot.querySelector("body")!;
     }
 
-    createHtml(props: PageProps = defaultProps): HTMLElement {
+    createHtml(): HTMLElement {
         const html = tag("html");
 
         const head = tag("head", { lang: "en" });
         head.appendChild(tag("meta", { charset: "UTF-8" }));
         head.appendChild(tag("meta", { name: "viewport", content: "width=device-width, initial-scale=1.0" }));
-        head.appendChild(tag("meta", { name: "description", content: props.description }));
+        head.appendChild(tag("meta", { name: "description", content: this.props.description }));
 
         const title = tag("title");
-        title.textContent = props.title;
+        title.textContent = this.props.title;
         head.appendChild(title);
 
         const styles = tag("style");
-        styles.textContent = props.styles ?? css;
+        styles.textContent = this.props.styles ?? css;
         head.appendChild(styles);
 
         html.appendChild(head);
@@ -121,20 +122,24 @@ export class Page implements ChildrenContainer {
     }
 
     update(props: PageProps) {
-        this.htmlRoot = this.createHtml(props);
+        this.props = props;
+        const newNode = this.createHtml();
+        this.htmlRoot.replaceWith(newNode);
+        this.htmlRoot = newNode;
+        this.domNode = this.htmlRoot.querySelector("body")!;
         return this.htmlRoot;
     }
 
-    clone() {
+    findChildById(id: string): Component | null {
+        return findByIdInPage(this, id);
+    }
+
+    clone(): Page {
         return new Page(this.props, this.children, this.htmlRoot);
     }
 
     addChild(child: Component) {
-        this.children.push(child);
-        console.log("children", this.children);
-        
-        child.parent = this;
-        this.htmlRoot = this.createHtml();
+        addChild(this, child);
     }
 
     removeChild(child: Component) {
@@ -142,43 +147,9 @@ export class Page implements ChildrenContainer {
         this.createHtml();
     }
 
-    // TODO:
-    addSibling(reference: Component, child: Component, position: 'before' | 'after') {
-        let index = this.children.findIndex(c => c.id == reference.id);
-
-        if (position == 'before') {
-            reference.domNode.insertAdjacentElement('beforebegin', child.domNode);
-        } else if (position == 'after') {
-            reference.domNode.insertAdjacentElement('afterend', child.domNode);
-
-            if (index && index > -1) {
-                index++;
-            }
-        }
-
-        // update descriptors
-        if (index !== undefined && index !== -1) {
-            parent!.childrenDescriptors.splice(index, 0, child);
-        }
-
-        // update parent
-        child.parent = reference.parent;
-
-        console.log("DOM: added sibling", child, " to reference", reference);
-    }
-
     isEmpty() {
         return this.children.length === 0;
     }
-
-    findById(id: string, current?: Component): Component | null {
-        if (current && current.id === id) return current;
-
-        for (const child of this.children) {
-            const node = this.findById(id, child);
-            if (node) return node;
-        }
-
-        return null;
-    }
 }
+
+

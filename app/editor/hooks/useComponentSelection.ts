@@ -1,5 +1,6 @@
 import { ComponentDescriptor } from '@/lib/components-meta/ComponentDescriptor';
 import { Component } from '@/lib/newcomps/Heading';
+import { Page } from '@/lib/newcomps/Page';
 import { create } from 'zustand';
 
 //interface ComponentSelection {
@@ -19,8 +20,8 @@ import { create } from 'zustand';
 //);
 
 interface ComponentSelection {
-    selectedComponent: Component | null;
-    selectComponent: (comp: Component) => void;
+    selectedComponent: Page | Component | null;
+    selectComponent: (comp: Page | Component) => void;
     closeEditor: () => void;
 }
 

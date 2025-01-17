@@ -8,6 +8,7 @@ import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../components
 import { createRoot } from "react-dom/client";
 import { createPortal } from "react-dom";
 import { FunctionComponent } from "react";
+import { addChild, addSibling, findByIdInComp, updateComp } from "./utils";
 
 export const ROW_TYPE = "Row";
 
@@ -97,13 +98,15 @@ export class Row implements Component, ChildrenContainer {
         this.domNode = this.createHtml();
     }
 
-    clone(): Component { 
+    clone(): Component {
         const row = new Row(this.props);
         row.children = this.children.map(c => c.clone());
         return row;
     }
 
     createHtml(): HTMLElement {
+        console.log("create Row html");
+        
         const baseClasses = "flex w-full";
         const gapClasses = {
             '1rem': 'gap-4',
@@ -124,7 +127,7 @@ export class Row implements Component, ChildrenContainer {
             'space-around': 'justify-around',
         };
 
-        const Jsx: FunctionComponent<RowProps>  = (props) => (
+        const Jsx: FunctionComponent<RowProps> = (props) => (
             <div
                 data-r-id="row"
                 className={
@@ -136,7 +139,7 @@ export class Row implements Component, ChildrenContainer {
                         props.className
                     )
                 }
-            > 
+            >
             </div>
         );
 
@@ -145,11 +148,13 @@ export class Row implements Component, ChildrenContainer {
         // add them to the props.children of the react node
 
         // go with option 1 for now.
-        
+
         // add the children
+        console.log("row props in create html", this.props);
+        
         const nodeFromReact = createHtmlNodeFromReact(Jsx, this.props);
         console.log("from react", nodeFromReact);
-        
+
         for (const c of this.children) {
             nodeFromReact.appendChild(c.createHtml());
         }
@@ -157,10 +162,8 @@ export class Row implements Component, ChildrenContainer {
         return nodeFromReact;
     }
 
-    addChild(child: Component) { 
-        this.children.push(child);
-        child.parent = this;
-        this.domNode = this.createHtml();
+    addChild(child: Component) {
+        addChild(this, child);
     }
 
     removeChild(child: Component) {
@@ -168,57 +171,20 @@ export class Row implements Component, ChildrenContainer {
         this.createHtml();
     }
 
-    // TODO:
-    addSibling(reference: Component, child: Component, position: 'before' | 'after') {
-        let index = this.children.findIndex(c => c.id == reference.id);
-        //
-        //if (position == 'before') {
-        //    reference.domNode.insertAdjacentElement('beforebegin', child.domNode);
-        //} else if (position == 'after') {
-        //    reference.domNode.insertAdjacentElement('afterend', child.domNode);
-        //
-        //    if (index && index > -1) {
-        //        index++;
-        //    }
-        //}
-        //
-        //// update descriptors
-        //if (index !== undefined && index !== -1) {
-        //    parent!.childrenDescriptors.splice(index, 0, child);
-        //}
-        //
-        //// update parent
-        //child.parent = reference.parent;
-        //
-        //console.log("DOM: added sibling", child, " to reference", reference);
-    }
-
     isEmpty() {
         return this.children.length === 0;
     }
 
+    update(props: RowProps) {
+        updateComp(this, props);
+    }
 
-    update(props: RowProps): HTMLElement {
-        this.props = props;
-        this.domNode = this.createHtml();
-        return this.domNode;
+    findChildById(id: string): Component | null {
+        return findByIdInComp(this, id);
+    }
+
+    addSibling(child: Component, position: "before" | "after") {
+        addSibling(this, child, position);
     }
 }
 
-//const desc: ComponentDescriptor = {
-//    id: "id",
-//    type: ROW_TYPE,
-//    name: "Row",
-//    icon: <LayoutGrid className="w-4 h-4" />,
-//    props: defaultProps,
-//    propsDescriptor,
-//    acceptsChildren: true,
-//    childrenDescriptors: [],
-//};
-//
-//export default {
-//    type: ROW_TYPE,
-//    descriptor: desc,
-//    createHtmlNode: (props) => createHtmlNodeFromReact(Node, props)
-//} as ComponentExport;
-//

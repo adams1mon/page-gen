@@ -1,15 +1,11 @@
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { SITE_TYPE, upsertNode } from "@/lib/components/Site";
 import { useEffect, useRef, useState } from "react";
 import { ComponentDivider } from "@/components/component-editor/component-input/ComponentDivider";
-import { ComponentContainer, findByIdInTree } from "@/lib/components-meta/ComponentContainer";
 import { Clipboard, Copy, Edit, Plus, Trash2 } from "lucide-react";
 import { ComponentSelector } from "@/components/component-editor/component-input/ComponentSelector";
 import { useComponentSelection } from "./hooks/useComponentSelection";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from "@/components/ui/context-menu";
 import { useRClickedComponent } from "./useRClickComponent";
-import { findByIdInComp, findByIdInPage } from "@/lib/newcomps/utils";
 import { Component } from "@/lib/newcomps/Heading";
 import { useComponentClipboard } from "./hooks/useComponentClipboard";
 
@@ -27,11 +23,15 @@ interface RectState {
     height: number;
 }
 
-export function ShadowTest() {
+interface ShadowTestProps {
+    onChange: () => void;
+}
+
+export function ShadowTest({ onChange }: ShadowTestProps) {
 
     const ref = useRef(null);
     const [overlay, setOverlay] = useState<OverlayState | null>(null);
-    const { site, setSite } = useSiteStore();
+    const { site } = useSiteStore();
     const { rClickedComponent, rClickComponent } = useRClickedComponent();
 
     useEffect(() => {
@@ -70,7 +70,7 @@ export function ShadowTest() {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const component = findByIdInPage(site, id);
+                const component = site.findChildById(id);
                 if (!component) {
                     console.warn("no component for id in site", id);
                     return;
@@ -102,7 +102,7 @@ export function ShadowTest() {
 
                 const id = componentRoot.dataset.id;
 
-                const component = findByIdInPage(site, id);
+                const component = site.findChildById(id);
                 if (!component) {
                     console.warn("no component for id in site", id);
                     return;
@@ -126,21 +126,20 @@ export function ShadowTest() {
 
     const handleRemove = (comp: Component) => {
         site.removeChild(comp);
-        setSite(site);
+        onChange();
     };
 
     const handleSiblingInsert = (reference: Component | null, newComponent: Component, position: 'before' | 'after') => {
         console.log("sibling insert", position);
-        //if (!reference) return;
-        //ComponentContainer.addSibling(reference, newComponent, position);
-        //setSite(site);
+        if (!reference) return;
+        reference.addSibling(newComponent, position);
+        onChange();
     };
 
     const handleInsert = (newComponent: Component) => {
         site.addChild(newComponent);
         console.log("add comp", newComponent);
-        
-        setSite(site.clone());
+        onChange();
     };
 
     return (
@@ -257,8 +256,6 @@ function ComponentContextMenu({
                             <ComponentSelector onInsert={(c) => {
                                 onInsertBefore(c);
                                 setIsOpen(false);
-                                console.log("set is open to false");
-
                             }}>
                                 <ContextMenuItem>
                                     Add Component

@@ -2,41 +2,50 @@
 
 import { ComponentDivider } from "./ComponentDivider";
 import { ComponentEditor } from "../ComponentEditor";
+import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { CollapsibleContent } from "@radix-ui/react-collapsible";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Component } from "@/lib/newcomps/Heading";
-import { ChildrenContainer } from "@/lib/newcomps/Page";
 
 
 interface ComponentInputProps {
-    parent: ChildrenContainer;
+    components: ComponentDescriptor[];
 
     // called with the changed 'components', 
     // should set the updated components them on the parent component
-    onChange: () => void;
+    onChange: (components: ComponentDescriptor[]) => void;
 };
 
 // Slot for another component
 export function ComponentInput(
     {
-        parent,
+        components,
         onChange,
     }: ComponentInputProps
 ) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const addComponent = (component: Component, index?: number) => {
-        parent.addChild(component, index);
-        onChange();
+    const addComponent = (component: ComponentDescriptor, index?: number) => {
+        const newComponents = [...components];
+        if (typeof index === 'number') {
+            newComponents.splice(index, 0, component);
+        }
+        onChange(newComponents);
     };
 
-    const deleteComponent = (component: Component) => {
-        parent.removeChild(component); 
-        onChange();
+    const handleComponentUpdate = (updatedComponent: ComponentDescriptor) => {
+        const newComponents = components.map(component =>
+            component.id === updatedComponent.id ? updatedComponent : component
+        );
+        onChange(newComponents);
+    };
+
+    const deleteComponent = (id: string) => {
+        const newComponents = components.filter(component => component.id !== id)
+        onChange(newComponents);
     };
 
     return (
@@ -60,10 +69,10 @@ export function ComponentInput(
 
                 <CollapsibleContent>
                     <div className="space-y-4">
-                        {parent.children.length === 0 ? (
+                        {components.length === 0 ? (
                             <ComponentDivider onInsert={(comp) => addComponent(comp, 0)} />
                         ) : (
-                            parent.children.map((component, index) => (
+                            components.map((component, index) => (
                                 <div key={component.id}>
                                     <ComponentDivider
                                         onInsert={(comp) => addComponent(comp, index)}
@@ -72,13 +81,10 @@ export function ComponentInput(
                                     {/* Render the editors of the child components recursively */}
                                     <ComponentEditor
                                         component={component}
-                                        onChange={onChange}
-                                        onDelete={() => {
-                                            parent.removeChild(component);
-                                            onChange();
-                                        }}
+                                        onUpdate={handleComponentUpdate}
+                                        onDelete={deleteComponent}
                                     />
-                                    {index === parent.children.length - 1 && (
+                                    {index === components.length - 1 && (
                                         <ComponentDivider
                                             onInsert={(comp) => addComponent(comp, index + 1)}
                                         />

@@ -8,7 +8,7 @@ import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../components
 import { createRoot } from "react-dom/client";
 import { createPortal } from "react-dom";
 import { FunctionComponent } from "react";
-import { addChild, addSibling, findByIdInComp, updateComp } from "./utils";
+import { addChild, addSibling, findByIdInComp, removeChild, updateComp } from "./utils";
 
 export const ROW_TYPE = "Row";
 
@@ -167,8 +167,7 @@ export class Row implements Component, ChildrenContainer {
     }
 
     removeChild(child: Component) {
-        this.children.filter(c => c.id !== child.id);
-        this.createHtml();
+        removeChild(this, child);
     }
 
     isEmpty() {

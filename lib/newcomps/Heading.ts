@@ -2,6 +2,7 @@ import { DataType, InputType, ObjectDesc, PropsDesc } from "../components-meta/P
 import { classNameDesc } from "../components/common";
 import { tag } from "../site-generator/generate-html";
 import { ChildrenContainer, createId } from "./Page";
+import { ComponentDesc } from "./types";
 import { addSibling, updateComp } from "./utils";
 
 export const HEADING_TYPE = "Heading";
@@ -49,105 +50,137 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export interface Component {
-
-    // static 
-    type: string;
-    propsDescriptor: PropsDesc;
-
-    // dynamic, existing once created
-    id: string;
-    props: any;
-    domNode: HTMLElement;
-
-    // set by a ChildrenContainer when this element is added
-    parent?: ChildrenContainer;
-
-    update: (props: any) => void;
-    createHtml: () => HTMLElement;
-    clone: () => any;
-    addSibling: (child: Component, position: 'before' | 'after') => void;
+export const headingDesc: ComponentDesc = { 
+    type: HEADING_TYPE,
+    propsDescriptor,
+    defaultProps,
+    createHtmlElement,
 };
 
-export class Heading implements Component {
+function createHtmlElement(props: HeadingProps): HTMLElement {
+    const baseClasses = ["font-bold", "text-foreground"];
+    const alignmentClasses = {
+        'left': 'text-left',
+        'center': 'text-center',
+        'right': 'text-right'
+    };
+    const levelClasses = {
+        '1': ['text-4xl', 'mb-6'],
+        '2': ['text-3xl', 'mb-5'],
+        '3': ['text-2xl', 'mb-4'],
+        '4': ['text-xl', 'mb-3'],
+        '5': ['text-lg', 'mb-2'],
+        '6': ['text-base', 'mb-2']
+    };
 
-    type: string = HEADING_TYPE;
-    propsDescriptor: PropsDesc = propsDescriptor;
+    const hTag = `h${props.level || 1}` as keyof JSX.IntrinsicElements;
+    const h = tag(hTag);
 
-    id: string;
-    props: HeadingProps;
-    domNode: HTMLElement;
-    parent?: ChildrenContainer;
+    h.classList.add(
+        ...baseClasses,
+        ...levelClasses[props.level as keyof typeof levelClasses || '1'],
+        alignmentClasses[props.textAlign as keyof typeof alignmentClasses || 'left'],
+    );
 
-    constructor(props: HeadingProps = defaultProps) {
-        this.id = createId(this.type);
-        this.props = props;
-        this.domNode = this.createHtml();
+    if (props.className) {
+        const classes = props.className.split(" ").filter(s => s.trim() !== "")
+        h.classList.add(...classes);
     }
 
-    clone(): Heading { 
-        return new Heading(this.props);
-    }
+    h.innerText = props.content;
 
-    createHtml(): HTMLElement {
-        const baseClasses = ["font-bold", "text-foreground"];
-        const alignmentClasses = {
-            'left': 'text-left',
-            'center': 'text-center',
-            'right': 'text-right'
-        };
-        const levelClasses = {
-            '1': ['text-4xl', 'mb-6'],
-            '2': ['text-3xl', 'mb-5'],
-            '3': ['text-2xl', 'mb-4'],
-            '4': ['text-xl', 'mb-3'],
-            '5': ['text-lg', 'mb-2'],
-            '6': ['text-base', 'mb-2']
-        };
-
-        const hTag = `h${this.props.level || 1}` as keyof JSX.IntrinsicElements;
-        const h = tag(hTag, {"data-id": this.id});
-
-        h.classList.add(
-            ...baseClasses,
-            ...levelClasses[this.props.level as keyof typeof levelClasses || '1'],
-            alignmentClasses[this.props.textAlign as keyof typeof alignmentClasses || 'left'],
-        );
-
-        if (this.props.className) {
-            const classes = this.props.className.split(" ").filter(s => s.trim() !== "")
-            h.classList.add(...classes);
-        }
-
-        h.innerText = this.props.content;
-
-        return h;
-    }
-
-    update(props: HeadingProps) { 
-        updateComp(this, props);
-    }
-
-    addSibling(child: Component, position: "before" | "after") {
-        addSibling(this, child, position);
-    }
+    return h;
 }
 
+//export class Heading implements Component {
+//
+//    type: string = HEADING_TYPE;
+//    propsDescriptor: PropsDesc = propsDescriptor;
+//
+//    id: string;
+//    props: HeadingProps;
+//    htmlElement: HTMLElement;
+//    parent?: ChildrenContainer;
+//
+//    constructor(props: HeadingProps = defaultProps) {
+//        this.id = createId(this.type);
+//        this.props = props;
+//        this.htmlElement = this.createHtmlElement();
+//    }
+//
+//    clone(): Heading {
+//        return new Heading(this.props);
+//    }
+//
+//    createHtmlElement(): HTMLElement {
+//        const baseClasses = ["font-bold", "text-foreground"];
+//        const alignmentClasses = {
+//            'left': 'text-left',
+//            'center': 'text-center',
+//            'right': 'text-right'
+//        };
+//        const levelClasses = {
+//            '1': ['text-4xl', 'mb-6'],
+//            '2': ['text-3xl', 'mb-5'],
+//            '3': ['text-2xl', 'mb-4'],
+//            '4': ['text-xl', 'mb-3'],
+//            '5': ['text-lg', 'mb-2'],
+//            '6': ['text-base', 'mb-2']
+//        };
+//
+//        const hTag = `h${this.props.level || 1}` as keyof JSX.IntrinsicElements;
+//        const h = tag(hTag, { "data-id": this.id });
+//
+//        h.classList.add(
+//            ...baseClasses,
+//            ...levelClasses[this.props.level as keyof typeof levelClasses || '1'],
+//            alignmentClasses[this.props.textAlign as keyof typeof alignmentClasses || 'left'],
+//        );
+//
+//        if (this.props.className) {
+//            const classes = this.props.className.split(" ").filter(s => s.trim() !== "")
+//            h.classList.add(...classes);
+//        }
+//
+//        h.innerText = this.props.content;
+//
+//        return h;
+//    }
+//
+//    update(props: HeadingProps) {
+//        console.log("update", props);
+//
+//        if (props.level != this.props.level) {
+//            updateComp(this, props);
+//            return;
+//        }
+//
+//        if (props.content != this.props.content) {
+//            this.htmlElement.innerText = props.content;
+//        }
+//
+//        if (props.textAlign != this.props.textAlign) {
+//            this.htmlElement.style.textAlign = props.textAlign;
+//        }
+//
+//        if (props.className != this.props.className) {
+//            if (this.props.className) {
+//                const classes = this.props.className.split(" ").filter(s => s.trim() !== "")
+//                this.htmlElement.classList.remove(...classes);
+//            }
+//
+//            if (props.className) {
+//                const classes = props.className.split(" ").filter(s => s.trim() !== "")
+//                this.htmlElement.classList.add(...classes);
+//            }
+//        }
+//
+//        this.props = props;
+//        //updateComp(this, props);
+//    }
+//
+//    addSibling(child: Component, position: "before" | "after") {
+//        addSibling(this, child, position);
+//    }
+//}
 
-//const desc: ComponentDescriptor = {
-//    id: "id",
-//    type: HEADING_TYPE,
-//    name: "Heading",
-//    icon: <Heading1 className="w-4 h-4" />,
-//    props: defaultProps,
-//    propsDescriptor,
-//    acceptsChildren: false,
-//    childrenDescriptors: [],
-//};
-
-//export default {
-//    type: HEADING_TYPE,
-//    descriptor: desc,
-//    //node: Node,
-//    createHtmlNode,
-//} as ComponentExport;

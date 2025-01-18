@@ -33,8 +33,7 @@ export default function EditorPage() {
 
     const updatePage = () => {
         setSite(site.clone());
-        console.log("update page");
-        
+        console.log("update page", site.children);
     };
 
     useEffect(() => {

@@ -31,7 +31,7 @@ export function ComponentEditor({
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <CollapsibleTrigger asChild>
                     <div className="flex items-center justify-between py-2 px-3 border-b cursor-pointer">
-                        <div className="cursor-move flex items-center gap-2 text-muted-foreground">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                             <span className="font-medium capitalize text-sm">{component.type}</span>
                         </div>
                         <div className="flex items-center gap-1">

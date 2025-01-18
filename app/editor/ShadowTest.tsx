@@ -8,6 +8,7 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, C
 import { useRClickedComponent } from "./useRClickComponent";
 import { Component } from "@/lib/newcomps/Heading";
 import { useComponentClipboard } from "./hooks/useComponentClipboard";
+import { Page } from "@/lib/newcomps/Page";
 
 type CompFunc = (comp: Component) => void;
 
@@ -27,6 +28,8 @@ interface ShadowTestProps {
     onChange: () => void;
 }
 
+let prevSite: Page | null = null;
+
 export function ShadowTest({ onChange }: ShadowTestProps) {
 
     const ref = useRef(null);
@@ -45,7 +48,7 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
 
         const shadow = ref.current.shadowRoot as ShadowRoot;
 
-        if (site.props.styles) {
+        if (prevSite !== null && prevSite.props.styles != site.props.styles) {
             const sheet = new CSSStyleSheet();
             sheet.replaceSync(site.props.styles);
             shadow.adoptedStyleSheets = [sheet];
@@ -58,6 +61,8 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
         } else {
             shadow.appendChild(site.htmlRoot);
         }
+
+        prevSite = site;
 
         const handleMouseOver = (e: Event) => {
             const target = e.target as HTMLElement;

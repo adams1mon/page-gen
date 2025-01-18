@@ -73,10 +73,7 @@ export function ComponentInput(
                                     <ComponentEditor
                                         component={component}
                                         onChange={onChange}
-                                        onDelete={() => {
-                                            parent.removeChild(component);
-                                            onChange();
-                                        }}
+                                        onDelete={() => deleteComponent(component)}
                                     />
                                     {index === parent.children.length - 1 && (
                                         <ComponentDivider

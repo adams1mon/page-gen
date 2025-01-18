@@ -4,9 +4,8 @@ import css from '!!raw-loader!../generated/styles.css';
 import { tag } from '../site-generator/generate-html';
 import { DataType, ObjectDesc, PropsDesc } from '../components-meta/PropsDescriptor';
 import { titleDesc, textDesc, longTextDesc } from '../components/common';
-import { Component } from './Heading';
-import { addChild, addSibling, findByIdInPage, updateComp } from './utils';
-import Heading from '../components/Heading';
+import { createId } from './utils';
+import { ChildrenContainer, ChildrenContainerImpl, ChildrenContainerMixin, Component } from './types';
 
 // a single static webpage
 
@@ -50,23 +49,8 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export function createId(type: string): string {
-    return `${type}-${Date.now()}`;
-}
-
-export interface ChildrenContainer {
-    domNode: HTMLElement;
-    children: Component[];
-    isEmpty: () => boolean;
-    addChild: (child: Component, index?: number) => void;
-    removeChild: (child: Component) => void;
-    findChildById: (id: string) => Component | null;
-};
-
-export type ComponentWithChildren = Component & ChildrenContainer;
-
-
-export class Page implements ChildrenContainer {
+export class Page extends ChildrenContainerMixin(Object) {
+//export class Page extends ChildrenContainerImpl {
 
     type: string = "Page";
     propsDescriptor: PropsDesc = propsDescriptor;
@@ -74,22 +58,19 @@ export class Page implements ChildrenContainer {
     id: string;
     props: PageProps;
 
-    children: Component[];
-
     htmlRoot: HTMLElement;
-    domNode: HTMLElement;
+    htmlElement: HTMLElement;
 
     constructor(
         props: PageProps = defaultProps,
-        children: Component[] = [],
         html?: HTMLElement,
         domNode?: HTMLElement,
     ) {
+        super();
         this.id = createId(this.type);
-        this.children = children;
         this.props = props;
         this.htmlRoot = html ?? this.createHtml();
-        this.domNode = domNode ?? this.htmlRoot.querySelector("body")!;
+        this.htmlElement = domNode ?? this.htmlRoot.querySelector("body")!;
     }
 
     createHtml(): HTMLElement {
@@ -115,7 +96,7 @@ export class Page implements ChildrenContainer {
 
         // render the children
         for (const child of this.children) {
-            body.appendChild(child.domNode);
+            body.appendChild(child.htmlElement);
         }
 
         return html;
@@ -126,30 +107,14 @@ export class Page implements ChildrenContainer {
         const newNode = this.createHtml();
         this.htmlRoot.replaceWith(newNode);
         this.htmlRoot = newNode;
-        this.domNode = this.htmlRoot.querySelector("body")!;
+        this.htmlElement = this.htmlRoot.querySelector("body")!;
         return this.htmlRoot;
     }
 
-    findChildById(id: string): Component | null {
-        return findByIdInPage(this, id);
-    }
-
     clone(): Page {
-        return new Page(this.props, this.children, this.htmlRoot);
-    }
-
-    addChild(child: Component) {
-        addChild(this, child);
-    }
-
-    removeChild(child: Component) {
-        this.children.filter(c => c.id !== child.id);
-        this.createHtml();
-    }
-
-    isEmpty() {
-        return this.children.length === 0;
+        const page = new Page(this.props, this.htmlRoot, this.htmlElement);
+        page.children = this.children;
+        return page;
     }
 }
-
 

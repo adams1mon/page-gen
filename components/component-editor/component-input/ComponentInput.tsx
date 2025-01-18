@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Component } from "@/lib/newcomps/Heading";
-import { ChildrenContainer } from "@/lib/newcomps/Page";
+import { ChildrenContainer, Component } from "@/lib/newcomps/types";
 
 
 interface ComponentInputProps {

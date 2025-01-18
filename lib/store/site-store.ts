@@ -4,12 +4,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ComponentDescriptor } from '../components-meta/ComponentDescriptor';
 import { newPage, newSite } from '../site-generator/generate-html';
-import { removeUnsavableAttributes } from '../components-meta/ComponentContainer';
 import { Page } from '../newcomps/Page';
 
 interface SiteStore {
     // Site state
-    //site: ComponentDescriptor;
     site: Page;
     autoSave: boolean;
     savedSites: { [key: string]: Page };

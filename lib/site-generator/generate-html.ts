@@ -3,11 +3,11 @@ import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { ReactElement, createElement } from "react";
 import { SITE_TYPE } from "../components/Site";
 import { ComponentContainer } from "../components-meta/ComponentContainer";
-import { Component } from "../newcomps/Heading";
 import { Page } from "../newcomps/Page";
 
 export function newPage(): Page {
     return new Page();
+    
     //return ComponentContainer.createInstance(SITE_TYPE);
 } 
 

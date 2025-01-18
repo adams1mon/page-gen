@@ -1,8 +1,8 @@
 import { DataType, InputType, ObjectDesc, PropsDesc } from "../components-meta/PropsDescriptor";
 import { classNameDesc } from "../components/common";
 import { tag } from "../site-generator/generate-html";
-import { ChildrenContainer, createId } from "./Page";
-import { addSibling, updateComp } from "./utils";
+import { ChildrenContainer, ChildrenContainerMixin, Component, childrenContainerMixin } from "./types";
+import { addSibling, createId, updateComp } from "./utils";
 
 export const HEADING_TYPE = "Heading";
 
@@ -49,47 +49,17 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export interface Component {
-
-    // static 
-    type: string;
-    propsDescriptor: PropsDesc;
-
-    // dynamic, existing once created
-    id: string;
-    props: any;
-    domNode: HTMLElement;
-
-    // set by a ChildrenContainer when this element is added
-    parent?: ChildrenContainer;
-
-    update: (props: any) => void;
-    createHtml: () => HTMLElement;
-    clone: () => any;
-    addSibling: (child: Component, position: 'before' | 'after') => void;
-};
-
-export class Heading implements Component {
-
-    type: string = HEADING_TYPE;
-    propsDescriptor: PropsDesc = propsDescriptor;
-
-    id: string;
-    props: HeadingProps;
-    domNode: HTMLElement;
-    parent?: ChildrenContainer;
+export class Heading extends Component {
 
     constructor(props: HeadingProps = defaultProps) {
-        this.id = createId(this.type);
-        this.props = props;
-        this.domNode = this.createHtml();
+        super(HEADING_TYPE, props, propsDescriptor);
     }
 
     clone(): Heading { 
         return new Heading(this.props);
     }
 
-    createHtml(): HTMLElement {
+    createHtmlElement(): HTMLElement {
         const baseClasses = ["font-bold", "text-foreground"];
         const alignmentClasses = {
             'left': 'text-left',
@@ -124,14 +94,17 @@ export class Heading implements Component {
         return h;
     }
 
-    update(props: HeadingProps) { 
-        updateComp(this, props);
-    }
-
-    addSibling(child: Component, position: "before" | "after") {
-        addSibling(this, child, position);
-    }
+    //addSibling(child: Component, position: "before" | "after") {
+    //    addSibling(this, child, position);
+    //}
 }
+
+//class A extends ChildrenContainerMixin(Heading) {
+//
+//};
+//
+//// @ts-ignore
+//const a: ChildrenContainer & Heading = new A();
 
 
 //const desc: ComponentDescriptor = {

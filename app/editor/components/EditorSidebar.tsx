@@ -1,9 +1,9 @@
 import { PictureInPicture2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
-import { Component } from "@/lib/newcomps/Heading";
 import { Page } from "@/lib/newcomps/Page";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
+import { Component } from "@/lib/newcomps/types";
 
 interface EditorSidebarProps {
     component: Component | Page;

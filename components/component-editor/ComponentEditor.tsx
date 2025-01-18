@@ -7,10 +7,9 @@ import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
 import { Copy } from "lucide-react";
-import { Component } from "@/lib/newcomps/Heading";
 import { useComponentClipboard } from "@/app/editor/hooks/useComponentClipboard";
 import { ComponentInput } from "./component-input/ComponentInput";
-import { ComponentWithChildren } from "@/lib/newcomps/Page";
+import { Component, ComponentWithChildren } from "@/lib/newcomps/types";
 
 interface ComponentEditorProps {
     component: Component | ComponentWithChildren;

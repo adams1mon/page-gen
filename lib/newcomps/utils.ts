@@ -1,6 +1,5 @@
-import { findComponentIndex } from "../components-meta/ComponentContainer";
-import { Component } from "./Heading";
-import { ChildrenContainer, ComponentWithChildren, Page } from "./Page";
+import { Page } from "./Page";
+import { ChildrenContainer, Component } from "./types";
 
 export function findByIdInPage(page: Page, id: string): Component | null {
 
@@ -29,19 +28,19 @@ export function updateComp(child: Component, props: any) {
     child.props = props;
 
     // TODO: do some DOM surgery to set the parent to the previous one's, etc.
-    const newNode = child.createHtml();
-    child.domNode.replaceWith(newNode);
-    child.domNode = newNode;
+    const newNode = child.createHtmlElement();
+    child.htmlElement.replaceWith(newNode);
+    child.htmlElement = newNode;
 }
 
 export function addChild(root: ChildrenContainer, child: Component, index?: number) {
     if (index && index > -1 && index < root.children.length) {
         root.children.splice(index, 0, child);
-        const node = root.domNode.childNodes.item(index);
-        node.insertBefore(node, child.domNode);
+        const node = root.htmlElement.childNodes.item(index);
+        node.insertBefore(child.htmlElement, node);
     } else {
         root.children.push(child);
-        root.domNode.appendChild(child.domNode);
+        root.htmlElement.appendChild(child.htmlElement);
     }
 
     child.parent = root;
@@ -58,9 +57,9 @@ export function addSibling(
     if (refIndex === -1) return;
 
     if (position == 'before') {
-        reference.domNode.insertAdjacentElement('beforebegin', child.domNode);
+        reference.htmlElement.insertAdjacentElement('beforebegin', child.htmlElement);
     } else if (position == 'after') {
-        reference.domNode.insertAdjacentElement('afterend', child.domNode);
+        reference.htmlElement.insertAdjacentElement('afterend', child.htmlElement);
         refIndex++;
     }
 
@@ -73,3 +72,6 @@ export function addSibling(
     console.log("DOM: added sibling", child, " to reference", reference, position);
 }
 
+export function createId(type: string): string {
+    return `${type}-${Date.now()}`;
+}

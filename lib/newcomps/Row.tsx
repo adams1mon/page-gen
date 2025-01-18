@@ -2,13 +2,10 @@ import { ComponentExport, createHtmlNodeFromReact } from "../components-meta/Com
 import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
 import { DataType, InputType, ObjectDesc, PropsDesc } from "../components-meta/PropsDescriptor";
 import { cn } from "../utils";
-import { Component } from "./Heading";
-import { ChildrenContainer, createId } from "./Page";
 import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../components/common";
-import { createRoot } from "react-dom/client";
-import { createPortal } from "react-dom";
 import { FunctionComponent } from "react";
 import { addChild, addSibling, findByIdInComp, updateComp } from "./utils";
+import { ChildrenContainer, ChildrenContainerMixin, Component, mixinChildrenContainer } from "./types";
 
 export const ROW_TYPE = "Row";
 
@@ -81,30 +78,28 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Row implements Component, ChildrenContainer {
+//export class Row extends ChildrenContainerMixin(Component) implements ChildrenContainer {
 
-    type: string = ROW_TYPE;
-    propsDescriptor: PropsDesc = propsDescriptor;
-
-    id: string;
-    props: RowProps;
-    domNode: HTMLElement;
-    parent?: ChildrenContainer;
-    children: Component[] = [];
+export class Row extends ChildrenContainerMixin(Component) {
+//export class Row extends Component {
 
     constructor(props: RowProps = defaultProps) {
-        this.id = createId(this.type);
-        this.props = props;
-        this.domNode = this.createHtml();
+        super(ROW_TYPE, props, propsDescriptor);
+
+        // not allowed to use children before it's initialized... in the constructor above,
+        // by the mixin
+        //for (const c of this.children) {
+        //    this.htmlElement.appendChild(c.createHtmlElement());
+        //}
     }
 
     clone(): Component {
         const row = new Row(this.props);
         row.children = this.children.map(c => c.clone());
-        return row;
+        return row as unknown as Component;
     }
 
-    createHtml(): HTMLElement {
+    createHtmlElement(): HTMLElement {
         console.log("create Row html");
         
         const baseClasses = "flex w-full";
@@ -155,36 +150,18 @@ export class Row implements Component, ChildrenContainer {
         const nodeFromReact = createHtmlNodeFromReact(Jsx, this.props);
         console.log("from react", nodeFromReact);
 
-        for (const c of this.children) {
-            nodeFromReact.appendChild(c.createHtml());
+        if (this.children) {
+            for (const c of this.children) {
+                nodeFromReact.appendChild(c.createHtmlElement());
+            }
         }
 
         return nodeFromReact;
     }
-
-    addChild(child: Component) {
-        addChild(this, child);
-    }
-
-    removeChild(child: Component) {
-        this.children.filter(c => c.id !== child.id);
-        this.createHtml();
-    }
-
-    isEmpty() {
-        return this.children.length === 0;
-    }
-
-    update(props: RowProps) {
-        updateComp(this, props);
-    }
-
-    findChildById(id: string): Component | null {
-        return findByIdInComp(this, id);
-    }
-
-    addSibling(child: Component, position: "before" | "after") {
-        addSibling(this, child, position);
-    }
 }
 
+
+let r = new Row();
+//const a = mixinChildrenContainer(r);
+
+//const r = new Row();

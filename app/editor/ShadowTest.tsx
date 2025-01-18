@@ -5,9 +5,9 @@ import { ComponentSelector } from "@/components/component-editor/component-input
 import { useComponentSelection } from "./hooks/useComponentSelection";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from "@/components/ui/context-menu";
-import { useRClickedComponent } from "./useRClickComponent";
-import { Component } from "@/lib/newcomps/Heading";
+import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { useComponentClipboard } from "./hooks/useComponentClipboard";
+import { Component } from "@/lib/newcomps/types";
 
 type CompFunc = (comp: Component) => void;
 

@@ -1,7 +1,8 @@
 import { ROW_TYPE, Row } from "./Row";
-import { Component, HEADING_TYPE, Heading } from "./Heading";
+import { HEADING_TYPE, Heading } from "./Heading";
+import { Component } from "./types";
 
 export const availableComponents: { [key: string]: () => Component } = {
-    [ROW_TYPE]: () => new Row(),
     [HEADING_TYPE]: () => new Heading(),
+    [ROW_TYPE]: () => new Row(),
 };

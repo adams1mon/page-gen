@@ -15,7 +15,7 @@ export function GenerateSiteButton() {
         try {
             setIsGenerating(true);
 
-            const html = site.domNode?.outerHTML;
+            const html = site.htmlRoot?.outerHTML;
             if (!html) {
                 console.warn("no site DOM node found when trying to get HTML");
                 return;
@@ -29,9 +29,7 @@ export function GenerateSiteButton() {
             const a = document.createElement('a');
             a.href = url;
             a.download = 'portfolio.html';
-            //document.body.appendChild(a);
             a.click();
-            //document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error generating site:', error);

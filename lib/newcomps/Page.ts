@@ -4,8 +4,8 @@ import css from '!!raw-loader!../generated/styles.css';
 import { tag } from '../site-generator/generate-html';
 import { DataType, ObjectDesc, PropsDesc } from '../components-meta/PropsDescriptor';
 import { titleDesc, textDesc, longTextDesc } from '../components/common';
-import { createId } from './utils';
-import { ChildrenContainer, ChildrenContainerImpl, ChildrenContainerMixin, Component } from './types';
+import { addChild, createId, findByIdInComp, removeChild } from './utils';
+import { ChildrenContainer, ComponentWrapper } from './types';
 
 // a single static webpage
 
@@ -49,8 +49,7 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Page extends ChildrenContainerMixin(Object) {
-//export class Page extends ChildrenContainerImpl {
+export class Page implements ChildrenContainer {
 
     type: string = "Page";
     propsDescriptor: PropsDesc = propsDescriptor;
@@ -61,12 +60,13 @@ export class Page extends ChildrenContainerMixin(Object) {
     htmlRoot: HTMLElement;
     htmlElement: HTMLElement;
 
+    children: ComponentWrapper[] = [];
+
     constructor(
         props: PageProps = defaultProps,
         html?: HTMLElement,
         domNode?: HTMLElement,
     ) {
-        super();
         this.id = createId(this.type);
         this.props = props;
         this.htmlRoot = html ?? this.createHtml();
@@ -95,8 +95,10 @@ export class Page extends ChildrenContainerMixin(Object) {
         html.appendChild(body);
 
         // render the children
-        for (const child of this.children) {
-            body.appendChild(child.htmlElement);
+        if (this.children) {
+            for (const child of this.children) {
+                body.appendChild(child.htmlElement);
+            }
         }
 
         return html;
@@ -115,6 +117,27 @@ export class Page extends ChildrenContainerMixin(Object) {
         const page = new Page(this.props, this.htmlRoot, this.htmlElement);
         page.children = this.children;
         return page;
+    }
+
+    addChild(child: ComponentWrapper, index?: number) {
+        addChild(this, child, index);
+    }
+
+    removeChild(child: ComponentWrapper) {
+        removeChild(this, child);
+    }
+
+    findChildById(id: string): ComponentWrapper | null {
+        for (const child of this.children) {
+            const node = findByIdInComp(child, id);
+            if (node) return node;
+        }
+
+        return null;
+    }
+
+    toString(): string {
+        return `Component: ${this.type}`;
     }
 }
 

@@ -65,6 +65,8 @@ export function createDefaultProps(desc: PropsDesc): any {
                 obj[key] = createDefaultProps(childDesc[key]);
             }
             return obj;
+        case DataType.EMPTY:
+            return {};
         default:
             console.log("unknown type: ", desc.type);
             break;

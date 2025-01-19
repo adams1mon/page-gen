@@ -1,8 +1,7 @@
 import { DataType, InputType, ObjectDesc, PropsDesc } from "../components-meta/PropsDescriptor";
 import { classNameDesc } from "../components/common";
 import { tag } from "../site-generator/generate-html";
-import { ChildrenContainer, ChildrenContainerMixin, Component, childrenContainerMixin } from "./types";
-import { addSibling, createId, updateComp } from "./utils";
+import { IComponent } from "./types";
 
 export const HEADING_TYPE = "Heading";
 
@@ -49,17 +48,59 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Heading extends Component {
+//export class Heading extends Component {
+//
+//    constructor(props: HeadingProps = defaultProps) {
+//        super(HEADING_TYPE, props, propsDescriptor);
+//    }
+//
+//    clone(): Heading { 
+//        return new Heading(this.props);
+//    }
+//
+//    createHtmlElement(): HTMLElement {
+//        const baseClasses = ["font-bold", "text-foreground"];
+//        const alignmentClasses = {
+//            'left': 'text-left',
+//            'center': 'text-center',
+//            'right': 'text-right'
+//        };
+//        const levelClasses = {
+//            '1': ['text-4xl', 'mb-6'],
+//            '2': ['text-3xl', 'mb-5'],
+//            '3': ['text-2xl', 'mb-4'],
+//            '4': ['text-xl', 'mb-3'],
+//            '5': ['text-lg', 'mb-2'],
+//            '6': ['text-base', 'mb-2']
+//        };
+//
+//        const hTag = `h${this.props.level || 1}` as keyof JSX.IntrinsicElements;
+//        const h = tag(hTag, {"data-id": this.id});
+//
+//        h.classList.add(
+//            ...baseClasses,
+//            ...levelClasses[this.props.level as keyof typeof levelClasses || '1'],
+//            alignmentClasses[this.props.textAlign as keyof typeof alignmentClasses || 'left'],
+//        );
+//
+//        if (this.props.className) {
+//            const classes = this.props.className.split(" ").filter(s => s.trim() !== "")
+//            h.classList.add(...classes);
+//        }
+//
+//        h.innerText = this.props.content;
+//
+//        return h;
+//    }
+//}
 
-    constructor(props: HeadingProps = defaultProps) {
-        super(HEADING_TYPE, props, propsDescriptor);
-    }
+export class Heading implements IComponent {
 
-    clone(): Heading { 
-        return new Heading(this.props);
-    }
+    componentName: string = "Heading";
+    propsDescriptor: PropsDesc = propsDescriptor;
+    acceptsChildren: boolean = false;
 
-    createHtmlElement(): HTMLElement {
+    createHtmlElement(props: HeadingProps): HTMLElement {
         const baseClasses = ["font-bold", "text-foreground"];
         const alignmentClasses = {
             'left': 'text-left',
@@ -75,52 +116,23 @@ export class Heading extends Component {
             '6': ['text-base', 'mb-2']
         };
 
-        const hTag = `h${this.props.level || 1}` as keyof JSX.IntrinsicElements;
-        const h = tag(hTag, {"data-id": this.id});
+        const hTag = `h${props.level || 1}` as keyof JSX.IntrinsicElements;
+        const h = tag(hTag);
 
         h.classList.add(
             ...baseClasses,
-            ...levelClasses[this.props.level as keyof typeof levelClasses || '1'],
-            alignmentClasses[this.props.textAlign as keyof typeof alignmentClasses || 'left'],
+            ...levelClasses[props.level as keyof typeof levelClasses || '1'],
+            alignmentClasses[props.textAlign as keyof typeof alignmentClasses || 'left'],
         );
 
-        if (this.props.className) {
-            const classes = this.props.className.split(" ").filter(s => s.trim() !== "")
+        if (props.className) {
+            const classes = props.className.split(" ").filter(s => s.trim() !== "")
             h.classList.add(...classes);
         }
 
-        h.innerText = this.props.content;
+        h.innerText = props.content;
 
         return h;
     }
-
-    //addSibling(child: Component, position: "before" | "after") {
-    //    addSibling(this, child, position);
-    //}
 }
 
-//class A extends ChildrenContainerMixin(Heading) {
-//
-//};
-//
-//// @ts-ignore
-//const a: ChildrenContainer & Heading = new A();
-
-
-//const desc: ComponentDescriptor = {
-//    id: "id",
-//    type: HEADING_TYPE,
-//    name: "Heading",
-//    icon: <Heading1 className="w-4 h-4" />,
-//    props: defaultProps,
-//    propsDescriptor,
-//    acceptsChildren: false,
-//    childrenDescriptors: [],
-//};
-
-//export default {
-//    type: HEADING_TYPE,
-//    descriptor: desc,
-//    //node: Node,
-//    createHtmlNode,
-//} as ComponentExport;

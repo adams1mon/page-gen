@@ -10,9 +10,7 @@ export function OpenHtmlButton() {
 
     const handleOpenInNewTab = async () => {
 
-        //const html = await generateHtml(site);
-
-        const html = site.domNode?.outerHTML;
+        const html = site.htmlRoot?.outerHTML;
         if (!html) {
             console.warn("no site DOM node found when trying to get HTML");
             return;

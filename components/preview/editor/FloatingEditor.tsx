@@ -5,12 +5,12 @@ import { X, PictureInPicture } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
-import { Component } from "@/lib/newcomps/Heading";
-import { ComponentWithChildren, Page } from "@/lib/newcomps/Page";
+import { Page } from "@/lib/newcomps/Page";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
+import { ComponentWrapper } from "@/lib/newcomps/types";
 
 interface FloatingEditorProps {
-    component: Page | Component | ComponentWithChildren;
+    component: Page | ComponentWrapper;
     onClose: () => void;
     onChange: () => void;
     onDock: () => void;

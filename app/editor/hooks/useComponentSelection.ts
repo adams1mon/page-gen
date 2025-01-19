@@ -1,10 +1,10 @@
 import { Page } from '@/lib/newcomps/Page';
-import { Component } from '@/lib/newcomps/types';
+import { ComponentWrapper } from '@/lib/newcomps/types';
 import { create } from 'zustand';
 
 interface ComponentSelection {
-    selectedComponent: Page | Component | null;
-    selectComponent: (comp: Page | Component) => void;
+    selectedComponent: Page | ComponentWrapper | null;
+    selectComponent: (comp: Page | ComponentWrapper) => void;
     closeEditor: () => void;
 }
 

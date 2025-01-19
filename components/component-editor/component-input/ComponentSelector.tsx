@@ -4,11 +4,11 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { availableComponents } from "@/lib/newcomps/available-comps";
-import { Component } from "@/lib/newcomps/types";
+import { ComponentRegistry } from "@/lib/newcomps/available-comps";
+import { ComponentWrapper } from "@/lib/newcomps/types";
 
 interface ComponentSelectorProps extends React.PropsWithChildren {
-    onInsert: (component: Component) => void;
+    onInsert: (component: ComponentWrapper) => void;
 }
 
 export function ComponentSelector({ onInsert, children }: ComponentSelectorProps) {
@@ -19,11 +19,11 @@ export function ComponentSelector({ onInsert, children }: ComponentSelectorProps
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" className="max-h-80 overflow-y-auto">
                 {
-                    Object.keys(availableComponents).map(k => (
+                    Object.keys(ComponentRegistry.components).map(k => (
 
                     <DropdownMenuItem
                         key={k}
-                        onClick={() => onInsert(availableComponents[k]())}
+                        onClick={() => onInsert(ComponentRegistry.createInstance(k))}
                         className="flex items-center gap-2"
                     >
                         {

@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { Page } from "@/lib/newcomps/Page";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
-import { Component } from "@/lib/newcomps/types";
+import { ComponentWrapper } from "@/lib/newcomps/types";
 
 interface EditorSidebarProps {
-    component: Component | Page;
+    component: ComponentWrapper | Page;
     onChange: () => void;
     onPopOut: () => void;
     onClose: () => void;

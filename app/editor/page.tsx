@@ -34,7 +34,6 @@ export default function EditorPage() {
     const updatePage = () => {
         setSite(site.clone());
         console.log("update page");
-        
     };
 
     useEffect(() => {

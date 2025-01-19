@@ -1,9 +1,12 @@
 import { Page } from "./Page";
-import { ChildrenContainer, Component } from "./types";
+import { ComponentWrapper } from "./types";
 
-export function findByIdInPage(page: Page, id: string): Component | null {
+export function findByIdInComp(comp: ComponentWrapper, id: string): ComponentWrapper | null {
+    if (comp.id == id) return comp;
 
-    for (const child of page.children as Component[]) {
+    if (!comp.children) return null;
+
+    for (const child of comp.children) {
         const node = findByIdInComp(child, id);
         if (node) return node;
     }
@@ -11,65 +14,56 @@ export function findByIdInPage(page: Page, id: string): Component | null {
     return null;
 }
 
-export function findByIdInComp(root: Component, id: string): Component | null {
-    if (root.id == id) return root;
-
-    if ("children" in root) {
-        for (const child of root.children as Component[]) {
-            const node = findByIdInComp(child, id);
-            if (node) return node;
-        }
-    }
-
-    return null;
-}
-
-export function updateComp(child: Component, props: any) {
-    child.props = props;
-
-    // TODO: do some DOM surgery to set the parent to the previous one's, etc.
-    const newNode = child.createHtmlElement();
-    child.htmlElement.replaceWith(newNode);
-    child.htmlElement = newNode;
-}
-
-export function addChild(root: ChildrenContainer, child: Component, index?: number) {
-    if (index && index > -1 && index < root.children.length) {
-        root.children.splice(index, 0, child);
-        const node = root.htmlElement.childNodes.item(index);
-        node.insertBefore(child.htmlElement, node);
-    } else {
-        root.children.push(child);
-        root.htmlElement.appendChild(child.htmlElement);
-    }
-
-    child.parent = root;
-}
-
 export function addSibling(
-    reference: Component,
-    child: Component,
+    reference: ComponentWrapper,
+    compToAdd: ComponentWrapper,
     position: 'before' | 'after',
 ) {
-    if (!reference.parent) return;
+    if (!reference.parent || !reference.parent.children) return;
 
     let refIndex = reference.parent.children.findIndex(c => c.id === reference.id);
     if (refIndex === -1) return;
 
     if (position == 'before') {
-        reference.htmlElement.insertAdjacentElement('beforebegin', child.htmlElement);
+        reference.htmlElement.insertAdjacentElement('beforebegin', compToAdd.htmlElement);
     } else if (position == 'after') {
-        reference.htmlElement.insertAdjacentElement('afterend', child.htmlElement);
+        reference.htmlElement.insertAdjacentElement('afterend', compToAdd.htmlElement);
         refIndex++;
     }
 
     // update children array
-    reference.parent.children.splice(refIndex, 0, child);
+    reference.parent.children.splice(refIndex, 0, compToAdd);
 
     // update parent
-    child.parent = reference.parent;
+    compToAdd.parent = reference.parent;
 
-    console.log("DOM: added sibling", child, " to reference", reference, position);
+    console.log("DOM: added sibling", compToAdd, " to reference", reference, position);
+}
+
+export function addChild(parent: ComponentWrapper | Page, child: ComponentWrapper, index?: number) {
+    if (!parent.children) return;
+
+    if (index && index > -1 && index < parent.children.length) {
+        parent.children.splice(index, 0, child);
+        const node = parent.htmlElement.childNodes.item(index);
+
+        // TODO: fix bug 
+        // Try to insert more elements into a Row and sometimes it happens.
+        // NotFoundError: Node.insertBefore: Child to insert before is not a child of this node
+        node.insertBefore(child.htmlElement, node);
+    } else {
+        parent.children.push(child);
+        parent.htmlElement.appendChild(child.htmlElement);
+    }
+
+    child.parent = parent;
+}
+
+export function removeChild(parent: ComponentWrapper | Page, child: ComponentWrapper) {
+    if (!parent.children) return;
+
+    parent.children = parent.children.filter(c => c.id !== child.id);
+    child.htmlElement.remove();
 }
 
 export function createId(type: string): string {

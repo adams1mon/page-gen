@@ -1,9 +1,9 @@
-import { Component } from '@/lib/newcomps/types';
+import { ComponentWrapper } from '@/lib/newcomps/types';
 import { create } from 'zustand';
 
 interface RClickedComponent {
-    rClickedComponent: Component | null;
-    rClickComponent: (comp: Component) => void;
+    rClickedComponent: ComponentWrapper | null;
+    rClickComponent: (comp: ComponentWrapper) => void;
 }
 
 export const useRClickedComponent = create<RClickedComponent>(

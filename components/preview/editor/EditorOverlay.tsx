@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+import { ComponentDescriptor } from "@/lib/foo/ComponentDescriptor";
 import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
 import { Copy, Edit, Plus, Trash2, Clipboard } from "lucide-react";
 import { Button } from "../../ui/button";

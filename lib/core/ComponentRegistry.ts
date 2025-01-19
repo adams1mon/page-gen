@@ -1,14 +1,11 @@
-import { ROW_TYPE, Row } from "./Row";
-import { HEADING_TYPE, Heading } from "./Heading";
-import { ComponentWrapper, CustomRow, IComponent } from "./types";
-import { updateComponentInTree } from "../components-meta/ComponentContainer";
+import { CustomRow } from "../newcomps/CustomRow";
+import { HEADING_TYPE, Heading } from "../newcomps/Heading";
+import { HERO_TYPE, Hero } from "../newcomps/Hero";
+import { ROW_TYPE, Row } from "../newcomps/Row";
+import { ComponentWrapper } from "./ComponentWrapper";
+import { IComponent } from "./types";
 
-//export const availableComponents: { [key: string]: () => Component } = {
-//    [HEADING_TYPE]: () => new Heading(),
-//    [ROW_TYPE]: () => new Row(),
-//};
-
-type ICompConstructor = new () => IComponent;
+type ICompConstructor = new () => IComponent<any>;
 
 export class ComponentRegistry {
 
@@ -22,10 +19,11 @@ export class ComponentRegistry {
             throw new Error(`${type} component is already defined`);
         }
         this.components[type] = constructorFunc;
-        console.log("added", type, constructorFunc);
+
+        console.log("defined", type, constructorFunc);
     }
 
-    static createInstance(type: string): ComponentWrapper {
+    static createInstance(type: string): ComponentWrapper<any> {
         if (!(type in ComponentRegistry.components)) {
             throw new Error(`${type} component not found in registry`);
         }
@@ -37,4 +35,5 @@ export class ComponentRegistry {
 ComponentRegistry.define("customRow", CustomRow);
 ComponentRegistry.define(ROW_TYPE, Row);
 ComponentRegistry.define(HEADING_TYPE, Heading);
+ComponentRegistry.define(HERO_TYPE, Hero);
 

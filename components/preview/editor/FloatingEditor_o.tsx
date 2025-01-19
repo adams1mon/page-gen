@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+import { ComponentDescriptor } from "@/lib/foo/ComponentDescriptor";
 import { PropInputs } from "../../component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "../../component-editor/component-input/ComponentInput";
 import { X, PictureInPicture } from "lucide-react";

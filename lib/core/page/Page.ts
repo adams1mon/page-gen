@@ -1,11 +1,13 @@
 // Import the Tailwind generated styles
 // @ts-ignore
-import css from '!!raw-loader!../generated/styles.css';
-import { tag } from '../site-generator/generate-html';
-import { DataType, ObjectDesc, PropsDesc } from '../components-meta/PropsDescriptor';
-import { titleDesc, textDesc, longTextDesc } from '../components/common';
-import { addChild, createId, findByIdInComp, removeChild } from './utils';
-import { ChildrenContainer, ComponentWrapper } from './types';
+import css from '!!raw-loader!./styles/generated/styles.css';
+import { titleDesc, textDesc, longTextDesc } from '../props/common';
+import { ChildrenContainer } from '../types';
+import { DataType, ObjectDesc, PropsDesc } from '../props/PropsDescriptor';
+import { ComponentWrapper } from '../ComponentWrapper';
+import { addChild, createId, findByIdInComp, removeChild } from '../tree-actions';
+import { tag } from '../utils';
+import { EventDispatcher } from '../EventQueue';
 
 // a single static webpage
 
@@ -49,7 +51,7 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Page implements ChildrenContainer {
+export class Page implements ChildrenContainer{
 
     type: string = "Page";
     propsDescriptor: PropsDesc = propsDescriptor;
@@ -60,7 +62,7 @@ export class Page implements ChildrenContainer {
     htmlRoot: HTMLElement;
     htmlElement: HTMLElement;
 
-    children: ComponentWrapper[] = [];
+    children: ComponentWrapper<any>[] = [];
 
     constructor(
         props: PageProps = defaultProps,
@@ -119,15 +121,16 @@ export class Page implements ChildrenContainer {
         return page;
     }
 
-    addChild(child: ComponentWrapper, index?: number) {
+    addChild(child: ComponentWrapper<any>, index?: number) {
         addChild(this, child, index);
+        EventDispatcher.publish("addchild", child.htmlElement);
     }
 
-    removeChild(child: ComponentWrapper) {
+    removeChild(child: ComponentWrapper<any>) {
         removeChild(this, child);
     }
 
-    findChildById(id: string): ComponentWrapper | null {
+    findChildById(id: string): ComponentWrapper<any> | null {
         for (const child of this.children) {
             const node = findByIdInComp(child, id);
             if (node) return node;
@@ -141,3 +144,6 @@ export class Page implements ChildrenContainer {
     }
 }
 
+export function newPage() {
+    return new Page();
+}

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "predev": "pnpm exec tailwind -c ./lib/styles/tailwind.config.ts -i ./lib/styles/globals.css -o ./lib/generated/styles.css",
+    "predev": "pnpm exec tailwind -c ./lib/core/page/styles/tailwind.config.ts -i ./lib/core/page/styles/globals.css -o ./lib/core/page/styles/generated/styles.css",
     "dev": "pnpm exec next dev"
   },
   "dependencies": {

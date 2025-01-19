@@ -1,5 +1,5 @@
-import { ComponentContainer, insertChild } from "@/lib/components-meta/ComponentContainer";
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+import { ComponentContainer, insertChild } from "@/lib/foo/ComponentContainer";
+import { ComponentDescriptor } from "@/lib/foo/ComponentDescriptor";
 import { SITE_TYPE } from "@/lib/components/Site";
 import { ReactNode, createElement } from "react";
 import { ComponentDivider } from "../../component-editor/component-input/ComponentDivider";

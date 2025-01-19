@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
 import { Copy } from "lucide-react";
 import { useComponentClipboard } from "@/app/editor/hooks/useComponentClipboard";
 import { ComponentInput } from "./component-input/ComponentInput";
-import { ComponentWrapper } from "@/lib/newcomps/types";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
 
 interface ComponentEditorProps {
-    component: ComponentWrapper;
+    component: ComponentWrapper<any>;
     onChange: () => void;
     onDelete: () => void | null;
 }

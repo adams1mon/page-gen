@@ -35,4 +35,4 @@ yarn-error.log*
 next-env.d.ts
 
 # generated files for the generated sites (styles, etc.)
-/lib/generated
+lib/**/generated

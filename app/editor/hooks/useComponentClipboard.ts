@@ -1,17 +1,17 @@
-import { ComponentWrapper } from '@/lib/newcomps/types';
+import { ComponentWrapper } from '@/lib/core/ComponentWrapper';
 import { create } from 'zustand';
 
-interface ComponentClipboard {
-    copiedComponent: ComponentWrapper | null;
-    copy: (component: ComponentWrapper) => void;
-    paste: () => ComponentWrapper | null;
+interface ComponentClipboard<T> {
+    copiedComponent: ComponentWrapper<T> | null;
+    copy: (component: ComponentWrapper<T>) => void;
+    paste: () => ComponentWrapper<T> | null;
     hasCopiedComponent: () => boolean;
 }
 
-export const useComponentClipboard = create<ComponentClipboard>(
+export const useComponentClipboard = create<ComponentClipboard<any>>(
     (set, get) => ({
             copiedComponent: null,
-            copy: (component: ComponentWrapper) => set(() => ({copiedComponent: component})),
+            copy: (component: ComponentWrapper<any>) => set(() => ({copiedComponent: component})),
             paste: () => {
                 const copied = get().copiedComponent 
                 return copied ? copied.clone() : null;

@@ -1,12 +1,12 @@
-import { ComponentWrapper } from '@/lib/newcomps/types';
+import { ComponentWrapper } from '@/lib/core/ComponentWrapper';
 import { create } from 'zustand';
 
-interface RClickedComponent {
-    rClickedComponent: ComponentWrapper | null;
-    rClickComponent: (comp: ComponentWrapper) => void;
+interface RClickedComponent<T> {
+    rClickedComponent: ComponentWrapper<T> | null;
+    rClickComponent: (comp: ComponentWrapper<T>) => void;
 }
 
-export const useRClickedComponent = create<RClickedComponent>(
+export const useRClickedComponent = create<RClickedComponent<any>>(
     (set) => {
         return {
             rClickedComponent: null,

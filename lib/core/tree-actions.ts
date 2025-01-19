@@ -1,7 +1,12 @@
-import { Page } from "./Page";
-import { ComponentWrapper } from "./types";
+import { Page } from "./page/Page";
+import { ComponentWrapper } from "./ComponentWrapper";
 
-export function findByIdInComp(comp: ComponentWrapper, id: string): ComponentWrapper | null {
+
+export function createId(type: string): string {
+    return `${type}-${Date.now()}`;
+}
+
+export function findByIdInComp<T>(comp: ComponentWrapper<T>, id: string): ComponentWrapper<T> | null {
     if (comp.id == id) return comp;
 
     if (!comp.children) return null;
@@ -14,9 +19,9 @@ export function findByIdInComp(comp: ComponentWrapper, id: string): ComponentWra
     return null;
 }
 
-export function addSibling(
-    reference: ComponentWrapper,
-    compToAdd: ComponentWrapper,
+export function addSibling<T>(
+    reference: ComponentWrapper<T>,
+    compToAdd: ComponentWrapper<T>,
     position: 'before' | 'after',
 ) {
     if (!reference.parent || !reference.parent.children) return;
@@ -40,7 +45,7 @@ export function addSibling(
     console.log("DOM: added sibling", compToAdd, " to reference", reference, position);
 }
 
-export function addChild(parent: ComponentWrapper | Page, child: ComponentWrapper, index?: number) {
+export function addChild<T>(parent: ComponentWrapper<T> | Page, child: ComponentWrapper<T>, index?: number) {
     if (!parent.children) return;
 
     if (index && index > -1 && index < parent.children.length) {
@@ -59,13 +64,10 @@ export function addChild(parent: ComponentWrapper | Page, child: ComponentWrappe
     child.parent = parent;
 }
 
-export function removeChild(parent: ComponentWrapper | Page, child: ComponentWrapper) {
+export function removeChild<T>(parent: ComponentWrapper<T> | Page, child: ComponentWrapper<T>) {
     if (!parent.children) return;
 
     parent.children = parent.children.filter(c => c.id !== child.id);
     child.htmlElement.remove();
 }
 
-export function createId(type: string): string {
-    return `${type}-${Date.now()}`;
-}

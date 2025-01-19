@@ -1,14 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { Clipboard } from "lucide-react";
-//import { useComponentClipboard } from '@/lib/store/component-clipboard-context';
 import { ComponentSelector } from "./ComponentSelector";
 import { useComponentClipboard } from "@/app/editor/hooks/useComponentClipboard";
-import { ComponentWrapper } from "@/lib/newcomps/types";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
 
 interface ComponentDividerProps {
-    onInsert: (component: ComponentWrapper) => void;
+    onInsert: (component: ComponentWrapper<any>) => void;
 }
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {

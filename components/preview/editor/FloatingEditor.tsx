@@ -10,7 +10,7 @@ import { ComponentInput } from "@/components/component-editor/component-input/Co
 import { ComponentWrapper } from "@/lib/newcomps/types";
 
 interface FloatingEditorProps {
-    component: Page | ComponentWrapper;
+    component: Page | ComponentWrapper<any>;
     onClose: () => void;
     onChange: () => void;
     onDock: () => void;

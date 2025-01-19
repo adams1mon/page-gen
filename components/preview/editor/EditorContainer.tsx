@@ -1,16 +1,16 @@
 //"use client";
 //
-//import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
+//import { ComponentDescriptor } from "@/lib/foo/ComponentDescriptor";
 //import { EditorOverlay } from "./EditorOverlay";
 //import { EditorContextMenu } from "./EditorContextMenu";
 //import { useState } from "react";
 //import { ComponentSelector } from "../../component-editor/component-input/ComponentSelector";
-//import { removeChild } from "@/lib/components-meta/ComponentContainer";
+//import { removeChild } from "@/lib/foo/ComponentContainer";
 //import { Button } from "@/components/ui/button";
 //import { Plus } from "lucide-react";
 //import { useSiteStore } from "@/lib/store/site-store";
-//import { findParentComponent } from "@/lib/components-meta/ComponentContainer";
-//import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
+//import { findParentComponent } from "@/lib/foo/ComponentContainer";
+//import { updateComponentInTree } from "@/lib/foo/ComponentContainer";
 //import { useComponentSelection } from "@/app/editor/hooks/useComponentSelection";
 //
 //interface EditorContainerProps extends React.PropsWithChildren {

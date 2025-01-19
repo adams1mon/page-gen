@@ -1,11 +1,9 @@
-import { ComponentExport, createHtmlNodeFromReact } from "../components-meta/ComponentContainer";
-import { ComponentDescriptor } from "../components-meta/ComponentDescriptor";
-import { DataType, InputType, ObjectDesc, PropsDesc } from "../components-meta/PropsDescriptor";
+import { DataType, InputType, ObjectDesc, PropsDesc } from "../core/props/PropsDescriptor";
 import { cn } from "../utils";
-import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../components/common";
+import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../core/props/common";
 import { FunctionComponent } from "react";
-import { IComponent } from "./types";
-import { defaultHead } from "next/head";
+import { IComponent } from "../core/types";
+import { createHtmlElementFromReact } from "../core/utils";
 
 export const ROW_TYPE = "Row";
 
@@ -15,44 +13,6 @@ export interface RowProps {
     justifyContent: string;
     className?: string;
 }
-
-function Node(props: RowProps) {
-    const baseClasses = "flex w-full";
-    const gapClasses = {
-        '1rem': 'gap-4',
-        '0.5rem': 'gap-2',
-        '2rem': 'gap-8',
-    };
-    const alignmentClasses = {
-        'stretch': 'items-stretch',
-        'center': 'items-center',
-        'flex-start': 'items-start',
-        'flex-end': 'items-end',
-    };
-    const justifyClasses = {
-        'flex-start': 'justify-start',
-        'center': 'justify-center',
-        'flex-end': 'justify-end',
-        'space-between': 'justify-between',
-        'space-around': 'justify-around',
-    };
-
-    return (
-        <div
-            className={
-                cn(
-                    baseClasses,
-                    gapClasses[props.gap as keyof typeof gapClasses] || 'gap-4',
-                    alignmentClasses[props.alignItems as keyof typeof alignmentClasses] || 'items-center',
-                    justifyClasses[props.justifyContent as keyof typeof justifyClasses] || 'justify-start',
-                    props.className
-                )
-            }
-        >
-            {props.children}
-        </div>
-    );
-};
 
 const defaultProps: RowProps = {
     gap: "1rem",
@@ -78,89 +38,8 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-//export class Row extends ChildrenContainerMixin(Component) implements ChildrenContainer {
 
-//export class Row extends ChildrenContainerMixin(Component) {
-////export class Row extends Component {
-//
-//    constructor(props: RowProps = defaultProps) {
-//        super(ROW_TYPE, props, propsDescriptor);
-//
-//        // not allowed to use children before it's initialized... in the constructor above,
-//        // by the mixin
-//        //for (const c of this.children) {
-//        //    this.htmlElement.appendChild(c.createHtmlElement());
-//        //}
-//    }
-//
-//    clone(): Component {
-//        const row = new Row(this.props);
-//        row.children = this.children.map(c => c.clone());
-//        return row as unknown as Component;
-//    }
-//
-//    createHtmlElement(): HTMLElement {
-//        console.log("create Row html");
-//
-//        const baseClasses = "flex w-full";
-//        const gapClasses = {
-//            '1rem': 'gap-4',
-//            '0.5rem': 'gap-2',
-//            '2rem': 'gap-8',
-//        };
-//        const alignmentClasses = {
-//            'stretch': 'items-stretch',
-//            'center': 'items-center',
-//            'flex-start': 'items-start',
-//            'flex-end': 'items-end',
-//        };
-//        const justifyClasses = {
-//            'flex-start': 'justify-start',
-//            'center': 'justify-center',
-//            'flex-end': 'justify-end',
-//            'space-between': 'justify-between',
-//            'space-around': 'justify-around',
-//        };
-//
-//        const Jsx: FunctionComponent<RowProps> = (props) => (
-//            <div
-//                data-r-id="row"
-//                className={
-//                    cn(
-//                        baseClasses,
-//                        gapClasses[props.gap as keyof typeof gapClasses] || 'gap-4',
-//                        alignmentClasses[props.alignItems as keyof typeof alignmentClasses] || 'items-center',
-//                        justifyClasses[props.justifyContent as keyof typeof justifyClasses] || 'justify-start',
-//                        props.className
-//                    )
-//                }
-//            >
-//            </div>
-//        );
-//
-//        // option 1: create DOM node from react element and add children dom nodes to it
-//        // option 2: create react nodes from the children (requires writing a converter) and 
-//        // add them to the props.children of the react node
-//
-//        // go with option 1 for now.
-//
-//        // add the children
-//        console.log("row props in create html", this.props);
-//
-//        const nodeFromReact = createHtmlNodeFromReact(Jsx, this.props);
-//        console.log("from react", nodeFromReact);
-//
-//        if (this.children) {
-//            for (const c of this.children) {
-//                nodeFromReact.appendChild(c.createHtmlElement());
-//            }
-//        }
-//
-//        return nodeFromReact;
-//    }
-//}
-
-export class Row implements IComponent {
+export class Row implements IComponent<RowProps> {
 
     componentName: string = "Row";
     propsDescriptor: PropsDesc = propsDescriptor;
@@ -171,7 +50,7 @@ export class Row implements IComponent {
 
     createHtmlElement(props: RowProps, children?: HTMLElement[]): HTMLElement {
         console.log("create Row html");
-        
+
         const baseClasses = "flex w-full";
         const gapClasses = {
             '1rem': 'gap-4',
@@ -192,21 +71,23 @@ export class Row implements IComponent {
             'space-around': 'justify-around',
         };
 
-        const Jsx: FunctionComponent<RowProps> = (props) => (
-            <div
-                data-r-id="row"
-                className={
-                    cn(
-                        baseClasses,
-                        gapClasses[props.gap as keyof typeof gapClasses] || 'gap-4',
-                        alignmentClasses[props.alignItems as keyof typeof alignmentClasses] || 'items-center',
-                        justifyClasses[props.justifyContent as keyof typeof justifyClasses] || 'justify-start',
-                        props.className
-                    )
-                }
-            >
-            </div>
-        );
+        const Jsx: FunctionComponent<RowProps> = (props) => {
+            return (
+                <div
+                    data-r-id="row"
+                    className={
+                        cn(
+                            baseClasses,
+                            gapClasses[props.gap as keyof typeof gapClasses] || 'gap-4',
+                            alignmentClasses[props.alignItems as keyof typeof alignmentClasses] || 'items-center',
+                            justifyClasses[props.justifyContent as keyof typeof justifyClasses] || 'justify-start',
+                            props.className
+                        )
+                    }
+                >
+                </div>
+            )
+        };
 
         // option 1: create DOM node from react element and add children dom nodes to it
         // option 2: create react nodes from the children (requires writing a converter) and 
@@ -216,20 +97,14 @@ export class Row implements IComponent {
 
         // add the children
         console.log("row props in create html", props);
-        
-        const nodeFromReact = createHtmlNodeFromReact(Jsx, props);
+
+        const nodeFromReact = createHtmlElementFromReact(Jsx, props);
         console.log("from react", nodeFromReact);
 
         children?.map(c => nodeFromReact.appendChild(c));
 
         this.htmlElement = nodeFromReact;
         return nodeFromReact;
-    }
-
-    update(props: any, children?: HTMLElement[]): HTMLElement {
-        console.log("custom update in row");
-        
-        return this.htmlElement ?? this.createHtmlElement(props, children);
     }
 }
 

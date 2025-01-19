@@ -1,4 +1,4 @@
-import { ObjectDesc } from "@/lib/components-meta/PropsDescriptor";
+import { ObjectDesc } from "@/lib/core/props/PropsDescriptor";
 import { PropInputs } from "./PropInputs";
 
 interface strKeyObj {

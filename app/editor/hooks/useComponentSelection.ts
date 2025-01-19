@@ -1,14 +1,14 @@
-import { Page } from '@/lib/newcomps/Page';
-import { ComponentWrapper } from '@/lib/newcomps/types';
+import { ComponentWrapper } from '@/lib/core/ComponentWrapper';
+import { Page } from '@/lib/core/page/Page';
 import { create } from 'zustand';
 
-interface ComponentSelection {
-    selectedComponent: Page | ComponentWrapper | null;
-    selectComponent: (comp: Page | ComponentWrapper) => void;
+interface ComponentSelection<T> {
+    selectedComponent: Page | ComponentWrapper<T> | null;
+    selectComponent: (comp: Page | ComponentWrapper<T>) => void;
     closeEditor: () => void;
 }
 
-export const useComponentSelection = create<ComponentSelection>(
+export const useComponentSelection = create<ComponentSelection<any>>(
     (set) => {
         return {
             selectedComponent: null,

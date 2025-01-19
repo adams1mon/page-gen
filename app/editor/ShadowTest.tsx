@@ -7,9 +7,9 @@ import { useSiteStore } from "@/lib/store/site-store";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from "@/components/ui/context-menu";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { useComponentClipboard } from "./hooks/useComponentClipboard";
-import { ComponentWrapper } from "@/lib/newcomps/types";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
 
-type CompFunc = (comp: ComponentWrapper) => void;
+type CompFunc = (comp: ComponentWrapper<any>) => void;
 
 interface OverlayState {
     id: string;
@@ -44,20 +44,7 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
         }
 
         const shadow = ref.current.shadowRoot as ShadowRoot;
-
-        //if (site.props.styles) {
-        //    const sheet = new CSSStyleSheet();
-        //    sheet.replaceSync(site.props.styles);
-        //    shadow.adoptedStyleSheets = [sheet];
-        //    console.log("added styles");
-        //}
-
-        const html = shadow.querySelector("html");
-        if (html) {
-            shadow.replaceChild(site.htmlRoot, html);
-        } else {
-            shadow.appendChild(site.htmlRoot);
-        }
+        shadow.appendChild(site.htmlRoot);
 
         const handleMouseOver = (e: Event) => {
             const target = e.target as HTMLElement;
@@ -122,22 +109,25 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
             shadow.removeEventListener('contextmenu', handleContextMenu);
         };
 
-    //}, [site, ref.current]);
     }, [ref.current]);
 
-    const handleRemove = (comp: ComponentWrapper) => {
+    const handleRemove = (comp: ComponentWrapper<any>) => {
         site.removeChild(comp);
         onChange();
     };
 
-    const handleSiblingInsert = (reference: ComponentWrapper | null, newComponent: ComponentWrapper, position: 'before' | 'after') => {
+    const handleSiblingInsert = (
+        reference: ComponentWrapper<any> | null, 
+        newComponent: ComponentWrapper<any>, 
+        position: 'before' | 'after',
+    ) => {
         console.log("sibling insert", position);
         if (!reference) return;
         reference.addSibling(newComponent, position);
         onChange();
     };
 
-    const handleInsert = (newComponent: ComponentWrapper) => {
+    const handleInsert = (newComponent: ComponentWrapper<any>) => {
         site.addChild(newComponent);
         console.log("add comp", newComponent);
         onChange();

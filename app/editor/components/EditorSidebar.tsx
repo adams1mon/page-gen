@@ -1,23 +1,23 @@
 import { PictureInPicture2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
-import { Page } from "@/lib/newcomps/Page";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
-import { ComponentWrapper } from "@/lib/newcomps/types";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { Page } from "@/lib/core/page/Page";
 
-interface EditorSidebarProps {
-    component: ComponentWrapper | Page;
+interface EditorSidebarProps<T> {
+    component: ComponentWrapper<T> | Page;
     onChange: () => void;
     onPopOut: () => void;
     onClose: () => void;
 }
 
-export function EditorSidebar({
+export function EditorSidebar<T>({
     component,
     onChange,
     onPopOut,
     onClose,
-}: EditorSidebarProps) {
+}: EditorSidebarProps<T>) {
     return (
         <div className="h-full overflow-y-auto border-l bg-background p-4">
             <div className="space-y-6">

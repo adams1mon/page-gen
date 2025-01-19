@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ChildrenContainer, ComponentWrapper } from "@/lib/newcomps/types";
+import { ChildrenContainer } from "@/lib/core/types";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
 
 
 interface ComponentInputProps {
@@ -28,12 +29,12 @@ export function ComponentInput(
 ) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const addComponent = (component: ComponentWrapper, index?: number) => {
+    const addComponent = (component: ComponentWrapper<any>, index?: number) => {
         parent.addChild(component, index);
         onChange();
     };
 
-    const deleteComponent = (component: ComponentWrapper) => {
+    const deleteComponent = (component: ComponentWrapper<any>) => {
         parent.removeChild(component);
         onChange();
     };
@@ -73,18 +74,15 @@ export function ComponentInput(
                                         <ComponentEditor
                                             component={component}
                                             onChange={onChange}
-                                            onDelete={() => {
-                                                parent.removeChild(component);
-                                                onChange();
-                                            }}
+                                            onDelete={() => deleteComponent(component)}
                                         />
                                         {
                                             // children should be defined, assertion should be above
                                             index === parent.children!.length - 1 && (
-                                            <ComponentDivider
-                                                onInsert={(comp) => addComponent(comp, index + 1)}
-                                            />
-                                        )}
+                                                <ComponentDivider
+                                                    onInsert={(comp) => addComponent(comp, index + 1)}
+                                                />
+                                            )}
                                     </div>
                                 ))
                             )}

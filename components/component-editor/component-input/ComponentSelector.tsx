@@ -4,11 +4,11 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ComponentRegistry } from "@/lib/newcomps/available-comps";
-import { ComponentWrapper } from "@/lib/newcomps/types";
+import { ComponentRegistry } from "@/lib/core/ComponentRegistry";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
 
 interface ComponentSelectorProps extends React.PropsWithChildren {
-    onInsert: (component: ComponentWrapper) => void;
+    onInsert: (component: ComponentWrapper<any>) => void;
 }
 
 export function ComponentSelector({ onInsert, children }: ComponentSelectorProps) {

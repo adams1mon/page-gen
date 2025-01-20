@@ -7,7 +7,6 @@ import { DataType, ObjectDesc, PropsDesc } from '../props/PropsDescriptor';
 import { ComponentWrapper } from '../ComponentWrapper';
 import { addChild, createId, findByIdInComp, removeChild } from '../tree-actions';
 import { tag } from '../utils';
-import { EventDispatcher } from '../EventQueue';
 
 // a single static webpage
 
@@ -123,7 +122,6 @@ export class Page implements ChildrenContainer{
 
     addChild(child: ComponentWrapper<any>, index?: number) {
         addChild(this, child, index);
-        EventDispatcher.publish("addchild", child.htmlElement);
     }
 
     removeChild(child: ComponentWrapper<any>) {

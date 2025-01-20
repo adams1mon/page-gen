@@ -80,7 +80,10 @@ export function ComponentEditor({
                         <PropInputs
                             propsDescriptor={component.propsDescriptor}
                             props={component.props}
-                            onChange={onChange}
+                            onChange={(newProps) => {
+                                component.update(newProps);
+                                onChange();
+                            }}
                         />
                     </div>
 

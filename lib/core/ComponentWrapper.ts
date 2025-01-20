@@ -1,4 +1,4 @@
-import { EventDispatcher } from "./EventQueue";
+import { EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
 import { addChild, addSibling, createId, findByIdInComp, removeChild } from "./tree-actions";
@@ -32,15 +32,20 @@ export class ComponentWrapper<T> {
 
         this.htmlElement = this.createHtmlElementTree();
 
-        // TODO:
-        // must set the data-id attribute every time we create a component?
-        // could this not be done by the preview??
-        this.htmlElement.setAttribute("data-id", this.id);
+        EventDispatcher.publish(
+            EventType.COMPONENT_HTML_CREATED,
+            { newHtml: this.htmlElement, id: this.id },
+        );
     }
 
     createHtmlElementTree(): HTMLElement {
         this.childrenHtml = this.children?.map(c => c.createHtmlElementTree());
-        return this.comp.createHtmlElement(this.props, this.childrenHtml);
+        const html = this.comp.createHtmlElement(this.props, this.childrenHtml);
+        EventDispatcher.publish(
+            EventType.COMPONENT_HTML_CREATED,
+            { newHtml: html, id: this.id },
+        );
+        return html;
     }
 
     clone(): ComponentWrapper<T> {
@@ -55,10 +60,9 @@ export class ComponentWrapper<T> {
 
     update(props: T) {
         this.props = props;
-        const newElement = this.comp.update ? this.comp.update(this.props) : this.createHtmlElementTree();
+        const newElement = this.comp.update?.(this.props) ?? this.createHtmlElementTree();
         this.htmlElement.replaceWith(newElement);
         this.htmlElement = newElement;
-        this.htmlElement.setAttribute("data-id", this.id);
     }
 
     addSibling(child: ComponentWrapper<T>, position: 'before' | 'after') {
@@ -67,7 +71,6 @@ export class ComponentWrapper<T> {
 
     addChild(child: ComponentWrapper<T>, index?: number) {
         addChild(this, child, index);
-        EventDispatcher.publish("addchild", child.htmlElement);
     }
 
     removeChild(child: ComponentWrapper<T>) {

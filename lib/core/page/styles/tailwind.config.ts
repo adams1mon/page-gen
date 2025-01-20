@@ -27,9 +27,10 @@ for (const colorName in tailwindColors) {
     }
 }
 
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    safeList: colorSafeList,
+    safelist: colorSafeList,
     darkMode: ['class'],
     content: [
         './lib/**/*.{js,ts,jsx,tsx,mdx}',
@@ -130,3 +131,4 @@ module.exports = {
         require('@tailwindcss/typography'),
     ],
 };
+

@@ -1,5 +1,6 @@
 import { Page } from "./page/Page";
 import { ComponentWrapper } from "./ComponentWrapper";
+import { EventDispatcher } from "./EventDispatcher";
 
 
 export function createId(type: string): string {

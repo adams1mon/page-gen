@@ -1,7 +1,6 @@
 "use client";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { FloatingEditor } from "@/components/preview/editor/FloatingEditor";
 import { useComponentSelection } from "./hooks/useComponentSelection";
 import { EditorToolbar } from "./components/EditorToolbar";
 import { EditorSidebar } from "./components/EditorSidebar";
@@ -11,6 +10,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useSiteStore } from "@/lib/store/site-store";
 import { ShadowTest } from "./ShadowTest";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
+import { FloatingEditor } from "./components/FloatingEditor";
 
 export default function EditorPage() {
     const { site, setSite } = useSiteStore();
@@ -55,7 +55,6 @@ export default function EditorPage() {
                     onViewChange={setActiveView}
                 />
             </div>
-
 
             <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel id="preview" order={0} minSize={30}>

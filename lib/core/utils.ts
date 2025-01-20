@@ -10,6 +10,7 @@ export function tag(name: string, obj?: { [key: string]: string }) {
 }
 
 export function createHtmlElementFromReact(jsx: FunctionComponent<any>, props: any): HTMLElement {
+    // @ts-ignore
     const doc: Document = Document.parseHTMLUnsafe(
         renderToStaticMarkup(createElement(jsx, props))
     );

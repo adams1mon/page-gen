@@ -1,13 +1,13 @@
 "use client";
 
-import { PropInputs } from "../../component-editor/prop-editor/PropInputs";
 import { X, PictureInPicture } from "lucide-react";
-import { Button } from "../../ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
-import { Page } from "@/lib/newcomps/Page";
+import { Page } from "@/lib/core/page/Page";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { Button } from "@/components/ui/button";
+import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
-import { ComponentWrapper } from "@/lib/newcomps/types";
 
 interface FloatingEditorProps {
     component: Page | ComponentWrapper<any>;

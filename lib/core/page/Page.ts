@@ -4,7 +4,7 @@ import css from '!!raw-loader!./styles/generated/styles.css';
 import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
 import { DataType, ObjectDesc, PropsDesc } from '../props/PropsDescriptor';
-import { ComponentWrapper } from '../ComponentWrapper';
+import { ComponentNode } from '../ComponentWrapper';
 import { addChild, createId, findByIdInComp, removeChild } from '../tree-actions';
 import { tag } from '../utils';
 
@@ -61,7 +61,7 @@ export class Page implements ChildrenContainer{
     htmlRoot: HTMLElement;
     htmlElement: HTMLElement;
 
-    children: ComponentWrapper<any>[] = [];
+    children: ComponentNode<any>[] = [];
 
     constructor(
         props: PageProps = defaultProps,
@@ -120,15 +120,15 @@ export class Page implements ChildrenContainer{
         return page;
     }
 
-    addChild(child: ComponentWrapper<any>, index?: number) {
+    addChild(child: ComponentNode<any>, index?: number) {
         addChild(this, child, index);
     }
 
-    removeChild(child: ComponentWrapper<any>) {
+    removeChild(child: ComponentNode<any>) {
         removeChild(this, child);
     }
 
-    findChildById(id: string): ComponentWrapper<any> | null {
+    findChildById(id: string): ComponentNode<any> | null {
         for (const child of this.children) {
             const node = findByIdInComp(child, id);
             if (node) return node;

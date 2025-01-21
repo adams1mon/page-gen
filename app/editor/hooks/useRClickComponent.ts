@@ -1,9 +1,9 @@
-import { ComponentWrapper } from '@/lib/core/ComponentWrapper';
+import { ComponentNode } from '@/lib/core/ComponentWrapper';
 import { create } from 'zustand';
 
 interface RClickedComponent<T> {
-    rClickedComponent: ComponentWrapper<T> | null;
-    rClickComponent: (comp: ComponentWrapper<T>) => void;
+    rClickedComponent: ComponentNode<T> | null;
+    rClickComponent: (comp: ComponentNode<T>) => void;
 }
 
 export const useRClickedComponent = create<RClickedComponent<any>>(

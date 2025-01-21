@@ -1,10 +1,10 @@
-import { ComponentWrapper } from '@/lib/core/ComponentWrapper';
+import { ComponentNode } from '@/lib/core/ComponentWrapper';
 import { Page } from '@/lib/core/page/Page';
 import { create } from 'zustand';
 
 interface ComponentSelection<T> {
-    selectedComponent: Page | ComponentWrapper<T> | null;
-    selectComponent: (comp: Page | ComponentWrapper<T>) => void;
+    selectedComponent: Page | ComponentNode<T> | null;
+    selectComponent: (comp: Page | ComponentNode<T>) => void;
     closeEditor: () => void;
 }
 

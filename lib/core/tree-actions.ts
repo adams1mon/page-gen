@@ -1,13 +1,11 @@
 import { Page } from "./page/Page";
-import { ComponentWrapper } from "./ComponentWrapper";
-import { EventDispatcher } from "./EventDispatcher";
-
+import { ComponentNode } from "./ComponentWrapper";
 
 export function createId(type: string): string {
     return `${type}-${Date.now()}`;
 }
 
-export function findByIdInComp<T>(comp: ComponentWrapper<T>, id: string): ComponentWrapper<T> | null {
+export function findByIdInComp<T>(comp: ComponentNode<T>, id: string): ComponentNode<T> | null {
     if (comp.id == id) return comp;
 
     if (!comp.children) return null;
@@ -21,8 +19,8 @@ export function findByIdInComp<T>(comp: ComponentWrapper<T>, id: string): Compon
 }
 
 export function addSibling<T>(
-    reference: ComponentWrapper<T>,
-    compToAdd: ComponentWrapper<T>,
+    reference: ComponentNode<T>,
+    compToAdd: ComponentNode<T>,
     position: 'before' | 'after',
 ) {
     if (!reference.parent || !reference.parent.children) return;
@@ -46,7 +44,7 @@ export function addSibling<T>(
     console.log("DOM: added sibling", compToAdd, " to reference", reference, position);
 }
 
-export function addChild<T>(parent: ComponentWrapper<T> | Page, child: ComponentWrapper<T>, index?: number) {
+export function addChild<T>(parent: ComponentNode<T> | Page, child: ComponentNode<T>, index?: number) {
     if (!parent.children) return;
 
     if (index && index > -1 && index < parent.children.length) {
@@ -65,7 +63,7 @@ export function addChild<T>(parent: ComponentWrapper<T> | Page, child: Component
     child.parent = parent;
 }
 
-export function removeChild<T>(parent: ComponentWrapper<T> | Page, child: ComponentWrapper<T>) {
+export function removeChild<T>(parent: ComponentNode<T> | Page, child: ComponentNode<T>) {
     if (!parent.children) return;
 
     parent.children = parent.children.filter(c => c.id !== child.id);

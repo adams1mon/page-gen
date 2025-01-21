@@ -4,7 +4,37 @@ import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
 import { addChild, addSibling, createId, findByIdInComp, removeChild } from "./tree-actions";
 import { IComponent } from "./types";
 
-export class ComponentWrapper<T> {
+export interface ComponentNode<T> {
+    type: string;
+    comp: IComponent<T>;
+    propsDescriptor: PropsDesc;
+
+    id: string;
+    props: T;
+    htmlElement: HTMLElement;
+
+    parent?: ComponentNode<T> | Page;
+    children?: ComponentNode<any>[];
+    childrenHtml?: HTMLElement[];
+
+    createHtmlElementTree: () => HTMLElement;
+
+    clone: () => ComponentNode<T>;
+
+    update(props: T): void;
+
+    addSibling(child: ComponentNode<T>, position: 'before' | 'after'): void;
+
+    addChild(child: ComponentNode<T>, index?: number): void;
+
+    removeChild(child: ComponentNode<T>): void;
+
+    findChildById(id: string): ComponentNode<T> | null;
+
+    toString(): string;
+}
+
+export class ComponentWrapper<T> implements ComponentNode<T> {
 
     type: string;
     comp: IComponent<T>;

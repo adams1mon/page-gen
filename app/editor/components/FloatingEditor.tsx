@@ -4,13 +4,13 @@ import { X, PictureInPicture } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
 import { Page } from "@/lib/core/page/Page";
-import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 
 interface FloatingEditorProps {
-    component: Page | ComponentWrapper<any>;
+    component: Page | ComponentNode<any>;
     onClose: () => void;
     onChange: () => void;
     onDock: () => void;

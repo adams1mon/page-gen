@@ -14,6 +14,7 @@ export class CustomRow implements IComponent<any> {
         console.log("custom row got children", children);
 
         const d = tag("div", { "data-custom": "row" });
+        d.style.outline = "2px solid yellow";
         d.innerText = "AAAAAH CUstom ROWW";
         return d;
     }

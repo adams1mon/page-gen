@@ -2,16 +2,16 @@ import { useEffect, useRef } from "react";
 import { ComponentDivider } from "@/components/component-editor/component-input/ComponentDivider";
 import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
-import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
+import { EditorContextMenu } from "./components/EditorContextMenu";
 import { EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
-import { ComponentContextMenu } from "./components/EditorContextMenu";
 
 
-interface ShadowTestProps {
+interface ShadowEditorProps {
     onChange: () => void;
 }
 
-export function ShadowTest({ onChange }: ShadowTestProps) {
+export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
     const ref = useRef(null);
     const { site } = useSiteStore();
@@ -48,8 +48,7 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
             }
         };
 
-
-        EventDispatcher.register(
+        EventDispatcher.addHandler(
             EventType.COMPONENT_HTML_CREATED,
             ({ newHtml, id }: { newHtml: HTMLElement, id: string }) => {
 
@@ -79,14 +78,14 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
 
     }, [ref.current]);
 
-    const handleRemove = (comp: ComponentWrapper<any>) => {
+    const handleRemove = (comp: ComponentNode<any>) => {
         site.removeChild(comp);
         onChange();
     };
 
     const handleSiblingInsert = (
-        reference: ComponentWrapper<any> | null,
-        newComponent: ComponentWrapper<any>,
+        reference: ComponentNode<any> | null,
+        newComponent: ComponentNode<any>,
         position: 'before' | 'after',
     ) => {
         console.log("sibling insert", position);
@@ -95,7 +94,7 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
         onChange();
     };
 
-    const handleInsert = (newComponent: ComponentWrapper<any>) => {
+    const handleInsert = (newComponent: ComponentNode<any>) => {
         site.addChild(newComponent);
         console.log("add comp", newComponent);
         onChange();
@@ -103,7 +102,7 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
 
     return (
         <div className="h-full overflow-auto">
-            <ComponentContextMenu
+            <EditorContextMenu
                 onInsert={handleInsert}
                 onInsertBefore={c => {
                     handleSiblingInsert(rClickedComponent, c, 'before');
@@ -120,7 +119,7 @@ export function ShadowTest({ onChange }: ShadowTestProps) {
                     ref={ref}
                 ></div>
 
-            </ComponentContextMenu>
+            </EditorContextMenu>
 
             <div className="p-4">
                 <ComponentDivider

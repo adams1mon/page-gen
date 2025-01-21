@@ -8,9 +8,9 @@ import { IframePreview } from "@/components/preview/IframePreview";
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSiteStore } from "@/lib/store/site-store";
-import { ShadowTest } from "./ShadowTest";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
 import { FloatingEditor } from "./components/FloatingEditor";
+import { ShadowEditor } from "./ShadowEditor";
 
 export default function EditorPage() {
     const { site, setSite } = useSiteStore();
@@ -60,16 +60,7 @@ export default function EditorPage() {
                 <ResizablePanel id="preview" order={0} minSize={30}>
                     <div className="h-full overflow-hidden">
                         {activeView === "editor" ? (
-                            <>
-                                {
-                                    <ShadowTest onChange={updatePage} />
-                                //<PreviewEditor
-                                //    comp={site}
-                                //    onChange={setSite}
-                                //    //onChange={() => console.log("add")}
-                                ///>
-                                }
-                            </>
+                            <ShadowEditor onChange={updatePage} />
                         ) : (
                             <IframePreview html={previewHtml} />
                         )}

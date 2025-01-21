@@ -2,7 +2,7 @@ import { CustomRow } from "../newcomps/CustomRow";
 import { HEADING_TYPE, Heading } from "../newcomps/Heading";
 import { HERO_TYPE, Hero } from "../newcomps/Hero";
 import { ROW_TYPE, Row } from "../newcomps/Row";
-import { ComponentWrapper } from "./ComponentWrapper";
+import { ComponentNode, ComponentWrapper } from "./ComponentWrapper";
 import { IComponent } from "./types";
 
 type ICompConstructor = new () => IComponent<any>;
@@ -23,7 +23,7 @@ export class ComponentRegistry {
         console.log("defined", type, constructorFunc);
     }
 
-    static createInstance(type: string): ComponentWrapper<any> {
+    static createInstance(type: string): ComponentNode<any> {
         if (!(type in ComponentRegistry.components)) {
             throw new Error(`${type} component not found in registry`);
         }

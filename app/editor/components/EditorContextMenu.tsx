@@ -2,14 +2,14 @@
 
 import { Clipboard, Copy, Edit, Plus, Trash2 } from "lucide-react";
 import { ComponentSelector } from "@/components/component-editor/component-input/ComponentSelector";
-import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from "@/components/ui/context-menu";
 import { useComponentClipboard } from "../hooks/useComponentClipboard";
 import { useComponentSelection } from "../hooks/useComponentSelection";
 import { useEffect, useState } from "react";
 import { useRClickedComponent } from "../hooks/useRClickComponent";
 
-type CompFunc = (comp: ComponentWrapper<any>) => void;
+type CompFunc = (comp: ComponentNode<any>) => void;
 
 interface ComponentContextMenuProps extends React.PropsWithChildren {
     onInsert: CompFunc;
@@ -18,7 +18,7 @@ interface ComponentContextMenuProps extends React.PropsWithChildren {
     onRemove: CompFunc;
 };
 
-export function ComponentContextMenu({
+export function EditorContextMenu({
     onInsert,
     onInsertBefore,
     onInsertAfter,

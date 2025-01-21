@@ -2,11 +2,11 @@ import { PictureInPicture2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
-import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Page } from "@/lib/core/page/Page";
 
 interface EditorSidebarProps<T> {
-    component: ComponentWrapper<T> | Page;
+    component: ComponentNode<T> | Page;
     onChange: () => void;
     onPopOut: () => void;
     onClose: () => void;

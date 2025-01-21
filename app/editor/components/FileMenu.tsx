@@ -58,9 +58,7 @@ export function FileMenu() {
       const a = document.createElement('a');
       a.href = url;
       a.download = 'site-config.json';
-      document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
       toast({

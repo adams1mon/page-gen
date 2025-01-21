@@ -6,35 +6,24 @@ import { PropInputs } from "./prop-editor/PropInputs";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { cn } from "@/lib/utils";
-import { ComponentInput } from "./component-input/ComponentInput";
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
 import { Copy } from "lucide-react";
-import { useComponentClipboard } from '@/lib/store/component-clipboard-context';
+import { useComponentClipboard } from "@/app/editor/hooks/useComponentClipboard";
+import { ComponentInput } from "./component-input/ComponentInput";
+import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
 
 interface ComponentEditorProps {
-    component: ComponentDescriptor;
-    onUpdate: (component: ComponentDescriptor) => void;
-    onDelete: ((id: string) => void) | null;
+    component: ComponentWrapper<any>;
+    onChange: () => void;
+    onDelete: () => void | null;
 }
 
 export function ComponentEditor({
     component,
-    onUpdate,
+    onChange,
     onDelete,
 }: ComponentEditorProps) {
     const [isOpen, setIsOpen] = useState(false);
     const { copy } = useComponentClipboard();
-
-    const updateComponentProps = (newProps: any) => {
-        onUpdate({
-            ...component,
-            props: newProps,
-        });
-    };
-
-    const updateChildrenDescriptors = (descriptors: ComponentDescriptor[]) => {
-        onUpdate({ ...component, childrenDescriptors: descriptors });
-    };
 
     return (
         <div className="group relative bg-background border rounded-lg">
@@ -52,8 +41,8 @@ export function ComponentEditor({
                                             variant="ghost"
                                             size="icon"
                                             onClick={(e) => {
-                                                e.stopPropagation;
-                                                onDelete(component.id);
+                                                e.stopPropagation();
+                                                onDelete();
                                             }}
                                             className="text-destructive hover:text-destructive"
                                         >
@@ -91,16 +80,19 @@ export function ComponentEditor({
                         <PropInputs
                             propsDescriptor={component.propsDescriptor}
                             props={component.props}
-                            onChange={updateComponentProps}
+                            onChange={(newProps) => {
+                                component.update(newProps);
+                                onChange();
+                            }}
                         />
                     </div>
 
                     {/* children component inputs */}
-                    {component.acceptsChildren &&
+                    {"children" in component &&
                         <div className="p-4">
                             <ComponentInput
-                                components={component.childrenDescriptors}
-                                onChange={updateChildrenDescriptors}
+                                parent={component}
+                                onChange={onChange}
                             />
                         </div>
                     }

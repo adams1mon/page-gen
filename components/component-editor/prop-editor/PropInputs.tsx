@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType } from "@/lib/components-meta/PropsDescriptor";
+import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType } from "@/lib/core/props/PropsDescriptor";
 import { StringInput } from "./StringInput";
 import { NumberInput } from "./NumberInput";
 import { ArrayInput } from "./ArrayInput";

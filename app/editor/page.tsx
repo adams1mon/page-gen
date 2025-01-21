@@ -1,46 +1,49 @@
 "use client";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { FloatingEditor } from "@/components/preview/editor/FloatingEditor";
 import { useComponentSelection } from "./hooks/useComponentSelection";
 import { EditorToolbar } from "./components/EditorToolbar";
 import { EditorSidebar } from "./components/EditorSidebar";
-import { PreviewEditor } from "@/components/preview/editor/PreviewEditor";
 import { IframePreview } from "@/components/preview/IframePreview";
 import { useEffect, useState } from "react";
-import { generateHtml } from "@/lib/site-generator/generate-html";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSiteStore } from "@/lib/store/site-store";
-import { ComponentDescriptor } from "@/lib/components-meta/ComponentDescriptor";
-import { updateComponentInTree } from "@/lib/components-meta/ComponentContainer";
+import { useEditorPreferences } from "@/lib/store/editor-preferences";
+import { FloatingEditor } from "./components/FloatingEditor";
+import { ShadowEditor } from "./ShadowEditor";
 
 export default function EditorPage() {
     const { site, setSite } = useSiteStore();
     const {
         selectedComponent,
-        isFloating,
         selectComponent,
         closeEditor,
+    } = useComponentSelection();
+
+    const {
+        isFloating,
         switchToFloating,
         switchToDocked,
-    } = useComponentSelection();
+    } = useEditorPreferences();
 
     const [activeView, setActiveView] = useState<"editor" | "preview">("editor");
     const [previewHtml, setPreviewHtml] = useState("");
     const debounce = useDebounce();
     const previewDebounceMillis = 100;
 
-    const updateComponent = (updatedComponent: ComponentDescriptor) => {
-        setSite(updateComponentInTree(site, updatedComponent));
+    const updatePage = () => {
+        setSite(site.clone());
+        console.log("update page");
     };
 
     useEffect(() => {
         if (activeView != "preview") return;
 
         debounce(async () => {
-            const html = await generateHtml(site);
-            setPreviewHtml(html);
+            const htmlStr = "<!DOCTYPE html>\n" + site.htmlRoot.outerHTML;
+            setPreviewHtml(htmlStr);
         }, previewDebounceMillis);
+
     }, [site, activeView]);
 
     return (
@@ -55,14 +58,11 @@ export default function EditorPage() {
 
             <ResizablePanelGroup direction="horizontal" className="h-full">
                 <ResizablePanel id="preview" order={0} minSize={30}>
-                    <div className="h-full overflow-auto p-4">
+                    <div className="h-full overflow-hidden">
                         {activeView === "editor" ? (
-                            <PreviewEditor
-                                comp={site}
-                                onChange={setSite}
-                            />
+                            <ShadowEditor onChange={updatePage} />
                         ) : (
-                            <IframePreview html={previewHtml} site={site} />
+                            <IframePreview html={previewHtml} />
                         )}
                     </div>
                 </ResizablePanel>
@@ -73,7 +73,7 @@ export default function EditorPage() {
                         <ResizablePanel id="editor-sidebar" order={1} defaultSize={40} minSize={15}>
                             <EditorSidebar
                                 component={selectedComponent}
-                                onComponentUpdate={updateComponent}
+                                onChange={updatePage}
                                 onPopOut={switchToFloating}
                                 onClose={closeEditor}
                             />
@@ -85,7 +85,7 @@ export default function EditorPage() {
             {selectedComponent && isFloating && (
                 <FloatingEditor
                     component={selectedComponent}
-                    onComponentUpdate={updateComponent}
+                    onChange={updatePage}
                     onClose={closeEditor}
                     onDock={switchToDocked}
                 />

@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "predev": "pnpm exec tailwind -c ./lib/styles/tailwind.config.ts -i ./lib/styles/globals.css -o ./lib/generated/styles.css",
+    "predev": "pnpm exec tailwind -c ./lib/core/page/styles/tailwind.config.ts -i ./lib/core/page/styles/globals.css -o ./lib/core/page/styles/generated/styles.css",
     "dev": "pnpm exec next dev"
   },
   "dependencies": {
@@ -72,7 +72,6 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.15",
-    "css-loader": "^7.1.2"
+    "@tailwindcss/typography": "^0.5.15"
   }
 }

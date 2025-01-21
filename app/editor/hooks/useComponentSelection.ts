@@ -1,31 +1,21 @@
-"use client";
-
-import { ComponentDescriptor } from '@/lib/components-meta/ComponentDescriptor';
-import { useEditorPreferences } from '@/lib/store/editor-preferences';
+import { ComponentNode } from '@/lib/core/ComponentWrapper';
+import { Page } from '@/lib/core/page/Page';
 import { create } from 'zustand';
 
-interface ComponentSelection {
-    selectedComponent: ComponentDescriptor | null;
-    isFloating: boolean;
-    selectComponent: (comp: ComponentDescriptor) => void;
+interface ComponentSelection<T> {
+    selectedComponent: Page | ComponentNode<T> | null;
+    selectComponent: (comp: Page | ComponentNode<T>) => void;
     closeEditor: () => void;
-    switchToFloating: () => void;
-    switchToDocked: () => void;
 }
 
-export const useComponentSelection = create<ComponentSelection>(
+export const useComponentSelection = create<ComponentSelection<any>>(
     (set) => {
-
-        const { isFloating, setIsFloating } = useEditorPreferences.getState();
-
         return {
             selectedComponent: null,
-            isFloating: isFloating,
             selectComponent: (comp) => set(() => ({selectedComponent: comp})),
             closeEditor: () => set(() => ({selectedComponent: null})),
-            switchToFloating: () => setIsFloating(true),
-            switchToDocked: () => setIsFloating(false),
         }
     }
 );
+
 

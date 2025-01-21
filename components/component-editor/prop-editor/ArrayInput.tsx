@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrayDesc, createDefaultProps } from "@/lib/components-meta/PropsDescriptor";
+import { ArrayDesc, createDefaultProps } from "@/lib/core/props/PropsDescriptor";
 import { PropInputs } from "./PropInputs";
 import { Plus, Trash2 } from "lucide-react";
 

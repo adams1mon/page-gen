@@ -83,7 +83,7 @@ const propsDescriptor: ObjectDesc = {
 
 export class Hero implements IComponent<HeroProps> {
 
-    componentName: string = "Heading";
+    componentName: string = "Hero";
     propsDescriptor: PropsDesc = propsDescriptor;
     acceptsChildren: boolean = false;
     initialProps?= defaultProps;

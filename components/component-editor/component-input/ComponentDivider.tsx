@@ -4,14 +4,15 @@ import { Clipboard } from "lucide-react";
 import { ComponentSelector } from "./ComponentSelector";
 import { useComponentClipboard } from "@/app/editor/hooks/useComponentClipboard";
 import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { useComponentSelector } from "@/lib/store/component-selector-store";
 
 interface ComponentDividerProps {
     onInsert: (component: ComponentWrapper<any>) => void;
 }
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {
-
     const { hasCopiedComponent, paste } = useComponentClipboard();
+    const { open: openSelector } = useComponentSelector();
 
     return (
         <div className="relative h-8 flex items-center justify-center my-4">
@@ -19,18 +20,16 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                 <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center gap-x-2">
-
-                <ComponentSelector onInsert={onInsert}>
-                    <Button
-                        variant="outline"
-                        className="bg-background border-border"
-                    >
-                        <div className="flex gap-2 text-muted-foreground">
-                            <Plus className="h-4 w-4" />
-                            <span>Add component</span>
-                        </div>
-                    </Button>
-                </ComponentSelector>
+                <Button
+                    variant="outline"
+                    className="bg-background border-border"
+                    onClick={() => openSelector(onInsert)}
+                >
+                    <div className="flex gap-2 text-muted-foreground">
+                        <Plus className="h-4 w-4" />
+                        <span>Add component</span>
+                    </div>
+                </Button>
 
                 {hasCopiedComponent() && (
                     <Button
@@ -50,7 +49,8 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                     </Button>
                 )}
             </div>
+
+            <ComponentSelector />
         </div>
     );
 }
-

@@ -43,6 +43,11 @@ export function addSibling<T>(
     compToAdd.parent = reference.parent;
 
     console.log("DOM: added sibling", compToAdd, " to reference", reference, position);
+
+    EventDispatcher.publish(
+        EventType.COMPONENT_ADDED,
+        { parent: reference.parent, child: compToAdd},
+    );
 }
 
 export function addChild<T>(parent: ComponentNode<T> | Page, child: ComponentNode<T>, index?: number) {

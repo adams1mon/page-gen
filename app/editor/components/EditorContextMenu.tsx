@@ -8,6 +8,7 @@ import { useComponentClipboard } from "../hooks/useComponentClipboard";
 import { useComponentSelection } from "../hooks/useComponentSelection";
 import { useEffect, useState } from "react";
 import { useRClickedComponent } from "../hooks/useRClickComponent";
+import { useComponentSelector } from "@/lib/store/component-selector-store";
 
 type CompFunc = (comp: ComponentNode<any>) => void;
 
@@ -25,17 +26,14 @@ export function EditorContextMenu({
     onRemove,
     children,
 }: ComponentContextMenuProps) {
-
     const { copy, paste, hasCopiedComponent } = useComponentClipboard();
     const { selectComponent } = useComponentSelection();
-
     const [isOpen, setIsOpen] = useState(true);
-
     const { rClickedComponent } = useRClickedComponent();
+    const { open: openSelector } = useComponentSelector();
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            // don't close when the click is on the menu itself
             if (isOpen && !(event.target as Element).closest('[role="menu"]')) {
                 setIsOpen(false);
             }
@@ -79,14 +77,16 @@ export function EditorContextMenu({
                             Insert Above
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent>
-                            <ComponentSelector onInsert={(c) => {
-                                onInsertBefore(c);
-                                setIsOpen(false);
-                            }}>
-                                <ContextMenuItem>
-                                    Add Component
-                                </ContextMenuItem>
-                            </ComponentSelector>
+                            <ContextMenuItem 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openSelector(onInsertBefore);
+                                    setIsOpen(false);
+                                }}
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Component
+                            </ContextMenuItem>
                             {pasteMenuItem()}
                         </ContextMenuSubContent>
                     </ContextMenuSub>
@@ -98,14 +98,16 @@ export function EditorContextMenu({
                             Insert Below
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent>
-                            <ComponentSelector onInsert={(c) => {
-                                onInsertAfter(c);
-                                setIsOpen(false);
-                            }}>
-                                <ContextMenuItem>
-                                    Add Component
-                                </ContextMenuItem>
-                            </ComponentSelector>
+                            <ContextMenuItem 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openSelector(onInsertAfter);
+                                    setIsOpen(false);
+                                }}
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Component
+                            </ContextMenuItem>
                             {pasteMenuItem()}
                         </ContextMenuSubContent>
                     </ContextMenuSub>
@@ -118,26 +120,17 @@ export function EditorContextMenu({
                                 Add Inside
                             </ContextMenuSubTrigger>
                             <ContextMenuSubContent>
-                                <ComponentSelector onInsert={(c) => {
-                                    onInsert(c);
-                                    setIsOpen(false);
-                                }}>
-                                    <ContextMenuItem>
-                                        Add Component
-                                    </ContextMenuItem>
-                                </ComponentSelector>
-                                {
-                                    hasCopiedComponent() && (
-                                        <ContextMenuItem onClick={() => {
-                                            const comp = paste();
-                                            if (comp) onInsert(comp);
-                                            setIsOpen(false);
-                                        }}>
-                                            <Clipboard className="h-4 w-4 mr-2" />
-                                            Paste Component
-                                        </ContextMenuItem>
-                                    )
-                                }
+                                <ContextMenuItem 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openSelector(onInsert);
+                                        setIsOpen(false);
+                                    }}
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Component
+                                </ContextMenuItem>
+                                {pasteMenuItem()}
                             </ContextMenuSubContent>
                         </ContextMenuSub>
                     )}
@@ -178,6 +171,8 @@ export function EditorContextMenu({
                     )}
                 </ContextMenuContent>
             }
+
+            <ComponentSelector />
         </ContextMenu>
     );
 }

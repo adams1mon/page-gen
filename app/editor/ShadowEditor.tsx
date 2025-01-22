@@ -5,6 +5,7 @@ import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
 import { EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
+import { useComponentSelector } from "@/lib/store/component-selector-store";
 
 
 interface ShadowEditorProps {
@@ -16,6 +17,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     const ref = useRef(null);
     const { site } = useSiteStore();
     const { rClickedComponent, rClickComponent } = useRClickedComponent();
+    const { open, onInsert } = useComponentSelector();
 
     useEffect(() => {
 
@@ -30,6 +32,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         shadow.appendChild(site.htmlRoot);
 
         const handleContextMenu = (e: MouseEvent) => {
+            
             const target = e.target as HTMLElement;
             if (!target) return;
 
@@ -45,6 +48,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 }
 
                 rClickComponent(component);
+                //e.preventDefault();
             }
         };
 
@@ -56,7 +60,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
                 // Add hover outline
                 let outline = "";
-                child.htmlElement.onmouseenter = () => {
+                child.htmlElement.onmouseenter = (e) => {
                     outline = child.htmlElement.style.outline;
                     child.htmlElement.style.outline = "2px solid blue";
                 };
@@ -89,7 +93,9 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 addButton.textContent = `Add to ${child.comp.componentName}`;
                 addButton.onclick = (e) => {
                     e.stopPropagation();
-                    rClickComponent(child);
+
+                    // open the component selector modal
+                    open((comp) => child.addChild(comp));
                     console.log("clicked", child);
                 };
 

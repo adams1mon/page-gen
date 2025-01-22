@@ -49,24 +49,52 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         };
 
         EventDispatcher.addHandler(
-            EventType.COMPONENT_HTML_CREATED,
-            ({ newHtml, id }: { newHtml: HTMLElement, id: string }) => {
+            EventType.COMPONENT_ADDED,
+            ({ child }: { parent: ComponentNode<any>, child: ComponentNode<any> }) => {
 
-                console.log("created component html", newHtml);
+                child.htmlElement.dataset.id = child.id;
 
-                newHtml.dataset.id = id;
-
+                // Add hover outline
                 let outline = "";
-                newHtml.onmouseenter = () => {
-                    outline = newHtml.style.outline;
-                    console.log("mouse enter", newHtml);
-                    newHtml.style.outline = "2px solid blue";
+                child.htmlElement.onmouseenter = () => {
+                    outline = child.htmlElement.style.outline;
+                    child.htmlElement.style.outline = "2px solid blue";
+                };
+                child.htmlElement.onmouseleave = () => {
+                    child.htmlElement.style.outline = outline;
+                };
+            },
+        );
+
+        EventDispatcher.addHandler(
+            EventType.COMPONENT_ADDED,
+            ({ child }: { parent: ComponentNode<any>, child: ComponentNode<any> }) => {
+
+                // Handle empty containers
+                if (!child.comp.acceptsChildren || !child.children) return;
+
+                if (child.htmlElement.querySelector("[data-editor-placeholder]")) return;
+
+                // Set container to relative positioning if not already positioned
+                const computedStyle = window.getComputedStyle(child.htmlElement);
+                if (computedStyle.position === 'static') {
+                    child.htmlElement.style.position = 'relative';
+                }
+
+                // Create placeholder
+                const placeholder = document.createElement('div');
+                placeholder.dataset.editorPlaceholder = 'true';
+
+                const addButton = document.createElement('button');
+                addButton.textContent = `Add to ${child.comp.componentName}`;
+                addButton.onclick = (e) => {
+                    e.stopPropagation();
+                    rClickComponent(child);
+                    console.log("clicked", child);
                 };
 
-                newHtml.onmouseleave = () => {
-                    console.log("mouse leave", newHtml);
-                    newHtml.style.outline = outline;
-                }
+                placeholder.appendChild(addButton);
+                child.htmlElement.appendChild(placeholder);
             },
         );
 

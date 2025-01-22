@@ -11,22 +11,21 @@ export function PropInputHeader(
         breadcrumbsPath?: string[],
     }
 ) {
-
     if (!displayName && !description && !breadcrumbsPath) 
         return null;
     
     return <div>
         {displayName &&
-            <label className="text-sm font-medium py-1">{displayName}</label>
+            <label className="text-xs font-medium">{displayName}</label>
         }
         {description &&
-            <p className="text-sm text-muted-foreground my-0">{description}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 mb-0">{description}</p>
         }
         {breadcrumbsPath &&
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0 mb-4">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 mb-2">
                 {breadcrumbsPath.map((item, index) => (
-                    <div key={index} className="flex items-center gap-1 overflow-x">
-                        {index > 0 && <ChevronRight className="h-4 w-4" />}
+                    <div key={index} className="flex items-center gap-0.5 overflow-x">
+                        {index > 0 && <ChevronRight className="h-3 w-3" />}
                         <span>{item}</span>
                     </div>
                 ))}

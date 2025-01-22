@@ -1,5 +1,6 @@
 import { Page } from "./page/Page";
 import { ComponentNode } from "./ComponentWrapper";
+import { EventDispatcher, EventType } from "./EventDispatcher";
 
 export function createId(type: string): string {
     return `${type}-${Date.now()}`;
@@ -61,6 +62,11 @@ export function addChild<T>(parent: ComponentNode<T> | Page, child: ComponentNod
     }
 
     child.parent = parent;
+
+    EventDispatcher.publish(
+        EventType.COMPONENT_ADDED,
+        { parent: parent, child: child},
+    );
 }
 
 export function removeChild<T>(parent: ComponentNode<T> | Page, child: ComponentNode<T>) {

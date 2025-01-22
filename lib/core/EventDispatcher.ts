@@ -21,5 +21,6 @@ export class EventDispatcher {
 // event types
 export const EventType = {
     COMPONENT_HTML_CREATED: "COMPONENT_HTML_CREATED",
+    COMPONENT_ADDED: "COMPONENT_ADDED",
 }
 

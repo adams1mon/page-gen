@@ -17,12 +17,24 @@ export enum InputType {
     URL,
 }
 
+// Categories for organizing props in the editor UI
+export enum PropCategory {
+    GENERAL = "general",      // Unspecified settings go here
+    CONTENT = "content",      // Text, images, etc
+    LAYOUT = "layout",        // Spacing, alignment, etc
+    STYLE = "style",         // Visual styling
+    BEHAVIOR = "behavior",    // Interactions, animations
+    ADVANCED = "advanced",    // Technical/developer settings
+    METADATA = "metadata",    // SEO, ids, etc
+}
+
 export type PropsDesc = EmptyDesc | LeafDesc | ArrayDesc | ObjectDesc;
 
 export interface BaseDesc {
     type: DataType;
     displayName: string;
     desc?: string;
+    category?: PropCategory; // Optional category - if not specified, will go under "General"
 }
 
 // Signals emtpy props, e.g. props: {}

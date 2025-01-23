@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { MouseEventHandler, useEffect, useRef } from "react";
 import { ComponentDivider } from "@/components/component-editor/component-input/ComponentDivider";
 import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
@@ -6,6 +6,7 @@ import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
 import { EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
+import { Page } from "@/lib/core/page/Page";
 
 
 interface ShadowEditorProps {
@@ -32,7 +33,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         shadow.appendChild(site.htmlRoot);
 
         const handleContextMenu = (e: MouseEvent) => {
-            
+
             const target = e.target as HTMLElement;
             if (!target) return;
 
@@ -54,52 +55,60 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
-            ({ child }: { parent: ComponentNode<any>, child: ComponentNode<any> }) => {
+            ({ child }: { parent: ComponentNode<any> | Page, child: ComponentNode<any> }) => {
 
                 child.htmlElement.dataset.id = child.id;
 
                 // Add hover outline
                 let outline = "";
+                let bgColor = "";
                 child.htmlElement.onmouseenter = (e) => {
                     outline = child.htmlElement.style.outline;
+                    bgColor = child.htmlElement.style.backgroundColor;
                     child.htmlElement.style.outline = "2px solid blue";
+                    child.htmlElement.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
+                    e.stopPropagation();
                 };
                 child.htmlElement.onmouseleave = () => {
                     child.htmlElement.style.outline = outline;
+                    child.htmlElement.style.backgroundColor = bgColor;
                 };
             },
         );
 
+        // Handle empty containers
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
-            ({ child }: { parent: ComponentNode<any>, child: ComponentNode<any> }) => {
+            ({ parent, child }: { parent: ComponentNode<any> | Page, child: ComponentNode<any> }) => {
 
-                // Handle empty containers
+                // handle the parent being a container component
+
+                console.log("add listener", parent, child);
+
+
+                const placeholderAttr = "[data-editor-placeholder]";
+
+                console.log(parent.htmlElement.dataset);
+
+
+                // add a placeholder if the child is a container component
+                // handle the child being a container component
                 if (!child.comp.acceptsChildren || !child.children) return;
 
-                if (child.htmlElement.querySelector("[data-editor-placeholder]")) return;
-
-                // Set container to relative positioning if not already positioned
-                const computedStyle = window.getComputedStyle(child.htmlElement);
-                if (computedStyle.position === 'static') {
-                    child.htmlElement.style.position = 'relative';
-                }
+                if (child.htmlElement.querySelector(placeholderAttr)) return;
 
                 // Create placeholder
-                const placeholder = document.createElement('div');
-                placeholder.dataset.editorPlaceholder = 'true';
-
-                const addButton = document.createElement('button');
-                addButton.textContent = `Add to ${child.comp.componentName}`;
-                addButton.onclick = (e) => {
+                function addChild(e: Event) {
                     e.stopPropagation();
 
                     // open the component selector modal
                     open((comp) => child.addChild(comp));
                     console.log("clicked", child);
-                };
+                }
 
-                placeholder.appendChild(addButton);
+                const placeholder = createPlaceholder(child.comp.componentName, addChild);
+                placeholder.dataset.editorPlaceholder = 'true';
+
                 child.htmlElement.appendChild(placeholder);
             },
         );
@@ -164,4 +173,62 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     );
 }
 
+// Create a placeholder component
+function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => void): HTMLElement {
+    const placeholder = document.createElement('div');
+    placeholder.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        position: relative;
+        width: 100%; /* Fill entire space */
+    `;
+
+    const innerDiv = document.createElement('div');
+    innerDiv.style.cssText = `
+        border: 2px dashed #ccc;
+        padding: 1rem;
+        width: 100%; /* Fill entire space */
+        height: 100%; /* Fill entire space */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    const title = document.createElement('div');
+    title.innerText = componentName;
+    title.style.cssText = `
+        font-weight: bold;
+        font-size: 1.3rem; /* Adjust font size as needed */
+    `;
+
+    const explanation = document.createElement('div');
+    explanation.innerText = 'This component is empty. Click the button below to add a component.';
+    explanation.style.cssText = `
+        margin: 1rem 0; /* Add some margin */
+    `;
+
+    const button = document.createElement('button');
+    button.innerText = 'Add Component';
+    button.style.cssText = `
+        padding: 0.3rem 0.5rem; /* Small padding */
+        border-radius: 5px; /* Rounded borders */
+        border: 2px solid #bbb;
+        color: hsl(0, 0%, 45.1%); /* Grey */
+        cursor: pointer;
+    `;
+
+    // Add click event listener
+    button.addEventListener('click', onClick);
+
+    // Append elements to inner div
+    innerDiv.appendChild(title);
+    innerDiv.appendChild(explanation);
+    innerDiv.appendChild(button);
+    placeholder.appendChild(innerDiv);
+
+    return placeholder;
+}
 

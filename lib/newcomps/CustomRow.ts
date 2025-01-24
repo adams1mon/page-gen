@@ -1,9 +1,10 @@
 import { EMPTY_DESCRIPTOR, PropsDesc } from "../core/props/PropsDescriptor";
 import { IComponent } from "../core/types";
 import { tag } from "../core/utils";
+import { ComponentPlugin } from "../core/ComponentPluginManager";
 
 
-export class CustomRow implements IComponent<any> {
+class CustomRow implements IComponent<any> {
 
     componentName: string = "customrow";
     propsDescriptor: PropsDesc = EMPTY_DESCRIPTOR;
@@ -19,3 +20,14 @@ export class CustomRow implements IComponent<any> {
         return d;
     }
 }
+
+
+const componentPlugin: ComponentPlugin = {
+    type: "customrow",
+    name: "Custom Row",
+    description: "not even a row",
+    constructorFunc: CustomRow,
+};
+
+export default componentPlugin;
+

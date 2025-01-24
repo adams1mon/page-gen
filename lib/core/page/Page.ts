@@ -4,7 +4,7 @@ import css from '!!raw-loader!./styles/generated/styles.css';
 import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
 import { DataType, ObjectDesc, PropsDesc } from '../props/PropsDescriptor';
-import { ComponentNode } from '../ComponentWrapper';
+import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
 import { addChild, createId, findByIdInComp, removeChild } from '../tree-actions';
 import { tag } from '../utils';
 
@@ -50,7 +50,15 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Page implements ChildrenContainer{
+export interface PageArgs {
+    id?: string,
+    props?: PageProps,
+    htmlRoot?: HTMLElement,
+    bodyElement?: HTMLElement,
+    children?: ComponentNode<any>[],
+}
+
+export class Page implements ChildrenContainer {
 
     type: string = "Page";
     propsDescriptor: PropsDesc = propsDescriptor;
@@ -63,15 +71,22 @@ export class Page implements ChildrenContainer{
 
     children: ComponentNode<any>[] = [];
 
-    constructor(
-        props: PageProps = defaultProps,
-        html?: HTMLElement,
-        domNode?: HTMLElement,
-    ) {
-        this.id = createId(this.type);
-        this.props = props;
-        this.htmlRoot = html ?? this.createHtml();
-        this.htmlElement = domNode ?? this.htmlRoot.querySelector("body")!;
+    constructor({
+        id,
+        props,
+        htmlRoot,
+        bodyElement,
+        children,
+    }: PageArgs) {
+        this.id = id || createId(this.type);
+        this.props = props || defaultProps;
+
+        // children has to be set before calling the createHtml
+        this.children = children || [];
+
+        this.htmlRoot = htmlRoot || this.createHtml();
+        this.htmlElement = bodyElement || this.htmlRoot.querySelector("body")!;
+        console.log("page constructor", this.id, this.props, this.htmlRoot, this.htmlElement, this.children);
     }
 
     createHtml(): HTMLElement {
@@ -115,9 +130,12 @@ export class Page implements ChildrenContainer{
     }
 
     clone(): Page {
-        const page = new Page(this.props, this.htmlRoot, this.htmlElement);
-        page.children = this.children;
-        return page;
+        return new Page({
+            props: this.props,
+            htmlRoot: this.htmlRoot,
+            bodyElement: this.htmlElement,
+            children: this.children,
+        });
     }
 
     addChild(child: ComponentNode<any>, index?: number) {
@@ -137,11 +155,22 @@ export class Page implements ChildrenContainer{
         return null;
     }
 
+    serialize(): SerializedPage {
+        return {
+            id: this.id,
+            props: this.props,
+            children: this.children.map(c => c.serialize()),
+        }
+    }
+
     toString(): string {
         return `Component: ${this.type}`;
     }
 }
 
-export function newPage() {
-    return new Page();
+export interface SerializedPage {
+    id: string;
+    props: PageProps;
+    children: SerializedComponentNode<any>[];
 }
+

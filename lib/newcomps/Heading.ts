@@ -2,6 +2,7 @@ import { DataType, InputType, ObjectDesc, PropsDesc } from "../core/props/PropsD
 import { classNameDesc } from "../core/props/common";
 import { tag } from "../core/utils";
 import { IComponent } from "../core/types";
+import { ComponentPlugin } from "../core/ComponentPluginManager";
 
 export const HEADING_TYPE = "Heading";
 
@@ -48,9 +49,8 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Heading implements IComponent<HeadingProps> {
+class Heading implements IComponent<HeadingProps> {
 
-    componentName: string = "Heading";
     propsDescriptor: PropsDesc = propsDescriptor;
     acceptsChildren: boolean = false;
     initialProps?: HeadingProps = defaultProps;
@@ -90,4 +90,12 @@ export class Heading implements IComponent<HeadingProps> {
         return h;
     }
 }
+
+const componentPlugin: ComponentPlugin = {
+    type: HEADING_TYPE,
+    name: "Heading",
+    constructorFunc: Heading,
+};
+
+export default componentPlugin;
 

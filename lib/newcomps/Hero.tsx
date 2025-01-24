@@ -2,6 +2,7 @@ import { DataType, InputType, ObjectDesc, PropsDesc } from "../core/props/PropsD
 import { createHtmlElementFromReact } from "../core/utils";
 import { htmlIdDesc } from "../core/props/common";
 import { IComponent } from "../core/types";
+import { ComponentPlugin } from "../core/ComponentPluginManager";
 
 export const HERO_TYPE = "Hero";
 
@@ -81,12 +82,11 @@ const propsDescriptor: ObjectDesc = {
     }
 };
 
-export class Hero implements IComponent<HeroProps> {
+class Hero implements IComponent<HeroProps> {
 
-    componentName: string = "Hero";
     propsDescriptor: PropsDesc = propsDescriptor;
     acceptsChildren: boolean = false;
-    initialProps?= defaultProps;
+    initialProps = defaultProps;
 
     createHtmlElement(props: HeroProps): HTMLElement {
 
@@ -115,3 +115,12 @@ export class Hero implements IComponent<HeroProps> {
         return createHtmlElementFromReact(jsx, props);
     }
 }
+
+const componentPlugin: ComponentPlugin = {
+    type: HERO_TYPE,
+    name: "Hero",
+    constructorFunc: Hero,
+};
+
+export default componentPlugin;
+

@@ -1,12 +1,12 @@
-import { EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
 import { addChild, addSibling, createId, findByIdInComp, removeChild } from "./tree-actions";
 import { IComponent } from "./types";
 
 export interface ComponentNode<T> {
-    type: string;
     comp: IComponent<T>;
+    type: string;
+    componentName: string;
     propsDescriptor: PropsDesc;
 
     id: string;
@@ -31,56 +31,90 @@ export interface ComponentNode<T> {
 
     findChildById(id: string): ComponentNode<T> | null;
 
+    serialize(): SerializedComponentNode<T>
+
     toString(): string;
+}
+
+export interface SerializedComponentNode<T> {
+    type: string;
+
+    id: string;
+    props: T;
+
+    children?: SerializedComponentNode<any>[];
+}
+
+export interface ComponentWrapperArgs<T> {
+    comp: IComponent<T>;
+    type: string;
+    componentName: string;
+    id?: string;
+    props?: T;
+    children?: ComponentNode<any>[];
+    parent?: ComponentNode<any> | Page;
 }
 
 export class ComponentWrapper<T> implements ComponentNode<T> {
 
-    type: string;
     comp: IComponent<T>;
+    type: string;
+    componentName: string;
 
     id: string;
     props: T;
     htmlElement: HTMLElement;
 
     // set by the parent when this element is added
-    parent?: ComponentWrapper<T> | Page;
-    children?: ComponentWrapper<any>[];
+    parent?: ComponentNode<any> | Page;
+    children?: ComponentNode<any>[];
     childrenHtml?: HTMLElement[];
 
-    constructor(type: string, comp: IComponent<T>) {
-        this.type = type;
+    constructor({
+        comp,
+        type,
+        componentName,
+        id,
+        props,
+        children,
+        parent,
+    }: ComponentWrapperArgs<T>) {
         this.comp = comp;
+        this.type = type;
+        this.componentName = componentName;
 
-        this.id = createId(type);
-        this.props = comp.initialProps ?? createDefaultProps(comp.propsDescriptor);
+        this.id = id || createId(type);
+
+        // initialize with props, initialProps or create the default props if both were undefined
+        this.props = props || comp.initialProps || createDefaultProps(comp.propsDescriptor);
 
         // initialize children so 'if (children)' checks return true
         if (comp.acceptsChildren) {
-            this.children = [];
+            this.children = children || [];
         }
+
+        this.parent = parent;
 
         this.htmlElement = this.createHtmlElementTree();
 
-        EventDispatcher.publish(
-            EventType.COMPONENT_HTML_CREATED,
-            { newHtml: this.htmlElement, id: this.id },
-        );
+        // TODO: is this good here?
+        this.htmlElement.dataset.id = id;
     }
 
     createHtmlElementTree(): HTMLElement {
         this.childrenHtml = this.children?.map(c => c.createHtmlElementTree());
         const html = this.comp.createHtmlElement(this.props, this.childrenHtml);
-        EventDispatcher.publish(
-            EventType.COMPONENT_HTML_CREATED,
-            { newHtml: html, id: this.id },
-        );
         return html;
     }
 
-    clone(): ComponentWrapper<T> {
-        const copy = new ComponentWrapper(this.type, this.comp);
-        copy.props = structuredClone(this.props);
+    clone(): ComponentNode<T> {
+        const copy = new ComponentWrapper({
+            comp: this.comp,
+            type: this.type,
+            componentName: this.componentName,
+            props: structuredClone(this.props),
+            parent: this.parent,
+        });
         return copy;
     }
 
@@ -109,6 +143,20 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
 
     findChildById(id: string): ComponentWrapper<T> | null {
         return findByIdInComp(this, id);
+    }
+
+    serialize(): SerializedComponentNode<T> {
+        const objectToSave: SerializedComponentNode<T> = {
+            type: this.type,
+            id: this.id,
+            props: this.props,
+        }
+
+        if (this.children) {
+            objectToSave.children = this.children.map(c => c.serialize());
+        }
+
+        return objectToSave;
     }
 
     toString(): string {

@@ -4,6 +4,7 @@ import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../core/props
 import { FunctionComponent } from "react";
 import { IComponent } from "../core/types";
 import { createHtmlElementFromReact } from "../core/utils";
+import { ComponentPlugin } from "../core/ComponentPluginManager";
 
 export const ROW_TYPE = "Row";
 
@@ -39,9 +40,8 @@ const propsDescriptor: ObjectDesc = {
 };
 
 
-export class Row implements IComponent<RowProps> {
+class Row implements IComponent<RowProps> {
 
-    componentName: string = "Row";
     propsDescriptor: PropsDesc = propsDescriptor;
     acceptsChildren: boolean = true;
     initialProps?: RowProps = defaultProps;
@@ -108,3 +108,12 @@ export class Row implements IComponent<RowProps> {
     }
 }
 
+
+const componentPlugin: ComponentPlugin = {
+    type: ROW_TYPE,
+    name: "Row",
+    description: "Simple row",
+    constructorFunc: Row,
+};
+
+export default componentPlugin;

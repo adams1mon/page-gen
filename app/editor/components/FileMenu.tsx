@@ -30,7 +30,7 @@ export function FileMenu() {
     saveSite,
     loadSite,
     resetSite,
-    savedSites,
+    savedPages: savedSites,
     deleteSavedSite,
   } = useSiteStore();
 

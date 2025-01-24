@@ -30,6 +30,9 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         }
 
         const shadow = ref.current.shadowRoot as ShadowRoot;
+
+        console.log(site);
+        
         shadow.appendChild(site.htmlRoot);
 
         const handleContextMenu = (e: MouseEvent) => {
@@ -53,65 +56,66 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             }
         };
 
+        function addHoverOutline(node: ComponentNode<any>) {
+            // Add hover outline
+            let outline = "";
+            let bgColor = "";
+            node.htmlElement.onmouseenter = (e) => {
+                outline = node.htmlElement.style.outline;
+                bgColor = node.htmlElement.style.backgroundColor;
+                node.htmlElement.style.outline = "2px solid blue";
+                node.htmlElement.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
+                e.stopPropagation();
+            };
+            node.htmlElement.onmouseleave = () => {
+                node.htmlElement.style.outline = outline;
+                node.htmlElement.style.backgroundColor = bgColor;
+            };
+        }
+
+        function addEmptyContainerPlaceholder(node: ComponentNode<any>) {
+            // add a placeholder if the child is a container component
+            // handle the child being a container component
+            if (!node.comp.acceptsChildren || !node.children) return;
+
+            const placeholderAttr = "[data-editor-placeholder]";
+            if (node.htmlElement.querySelector(placeholderAttr)) return;
+
+            function addChild(e: Event) {
+                e.stopPropagation();
+
+                // open the component selector modal
+                open((comp) => node.addChild(comp));
+                console.log("clicked", node);
+            }
+
+            const placeholder = createPlaceholder(node.componentName, addChild);
+            placeholder.dataset.editorPlaceholder = 'true';
+
+            node.htmlElement.appendChild(placeholder);
+        }
+
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
             ({ child }: { parent: ComponentNode<any> | Page, child: ComponentNode<any> }) => {
 
                 child.htmlElement.dataset.id = child.id;
 
-                // Add hover outline
-                let outline = "";
-                let bgColor = "";
-                child.htmlElement.onmouseenter = (e) => {
-                    outline = child.htmlElement.style.outline;
-                    bgColor = child.htmlElement.style.backgroundColor;
-                    child.htmlElement.style.outline = "2px solid blue";
-                    child.htmlElement.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
-                    e.stopPropagation();
-                };
-                child.htmlElement.onmouseleave = () => {
-                    child.htmlElement.style.outline = outline;
-                    child.htmlElement.style.backgroundColor = bgColor;
-                };
+                addHoverOutline(child);
+                addEmptyContainerPlaceholder(child);
             },
         );
 
-        // Handle empty containers
-        EventDispatcher.addHandler(
-            EventType.COMPONENT_ADDED,
-            ({ parent, child }: { parent: ComponentNode<any> | Page, child: ComponentNode<any> }) => {
-
-                // handle the parent being a container component
-
-                console.log("add listener", parent, child);
-
-
-                const placeholderAttr = "[data-editor-placeholder]";
-
-                console.log(parent.htmlElement.dataset);
-
-
-                // add a placeholder if the child is a container component
-                // handle the child being a container component
-                if (!child.comp.acceptsChildren || !child.children) return;
-
-                if (child.htmlElement.querySelector(placeholderAttr)) return;
-
-                // Create placeholder
-                function addChild(e: Event) {
-                    e.stopPropagation();
-
-                    // open the component selector modal
-                    open((comp) => child.addChild(comp));
-                    console.log("clicked", child);
-                }
-
-                const placeholder = createPlaceholder(child.comp.componentName, addChild);
-                placeholder.dataset.editorPlaceholder = 'true';
-
-                child.htmlElement.appendChild(placeholder);
-            },
-        );
+        //EventDispatcher.addHandler(
+        //    EventType.PAGE_LOADED,
+        //    ({ child }: { parent: ComponentNode<any> | Page, child: ComponentNode<any> }) => {
+        //
+        //        child.htmlElement.dataset.id = child.id;
+        //
+        //        addHoverOutline(child);
+        //        addEmptyContainerPlaceholder(child);
+        //    },
+        //);
 
         shadow.addEventListener('contextmenu', handleContextMenu);
 
@@ -120,6 +124,22 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         };
 
     }, [ref.current]);
+    
+    //useEffect(() => {
+    //    if (!ref.current) return;
+    //    if (!ref.current.shadowRoot) return;
+    //
+    //    const shadow = ref.current.shadowRoot as ShadowRoot;
+    //
+    //    if (shadow.firstChild) {
+    //        shadow.replaceChild(site.htmlRoot, shadow.firstChild);
+    //    } else {
+    //        shadow.appendChild(site.htmlRoot);
+    //    }
+    //
+    //    console.log("page changed, replaced/added html");
+    //
+    //}, [site]);
 
     const handleRemove = (comp: ComponentNode<any>) => {
         site.removeChild(comp);

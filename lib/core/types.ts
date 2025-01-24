@@ -9,7 +9,6 @@ export interface ChildrenContainer {
 };
 
 export interface IComponent<T> {
-    componentName: string;
     propsDescriptor: PropsDesc;
     initialProps?: T;
     acceptsChildren: boolean;

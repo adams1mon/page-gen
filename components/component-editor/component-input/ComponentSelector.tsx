@@ -1,21 +1,21 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ComponentRegistry } from "@/lib/core/ComponentRegistry";
+import { ComponentPluginManager } from "@/lib/core/ComponentPluginManager";
 import { Search, Layers } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
+import { ComponentRepository } from "@/lib/core/ComponentRepository";
 
 export function ComponentSelector() {
     const [search, setSearch] = useState("");
     const { isOpen, onInsert, close } = useComponentSelector();
 
-    const components = Object.entries(ComponentRegistry.components)
-        .filter(([type, Component]) => {
-            const instance = new Component();
-            return instance.componentName.toLowerCase().includes(search.toLowerCase());
+    const searchedComponents = ComponentPluginManager.getPlugins()
+        .filter(p => {
+            return p.name.toLowerCase().includes(search.toLowerCase());
         });
 
     return (
@@ -35,20 +35,19 @@ export function ComponentSelector() {
                 </DialogHeader>
 
                 <div className="flex-1 overflow-auto">
-                    {components.length === 0 ? (
+                    {searchedComponents.length === 0 ? (
                         <div className="flex items-center justify-center h-32 text-muted-foreground">
                             No components found
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-                            {components.map(([type, Component]) => {
-                                const instance = new Component();
+                            {searchedComponents.map((comp, index) => {
                                 return (
                                     <button
-                                        key={type}
+                                        key={index}
                                         onClick={() => {
                                             if (onInsert) {
-                                                onInsert(ComponentRegistry.createInstance(type));
+                                                onInsert(ComponentRepository.createComponent(comp.type));
                                                 close();
                                             }
                                         }}
@@ -63,11 +62,11 @@ export function ComponentSelector() {
                                         </div>
                                         <div className="flex flex-col items-center text-center">
                                             <span className="font-medium">
-                                                {instance.componentName}
+                                                {comp.name}
                                             </span>
-                                            {instance.propsDescriptor.desc && (
+                                            {comp.description && (
                                                 <span className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                                    {instance.propsDescriptor.desc}
+                                                    {comp.description}
                                                 </span>
                                             )}
                                         </div>

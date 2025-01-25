@@ -17,7 +17,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     const ref = useRef(null);
     const { site } = useSiteStore();
     const { rClickedComponent, rClickComponent } = useRClickedComponent();
-    const { openSelector: open } = useComponentSelector();
+    const { openComponentSelector } = useComponentSelector();
 
     useEffect(() => {
 
@@ -81,7 +81,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 e.stopPropagation();
 
                 // open the component selector modal
-                open((comp) => node.addChild(comp));
+                openComponentSelector((comp) => node.addChild(comp));
                 console.log("clicked", node);
             }
 
@@ -131,7 +131,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     }, [ref.current]);
 
     const handleRemove = (comp: ComponentNode<any>) => {
-        site.removeChild(comp);
+        comp.remove()
         onChange();
     };
 

@@ -1,7 +1,7 @@
 import { EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
-import { addChild, addSibling, createId, findByIdInComp, removeChild } from "./tree-actions";
+import { addChild, addSibling, createId, findByIdInComp, remove, removeChild } from "./tree-actions";
 import { IComponent } from "./types";
 
 export interface ComponentNode<T> {
@@ -23,6 +23,8 @@ export interface ComponentNode<T> {
     clone: () => ComponentNode<T>;
 
     update(props: T): void;
+
+    remove(): void;
 
     addSibling(child: ComponentNode<T>, position: 'before' | 'after'): void;
 
@@ -128,6 +130,10 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         EventDispatcher.publish(EventType.COMPONENT_UPDATED, { component: this });
     }
 
+    remove() {
+        remove(this);
+    }
+
     addSibling(child: ComponentWrapper<T>, position: 'before' | 'after') {
         addSibling(this, child, position);
     }
@@ -163,35 +169,3 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 }
 
-//export class EventPublisherComponentProxy<T> extends ComponentWrapper<T> {
-//
-//    constructor(args) {
-//        super(args);
-//    }
-//
-//    createHtmlElementTree(): HTMLElement {
-//        const html = super.createHtmlElementTree();
-//        EventDispatcher.publish("COMPONENT_CREATE_HTML", { component: this });
-//        return html;
-//    }
-//
-//    clone(): ComponentNode<T> {
-//        const copy = new EventPublisherComponentProxy({
-//            comp: this.comp,
-//            type: this.type,
-//            componentName: this.componentName,
-//            props: structuredClone(this.props),
-//            parent: this.parent,
-//        });
-//        return copy;
-//    }
-//
-//    update(props: T) {
-//        super.update(props);
-//        EventDispatcher.publish("COMPONENT_UPDATE", { component: this });
-//    }
-//
-//    toString(): string {
-//        return "EventPublisherProxy: " + super.toString();
-//    }
-//}

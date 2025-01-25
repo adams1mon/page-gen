@@ -81,3 +81,11 @@ export function removeChild<T>(parent: ComponentNode<T> | Page, child: Component
     child.htmlElement.remove();
 }
 
+export function remove<T>(comp: ComponentNode<T>) {
+    if (comp.parent) {
+        removeChild(comp.parent, comp);
+        return;
+    }
+
+    comp.htmlElement.remove();
+}

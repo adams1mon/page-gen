@@ -12,7 +12,7 @@ interface ComponentDividerProps {
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {
     const { hasCopiedComponent, paste } = useComponentClipboard();
-    const { open: openSelector } = useComponentSelector();
+    const { openSelector: openSelector } = useComponentSelector();
 
     return (
         <div className="relative h-8 flex items-center justify-center my-4">

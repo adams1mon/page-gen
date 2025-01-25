@@ -1,10 +1,10 @@
-import { MouseEventHandler, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ComponentDivider } from "@/components/component-editor/component-input/ComponentDivider";
 import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
-import { ComponentAddedEvent, ComponentLoadedEvent, EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
+import { ComponentAddedEvent, EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 
 
@@ -17,7 +17,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     const ref = useRef(null);
     const { site } = useSiteStore();
     const { rClickedComponent, rClickComponent } = useRClickedComponent();
-    const { open } = useComponentSelector();
+    const { openSelector: open } = useComponentSelector();
 
     useEffect(() => {
 
@@ -33,6 +33,8 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         shadow.appendChild(site.htmlRoot);
 
         const handleContextMenu = (e: MouseEvent) => {
+            // find nearest element with a 'data-id' attribute
+            // and select it
 
             const target = e.target as HTMLElement;
             if (!target) return;
@@ -60,7 +62,6 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 bgColor = node.htmlElement.style.backgroundColor;
                 node.htmlElement.style.outline = "2px solid blue";
                 node.htmlElement.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
-                //e.stopPropagation();
             };
             node.htmlElement.onmouseleave = () => {
                 node.htmlElement.style.outline = outline;
@@ -69,8 +70,9 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         }
 
         function addEmptyContainerPlaceholder(node: ComponentNode<any>) {
-            // add a placeholder if the child is a container component
-            if (!node.comp.acceptsChildren || !node.children) return;
+
+            // add a placeholder if the node is a container component
+            if (!node.children || node.children.length > 0) return;
 
             const placeholderAttr = "[data-editor-placeholder]";
             if (node.htmlElement.querySelector(placeholderAttr)) return;
@@ -92,9 +94,6 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
             ({ component }: ComponentAddedEvent) => {
-
-                console.log("added handler", component.id);
-
                 component.htmlElement.dataset.id = component.id;
 
                 addHoverOutline(component);
@@ -104,10 +103,17 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_LOADED,
-            ({ component }: ComponentLoadedEvent) => {
+            ({ component }: ComponentAddedEvent) => {
+                component.htmlElement.dataset.id = component.id;
 
-                console.log("loaded handler", component.id);
+                addHoverOutline(component);
+                addEmptyContainerPlaceholder(component);
+            },
+        );
 
+        EventDispatcher.addHandler(
+            EventType.COMPONENT_UPDATED,
+            ({ component }: ComponentAddedEvent) => {
                 component.htmlElement.dataset.id = component.id;
 
                 addHoverOutline(component);
@@ -117,27 +123,12 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
         shadow.addEventListener('contextmenu', handleContextMenu);
 
+
         return () => {
             shadow.removeEventListener('contextmenu', handleContextMenu);
         };
 
     }, [ref.current]);
-
-    //useEffect(() => {
-    //    if (!ref.current) return;
-    //    if (!ref.current.shadowRoot) return;
-    //
-    //    const shadow = ref.current.shadowRoot as ShadowRoot;
-    //
-    //    if (shadow.firstChild) {
-    //        shadow.replaceChild(site.htmlRoot, shadow.firstChild);
-    //    } else {
-    //        shadow.appendChild(site.htmlRoot);
-    //    }
-    //
-    //    console.log("page changed, replaced/added html");
-    //
-    //}, [site]);
 
     const handleRemove = (comp: ComponentNode<any>) => {
         site.removeChild(comp);
@@ -149,9 +140,15 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         newComponent: ComponentNode<any>,
         position: 'before' | 'after',
     ) => {
-        console.log("sibling insert", position);
+        console.log("sibling insert", position, reference, newComponent);
         if (!reference) return;
         reference.addSibling(newComponent, position);
+        onChange();
+    };
+
+    const handleInsertInto = (parent: ComponentNode<any>, newComponent: ComponentNode<any>) => {
+        parent.addChild(newComponent); 
+        console.log("add comp", newComponent);
         onChange();
     };
 
@@ -164,7 +161,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     return (
         <div className="h-full overflow-auto">
             <EditorContextMenu
-                onInsert={handleInsert}
+                onInsertInto={handleInsertInto}
                 onInsertBefore={c => {
                     handleSiblingInsert(rClickedComponent, c, 'before');
                 }}
@@ -239,7 +236,10 @@ function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => vo
     `;
 
     // Add click event listener
-    button.addEventListener('click', onClick);
+    button.addEventListener('click', (e) => {
+        onClick(e);
+        placeholder.remove();
+    });
 
     // Append elements to inner div
     innerDiv.appendChild(title);

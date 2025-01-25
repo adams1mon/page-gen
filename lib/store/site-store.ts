@@ -62,7 +62,7 @@ function loadState(): LoadedState {
         console.log("site ", parsed.pageName, " not found in ", parsed.savedPages);
         loadedPage = PageRepository.createPage();
     } else {
-        loadedPage = PageRepository.deserialize(parsed.savedPages[parsed.pageName]);
+        loadedPage = PageRepository.load(parsed.savedPages[parsed.pageName]);
     }
 
     return {
@@ -129,7 +129,7 @@ export const useSiteStore = create<SiteStore>()(
                 console.log(savedSites);
 
                 if (savedSites[name]) {
-                    const loaded = PageRepository.deserialize(savedSites[name]);
+                    const loaded = PageRepository.load(savedSites[name]);
                     console.log("load site called", loaded);
 
                     set({

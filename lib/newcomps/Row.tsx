@@ -74,7 +74,6 @@ class Row implements IComponent<RowProps> {
         const Jsx: FunctionComponent<RowProps> = (props) => {
             return (
                 <div
-                    data-r-id="row"
                     className={
                         cn(
                             baseClasses,

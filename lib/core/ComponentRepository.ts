@@ -1,6 +1,7 @@
 import { ComponentPluginManager } from "./ComponentPluginManager";
-import { ComponentNode, ComponentWrapper, SerializedComponentNode } from "./ComponentWrapper";
+import { ComponentNode, ComponentWrapper, EventPublisherComponentProxy, SerializedComponentNode } from "./ComponentWrapper";
 import { EventDispatcher, EventType } from "./EventDispatcher";
+import { Page } from "./page/Page";
 
 
 export class ComponentRepository {
@@ -22,14 +23,17 @@ export class ComponentRepository {
     static loadComponent<T>(serializedComp: SerializedComponentNode<T>): ComponentNode<T> {
         const plugin = ComponentPluginManager.getPlugin(serializedComp.type);
 
-        const comp = new ComponentWrapper({
+        const comp: ComponentNode<T> = new ComponentWrapper({
             id: serializedComp.id,
             type: serializedComp.type,
             componentName: plugin.name,
             comp: new plugin.constructorFunc(),
             props: serializedComp.props,
-            children: serializedComp.children?.map(ComponentRepository.loadComponent),
+            children: serializedComp.children?.map(c => ComponentRepository.loadComponent(c)),
         });
+            
+        // the parent needs to be set explicitly
+        comp.children?.forEach(child => { child.parent = comp });
 
         EventDispatcher.publish(EventType.COMPONENT_LOADED, { component: comp });
         return comp;

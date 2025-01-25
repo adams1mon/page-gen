@@ -18,6 +18,9 @@ export class EventDispatcher {
         }[]
     } = {};
 
+    static handlerSet: Set<string> = new Set();
+
+
     static publish(eventType: string, event: any) {
 
         if (!this.queues[eventType]) {
@@ -51,19 +54,24 @@ export class EventDispatcher {
         }
     }
 
-    static addHandler(eventType: string, handler: EventHandler, startFrom: "beginning" | "end" = "beginning") {
+    static addHandler(eventType: string, handler: EventHandler, handlerKey?: string, startFrom: "beginning" | "end" = "beginning") {
         if (!this.listeners[eventType]) {
             this.listeners[eventType] = [];
         }
+
+        // if this handler already exists, skip it
+        // to avoid registering the same handler for the same event
+        // multiple times
+        const key = eventType + handlerKey || handler.name; 
+        if (this.handlerSet.has(key)) return;
+
+        this.handlerSet.add(key);
 
         const listener = {
             handler: handler,
             nextIndex: startFrom === "beginning" ? 0 : this.queues[eventType].length,
         };
-
-        if (this.listeners[eventType].filter(l => l.handler === handler).length > 0) {
-            console.log("already in");
-        }
+        
         this.listeners[eventType].push(listener);
 
         // consume all events from the beginning
@@ -84,6 +92,7 @@ export class EventDispatcher {
 export const EventType = {
     COMPONENT_ADDED: "COMPONENT_ADDED",
     COMPONENT_LOADED: "COMPONENT_LOADED",
+    COMPONENT_UPDATED: "COMPONENT_UPDATED",
 }
 
 export interface ComponentAddedEvent {

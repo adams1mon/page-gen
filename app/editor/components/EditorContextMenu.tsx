@@ -13,14 +13,14 @@ import { useComponentSelector } from "@/lib/store/component-selector-store";
 type CompFunc = (comp: ComponentNode<any>) => void;
 
 interface ComponentContextMenuProps extends React.PropsWithChildren {
-    onInsert: CompFunc;
+    onInsertInto: (parent: ComponentNode<any>, compToAdd: ComponentNode<any>) => void;
     onInsertBefore: CompFunc;
     onInsertAfter: CompFunc;
     onRemove: CompFunc;
 };
 
 export function EditorContextMenu({
-    onInsert,
+    onInsertInto,
     onInsertBefore,
     onInsertAfter,
     onRemove,
@@ -30,7 +30,7 @@ export function EditorContextMenu({
     const { selectComponent } = useComponentSelection();
     const [isOpen, setIsOpen] = useState(true);
     const { rClickedComponent } = useRClickedComponent();
-    const { open: openSelector } = useComponentSelector();
+    const { openComponentSelector } = useComponentSelector();
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -80,7 +80,7 @@ export function EditorContextMenu({
                             <ContextMenuItem 
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    openSelector(onInsertBefore);
+                                    openComponentSelector(onInsertBefore);
                                     setIsOpen(false);
                                 }}
                             >
@@ -101,7 +101,7 @@ export function EditorContextMenu({
                             <ContextMenuItem 
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    openSelector(onInsertAfter);
+                                    openComponentSelector(onInsertAfter);
                                     setIsOpen(false);
                                 }}
                             >
@@ -123,7 +123,7 @@ export function EditorContextMenu({
                                 <ContextMenuItem 
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        openSelector(onInsert);
+                                        openComponentSelector(newComp => onInsertInto(rClickedComponent, newComp));
                                         setIsOpen(false);
                                     }}
                                 >

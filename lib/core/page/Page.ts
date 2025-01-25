@@ -101,7 +101,7 @@ export class Page implements ChildrenContainer {
         head.appendChild(title);
 
         const styles = tag("style");
-        styles.textContent = this.props.styles ?? css;
+        styles.textContent = this.props.styles || css;
         head.appendChild(styles);
 
         html.appendChild(head);

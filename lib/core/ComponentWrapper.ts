@@ -1,3 +1,4 @@
+import { EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
 import { addChild, addSibling, createId, findByIdInComp, removeChild } from "./tree-actions";
@@ -98,7 +99,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     createHtmlElementTree(): HTMLElement {
-        this.childrenHtml = this.children?.map(c => c.createHtmlElementTree());
+        this.childrenHtml = this.children?.map(c => c.htmlElement);
         const html = this.comp.createHtmlElement(this.props, this.childrenHtml);
         return html;
     }
@@ -120,9 +121,11 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
 
     update(props: T) {
         this.props = props;
-        const newElement = this.comp.update?.(this.props) ?? this.createHtmlElementTree();
+        const newElement = this.comp.update?.(this.props) || this.createHtmlElementTree();
         this.htmlElement.replaceWith(newElement);
         this.htmlElement = newElement;
+
+        EventDispatcher.publish(EventType.COMPONENT_UPDATED, { component: this });
     }
 
     addSibling(child: ComponentWrapper<T>, position: 'before' | 'after') {
@@ -160,3 +163,35 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 }
 
+//export class EventPublisherComponentProxy<T> extends ComponentWrapper<T> {
+//
+//    constructor(args) {
+//        super(args);
+//    }
+//
+//    createHtmlElementTree(): HTMLElement {
+//        const html = super.createHtmlElementTree();
+//        EventDispatcher.publish("COMPONENT_CREATE_HTML", { component: this });
+//        return html;
+//    }
+//
+//    clone(): ComponentNode<T> {
+//        const copy = new EventPublisherComponentProxy({
+//            comp: this.comp,
+//            type: this.type,
+//            componentName: this.componentName,
+//            props: structuredClone(this.props),
+//            parent: this.parent,
+//        });
+//        return copy;
+//    }
+//
+//    update(props: T) {
+//        super.update(props);
+//        EventDispatcher.publish("COMPONENT_UPDATE", { component: this });
+//    }
+//
+//    toString(): string {
+//        return "EventPublisherProxy: " + super.toString();
+//    }
+//}

@@ -17,15 +17,18 @@ export class PageRepository {
         return page.serialize();
     }
 
-    static deserialize(serializedPage: SerializedPage): Page {
-        const p = new Page({
+    static load(serializedPage: SerializedPage): Page {
+        const page = new Page({
             id: serializedPage.id,
             props: serializedPage.props,
             children: serializedPage.children?.map(c => ComponentRepository.loadComponent(c)),
         });
 
+        // the parent needs to be set explicitly
+        page.children.forEach(child => { child.parent = page });
+
         console.log("load page - created elements");
 
-        return p;
+        return page;
     }
 };

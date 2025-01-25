@@ -65,8 +65,6 @@ function loadState(): LoadedState {
         loadedPage = PageRepository.deserialize(parsed.savedPages[parsed.pageName]);
     }
 
-    EventDispatcher.publish("load", {page: loadedPage});
-
     return {
         site: loadedPage,
         pageName: parsed.pageName,

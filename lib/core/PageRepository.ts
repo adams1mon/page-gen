@@ -24,7 +24,7 @@ export class PageRepository {
             children: serializedPage.children?.map(c => ComponentRepository.loadComponent(c)),
         });
 
-        console.log("loaded", p);
+        console.log("load page - created elements");
 
         return p;
     }

@@ -1,6 +1,6 @@
 import { Page } from "./page/Page";
 import { ComponentNode } from "./ComponentWrapper";
-import { EventDispatcher, EventType } from "./EventDispatcher";
+import { ComponentAddedEvent, EventDispatcher, EventType } from "./EventDispatcher";
 
 export function createId(type: string): string {
     return `${type}-${Date.now()}`;
@@ -46,7 +46,7 @@ export function addSibling<T>(
 
     EventDispatcher.publish(
         EventType.COMPONENT_ADDED,
-        { parent: reference.parent, child: compToAdd},
+        { parent: reference.parent, component: compToAdd } as ComponentAddedEvent,
     );
 }
 
@@ -70,7 +70,7 @@ export function addChild<T>(parent: ComponentNode<T> | Page, child: ComponentNod
 
     EventDispatcher.publish(
         EventType.COMPONENT_ADDED,
-        { parent: parent, child: child},
+        { parent: parent, component: child } as ComponentAddedEvent,
     );
 }
 

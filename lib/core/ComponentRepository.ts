@@ -1,5 +1,6 @@
 import { ComponentPluginManager } from "./ComponentPluginManager";
 import { ComponentNode, ComponentWrapper, SerializedComponentNode } from "./ComponentWrapper";
+import { EventDispatcher, EventType } from "./EventDispatcher";
 
 
 export class ComponentRepository {
@@ -14,20 +15,23 @@ export class ComponentRepository {
         });
     }
 
-    static saveComponent(comp: ComponentNode<any>): SerializedComponentNode<any> { 
+    static saveComponent(comp: ComponentNode<any>): SerializedComponentNode<any> {
         return comp.serialize();
     }
 
     static loadComponent<T>(serializedComp: SerializedComponentNode<T>): ComponentNode<T> {
         const plugin = ComponentPluginManager.getPlugin(serializedComp.type);
 
-        return new ComponentWrapper({
+        const comp = new ComponentWrapper({
             id: serializedComp.id,
             type: serializedComp.type,
             componentName: plugin.name,
             comp: new plugin.constructorFunc(),
             props: serializedComp.props,
-            children: serializedComp.children?.map(ComponentRepository.loadComponent), 
+            children: serializedComp.children?.map(ComponentRepository.loadComponent),
         });
+
+        EventDispatcher.publish(EventType.COMPONENT_LOADED, { component: comp });
+        return comp;
     }
 };

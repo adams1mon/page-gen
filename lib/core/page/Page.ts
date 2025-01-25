@@ -86,7 +86,6 @@ export class Page implements ChildrenContainer {
 
         this.htmlRoot = htmlRoot || this.createHtml();
         this.htmlElement = bodyElement || this.htmlRoot.querySelector("body")!;
-        console.log("page constructor", this.id, this.props, this.htmlRoot, this.htmlElement, this.children);
     }
 
     createHtml(): HTMLElement {

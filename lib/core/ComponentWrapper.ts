@@ -94,11 +94,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         }
 
         this.parent = parent;
-
         this.htmlElement = this.createHtmlElementTree();
-
-        // TODO: is this good here?
-        this.htmlElement.dataset.id = id;
     }
 
     createHtmlElementTree(): HTMLElement {

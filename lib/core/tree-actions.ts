@@ -46,10 +46,11 @@ export function addSibling<T>(
 
     EventDispatcher.publish(
         EventType.COMPONENT_ADDED,
-        { parent: reference.parent, component: compToAdd } as ComponentTreeEvent,
+        { parent: reference.parent, component: compToAdd, position } as ComponentTreeEvent,
     );
 }
 
+// TODO: is index used???
 export function addChild<T>(parent: ComponentNode<T> | Page, child: ComponentNode<T>, index?: number) {
     if (!parent.children) return;
 

@@ -45,6 +45,7 @@ export function EditorContextMenu({
         }
     }, [isOpen]);
 
+    // TODO: fix this, it only inserts 'after'!!
     function pasteMenuItem() {
         return hasCopiedComponent() && (
             <ContextMenuItem onClick={() => {

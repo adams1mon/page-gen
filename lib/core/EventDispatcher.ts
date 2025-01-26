@@ -91,6 +91,8 @@ export class EventDispatcher {
 // event types
 export const EventType = {
     COMPONENT_ADDED: "COMPONENT_ADDED",
+    COMPONENT_ADDED_AFTER: "COMPONENT_ADDED_AFTER",
+    COMPONENT_ADDED_BEFORE: "COMPONENT_ADDED_BEFORE",
     COMPONENT_LOADED: "COMPONENT_LOADED",
     COMPONENT_UPDATED: "COMPONENT_UPDATED",
     COMPONENT_REMOVED: "COMPONENT_REMOVED",
@@ -99,5 +101,6 @@ export const EventType = {
 export interface ComponentTreeEvent {
     parent: ComponentNode<any> | Page;
     component: ComponentNode<any>;
+    position?: "before" | "after";
 }
 

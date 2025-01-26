@@ -7,7 +7,6 @@ import { EditorContextMenu } from "./components/EditorContextMenu";
 import { ComponentTreeEvent, EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 import { Page } from "@/lib/core/page/Page";
-import { WrappedBuildError } from "next/dist/server/base-server";
 
 
 interface ShadowEditorProps {
@@ -35,154 +34,36 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         shadow.appendChild(site.htmlRoot);
 
         const handleContextMenu = (e: MouseEvent) => {
-            // find nearest element with a 'data-id' attribute
-            // and select it
+            // find nearest ancestor element of the clicked element 
+            // with a 'data-id' attribute, and select it
 
             const target = e.target as HTMLElement;
             if (!target) return;
 
-            const componentRoot = target.closest('[data-id]');
-            if (componentRoot && !componentRoot.dataset.id.startsWith('Site')) {
+            const componentRoot = target.closest('[data-id]') as HTMLElement | null;
+            if (!componentRoot || componentRoot.dataset.id?.startsWith('Site')) return;
 
-                const id = componentRoot.dataset.id;
+            // Every element in the generated page MUST have a data-id attribute.
+            const id = componentRoot.dataset.id!;
 
-                const component = site.findChildById(id);
-                if (!component) {
-                    console.warn("no component for id in site", id);
-                    return;
-                }
-
-                rClickComponent(component);
-            }
-        };
-
-        function addWrapperOverlay(node: ComponentNode<any>) {
-            const wrapperId = "wrapper-" + node.id;
-
-            if (node.htmlElement.parentElement?.matches(wrapperId)) {
-                console.log("wrapper already present, node");
+            const component = site.findChildById(id);
+            if (!component) {
+                console.warn("no component for id in site", id);
                 return;
             }
 
-            // add an overlay wrapper div, maybe could also contain the container empty placeholder?
-            const wrapperDiv = document.createElement("div");
-            wrapperDiv.dataset.wrapperId = wrapperId;
-            wrapperDiv.style.position = "relative";
-
-            // add a floating tab in the top left with the name of the component
-            const nameTab = document.createElement("div");
-            nameTab.innerText = node.componentName;
-            nameTab.style.position = "fixed";
-            nameTab.style.position = "absolute";
-            nameTab.style.top = "0";
-            nameTab.style.left = "0";
-            nameTab.style.backgroundColor = "white";
-            nameTab.style.color = "black";
-            nameTab.style.zIndex = "999";
-            nameTab.style.padding = "0 0.2rem";
-            nameTab.style.borderBottomRightRadius = "0.3rem";
-            nameTab.style.opacity = "0.5";
-            nameTab.style.display = "none";
-
-            wrapperDiv.appendChild(nameTab);
-
-            wrapperDiv.onmouseenter = () => {
-                wrapperDiv.style.outline = "2px dashed hsl(0, 0%, 20%)";
-                wrapperDiv.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
-                nameTab.style.display = "block";
-            }
-
-            wrapperDiv.onmouseleave = () => {
-                wrapperDiv.style.outline = "";
-                wrapperDiv.style.backgroundColor = "";
-                nameTab.style.display = "none";
-            }
-
-            node.htmlElement.parentElement?.appendChild(wrapperDiv);
-            node.htmlElement.parentElement?.removeChild(node.htmlElement);
-            wrapperDiv.appendChild(node.htmlElement);
-        }
-
-        function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
-
-            // NOTE: node should ALWAYS contain at least one child
-            if (!node.children || node.children.length === 0) return;
-
-            node.htmlElement.parentElement?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
-        }
-
-        function addEmptyContainerPlaceholder(node: ComponentNode<any>) {
-
-            // only add a placeholder if there are no children
-            if (!node.children || node.children.length > 0) return;
-
-            // TODO: maybe add an 'add' button if there are children?
-
-            const wrapperId = "wrapper-" + node.id;
-            const wrapperDiv = node.htmlElement.parentElement?.querySelector(`[data-wrapper-id="${wrapperId}"]`);
-
-            //// placeholder already present
-            //const placeholderAttr = "[data-editor-placeholder]";
-            //if (wrapperDiv?.querySelector(placeholderAttr)) return;
-
-            function addChild(e: Event) {
-                e.stopPropagation();
-
-                // open the component selector modal
-                openComponentSelector((comp) => node.addChild(comp));
-                console.log("clicked", node);
-            }
-
-            const placeholder = createPlaceholder(node.componentName, addChild);
-            placeholder.dataset.editorPlaceholder = node.id;
-
-            wrapperDiv?.appendChild(placeholder);
-        }
-
-        //function addEmptyContainerPlaceholder(node: ComponentNode<any>) {
-        //
-        //    // add a placeholder if the node is a container component
-        //    if (!node.children || node.children.length > 0) return;
-        //
-        //    const placeholderAttr = "[data-editor-placeholder]";
-        //    if (node.htmlElement.querySelector(placeholderAttr)) return;
-        //
-        //    function addChild(e: Event) {
-        //        e.stopPropagation();
-        //
-        //        // open the component selector modal
-        //        openComponentSelector((comp) => node.addChild(comp));
-        //        console.log("clicked", node);
-        //    }
-        //
-        //    const placeholder = createPlaceholder(node.componentName, addChild);
-        //    placeholder.dataset.editorPlaceholder = 'true';
-        //
-        //    node.htmlElement.appendChild(placeholder);
-        //}
-
-        //function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
-        //
-        //    // add a placeholder if the node is a container component
-        //    if (!node.children || node.children.length === 0) return;
-        //
-        //    // this relies on the fact that the placeholder will be added as 
-        //    // the first element of a container component (instead of a child element)
-        //    const placeholderAttr = "[data-editor-placeholder]";
-        //    if (node.htmlElement.firstElementChild?.matches(placeholderAttr)) {
-        //        node.htmlElement.firstElementChild?.remove();
-        //    }
-        //}
+            rClickComponent(component);
+        };
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
-            ({ parent, component }: ComponentTreeEvent) => {
+            ({ parent, component, position }: ComponentTreeEvent) => {
                 component.htmlElement.dataset.id = component.id;
 
-                addWrapperOverlay(component);
+                addWrapperOverlay(component, position);
 
                 removeEmptyContainerPlaceholder(parent);
-                addEmptyContainerPlaceholder(component);
+                addEmptyContainerPlaceholder(component, openComponentSelector);
             },
         );
 
@@ -192,7 +73,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 component.htmlElement.dataset.id = component.id;
 
                 addWrapperOverlay(component);
-                addEmptyContainerPlaceholder(component);
+                addEmptyContainerPlaceholder(component, openComponentSelector);
             },
         );
 
@@ -201,19 +82,20 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             ({ component }: ComponentTreeEvent) => {
 
                 component.htmlElement.dataset.id = component.id;
-                //addEmptyContainerPlaceholder(component);
             },
         );
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_REMOVED,
-            ({ parent }: ComponentTreeEvent) => {
+            ({ parent, component }: ComponentTreeEvent) => {
 
                 // See if the placeholder needs to be added back to the parent container element.
                 // Don't let the Page to show the placeholder,
                 // only show it for components.
                 if (parent.type === "Page") return;
-                addEmptyContainerPlaceholder(parent as ComponentNode<any>);
+                addEmptyContainerPlaceholder(parent as ComponentNode<any>, openComponentSelector);
+
+                removeWrapperOverlay(component);
             },
         );
 
@@ -283,6 +165,124 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     );
 }
 
+function createWrapperId(node: ComponentNode<any>): string {
+    return "wrapper-" + node.id;
+}
+
+function addWrapperOverlay(node: ComponentNode<any>, position?: "before" | "after") {
+    const wrapperId = createWrapperId(node);
+
+    if (node.htmlElement.parentElement?.matches(wrapperId)) {
+        console.log("wrapper already present, node", node);
+        return;
+    }
+
+    // add an overlay wrapper div, maybe could also contain the container empty placeholder?
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.dataset.wrapperId = wrapperId;
+    wrapperDiv.style.position = "relative";
+
+    // add a floating tab in the top left with the name of the component
+    const nameTab = document.createElement("div");
+    nameTab.innerText = node.componentName;
+    nameTab.style.position = "fixed";
+    nameTab.style.position = "absolute";
+    nameTab.style.top = "0";
+    nameTab.style.left = "0";
+    nameTab.style.backgroundColor = "white";
+    nameTab.style.color = "black";
+    nameTab.style.zIndex = "999";
+    nameTab.style.padding = "0 0.2rem";
+    nameTab.style.borderBottomRightRadius = "0.3rem";
+    nameTab.style.opacity = "0.5";
+    nameTab.style.display = "none";
+
+    wrapperDiv.appendChild(nameTab);
+
+    wrapperDiv.onmouseenter = () => {
+        wrapperDiv.style.outline = "2px dashed hsl(0, 0%, 20%)";
+        wrapperDiv.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
+        nameTab.style.display = "block";
+    }
+
+    wrapperDiv.onmouseleave = () => {
+        wrapperDiv.style.outline = "";
+        wrapperDiv.style.backgroundColor = "";
+        nameTab.style.display = "none";
+    }
+
+    // Handle insert positions.
+    if (position === "before") {
+
+        // The node's html element got inserted before another html element in the tree,
+        // but it's inside the wrapper of that element, because the insertion doesn't know about
+        // the wrappers installed by the editor.
+        // We need to move the wrapper outside of the reference element's wrapper.
+        node.htmlElement.parentElement?.insertAdjacentElement("beforebegin", wrapperDiv);
+
+    } else if (position === "after") {
+        // Same thing, but after.
+        node.htmlElement.parentElement?.insertAdjacentElement("afterend", wrapperDiv);
+    } else {
+        // Simple insert.
+        node.htmlElement.parentElement?.appendChild(wrapperDiv);
+    }
+
+    node.htmlElement.parentElement?.removeChild(node.htmlElement);
+
+        //node.htmlElement.parentElement?.appendChild(wrapperDiv);
+        //node.htmlElement.parentElement?.removeChild(node.htmlElement);
+
+    wrapperDiv.appendChild(node.htmlElement);
+}
+
+function removeWrapperOverlay(node: ComponentNode<any>) {
+   const wrapperId = createWrapperId(node); 
+
+   const wrapperDiv = node.htmlElement.closest(`[data-wrapper-id="${wrapperId}"]`);
+   if (!wrapperDiv) return;
+
+   wrapperDiv.remove();
+}
+
+function addEmptyContainerPlaceholder(
+    node: ComponentNode<any>,
+    openComponentSelector: (onInsert: (comp: ComponentNode<any>) => void) => void,
+) {
+    // only add a placeholder if there are no children
+    if (!node.children || node.children.length > 0) return;
+
+    // TODO: maybe add an 'add' button if there are children?
+    function addChild(e: Event) {
+        e.stopPropagation();
+
+        // open the component selector modal
+        openComponentSelector((comp) => node.addChild(comp));
+        console.log("clicked", node);
+    }
+
+    const placeholder = createPlaceholder(node.componentName, addChild);
+    placeholder.dataset.editorPlaceholder = node.id;
+
+    const wrapperId = "wrapper-" + node.id;
+    const wrapperDiv = node.htmlElement.closest(`[data-wrapper-id="${wrapperId}"]`);
+    if (!wrapperDiv) {
+        console.log("no wrapper div found", node);
+        return;
+    }
+
+    // placeholder already present
+    const placeholderAttr = "[data-editor-placeholder]";
+    if (wrapperDiv.querySelector(placeholderAttr)) return;
+
+    wrapperDiv.appendChild(placeholder);
+}
+
+function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
+    if (!node.children || node.children.length === 0) return;
+    node.htmlElement.parentElement?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
+}
+
 // Create a placeholder component
 function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => void): HTMLElement {
 
@@ -342,10 +342,7 @@ function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => vo
     `;
 
     // Add click event listener
-    button.addEventListener('click', (e) => {
-        onClick(e);
-        //placeholder.remove();
-    });
+    button.addEventListener('click', (e) => onClick(e));
 
     // Append elements to inner div
     innerDiv.appendChild(title);

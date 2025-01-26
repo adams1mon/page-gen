@@ -12,7 +12,7 @@ interface ComponentDividerProps {
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {
     const { hasCopiedComponent, paste } = useComponentClipboard();
-    const { openSelector: openSelector } = useComponentSelector();
+    const { openComponentSelector } = useComponentSelector();
 
     return (
         <div className="relative h-8 flex items-center justify-center my-4">
@@ -23,7 +23,7 @@ export function ComponentDivider({ onInsert }: ComponentDividerProps) {
                 <Button
                     variant="outline"
                     className="bg-background border-border"
-                    onClick={() => openSelector(onInsert)}
+                    onClick={() => openComponentSelector(onInsert)}
                 >
                     <div className="flex gap-2 text-muted-foreground">
                         <Plus className="h-4 w-4" />

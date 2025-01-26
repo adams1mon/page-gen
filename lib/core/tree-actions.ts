@@ -1,6 +1,6 @@
 import { Page } from "./page/Page";
 import { ComponentNode } from "./ComponentWrapper";
-import { ComponentAddedEvent, EventDispatcher, EventType } from "./EventDispatcher";
+import { ComponentTreeEvent, EventDispatcher, EventType } from "./EventDispatcher";
 
 export function createId(type: string): string {
     return `${type}-${Date.now()}`;
@@ -46,7 +46,7 @@ export function addSibling<T>(
 
     EventDispatcher.publish(
         EventType.COMPONENT_ADDED,
-        { parent: reference.parent, component: compToAdd } as ComponentAddedEvent,
+        { parent: reference.parent, component: compToAdd } as ComponentTreeEvent,
     );
 }
 
@@ -70,7 +70,7 @@ export function addChild<T>(parent: ComponentNode<T> | Page, child: ComponentNod
 
     EventDispatcher.publish(
         EventType.COMPONENT_ADDED,
-        { parent: parent, component: child } as ComponentAddedEvent,
+        { parent: parent, component: child } as ComponentTreeEvent,
     );
 }
 
@@ -79,6 +79,11 @@ export function removeChild<T>(parent: ComponentNode<T> | Page, child: Component
 
     parent.children = parent.children.filter(c => c.id !== child.id);
     child.htmlElement.remove();
+
+    EventDispatcher.publish(
+        EventType.COMPONENT_REMOVED, 
+        { parent: child.parent, component: child }
+    );
 }
 
 export function remove<T>(comp: ComponentNode<T>) {
@@ -88,4 +93,8 @@ export function remove<T>(comp: ComponentNode<T>) {
     }
 
     comp.htmlElement.remove();
+    EventDispatcher.publish(
+        EventType.COMPONENT_REMOVED, 
+        { parent: comp.parent, component: comp },
+    );
 }

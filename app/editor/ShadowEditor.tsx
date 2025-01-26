@@ -4,8 +4,10 @@ import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
-import { ComponentAddedEvent, EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
+import { ComponentTreeEvent, EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
+import { Page } from "@/lib/core/page/Page";
+import { WrappedBuildError } from "next/dist/server/base-server";
 
 
 interface ShadowEditorProps {
@@ -54,28 +56,74 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             }
         };
 
-        function addHoverOutline(node: ComponentNode<any>) {
-            let outline = "";
-            let bgColor = "";
-            node.htmlElement.onmouseenter = (e) => {
-                outline = node.htmlElement.style.outline;
-                bgColor = node.htmlElement.style.backgroundColor;
-                node.htmlElement.style.outline = "2px solid blue";
-                node.htmlElement.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
-            };
-            node.htmlElement.onmouseleave = () => {
-                node.htmlElement.style.outline = outline;
-                node.htmlElement.style.backgroundColor = bgColor;
-            };
+        function addWrapperOverlay(node: ComponentNode<any>) {
+            const wrapperId = "wrapper-" + node.id;
+
+            if (node.htmlElement.parentElement?.matches(wrapperId)) {
+                console.log("wrapper already present, node");
+                return;
+            }
+
+            // add an overlay wrapper div, maybe could also contain the container empty placeholder?
+            const wrapperDiv = document.createElement("div");
+            wrapperDiv.dataset.wrapperId = wrapperId;
+            wrapperDiv.style.position = "relative";
+
+            // add a floating tab in the top left with the name of the component
+            const nameTab = document.createElement("div");
+            nameTab.innerText = node.componentName;
+            nameTab.style.position = "fixed";
+            nameTab.style.position = "absolute";
+            nameTab.style.top = "0";
+            nameTab.style.left = "0";
+            nameTab.style.backgroundColor = "white";
+            nameTab.style.color = "black";
+            nameTab.style.zIndex = "999";
+            nameTab.style.padding = "0 0.2rem";
+            nameTab.style.borderBottomRightRadius = "0.3rem";
+            nameTab.style.opacity = "0.5";
+            nameTab.style.display = "none";
+
+            wrapperDiv.appendChild(nameTab);
+
+            wrapperDiv.onmouseenter = () => {
+                wrapperDiv.style.outline = "2px dashed hsl(0, 0%, 20%)";
+                wrapperDiv.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
+                nameTab.style.display = "block";
+            }
+
+            wrapperDiv.onmouseleave = () => {
+                wrapperDiv.style.outline = "";
+                wrapperDiv.style.backgroundColor = "";
+                nameTab.style.display = "none";
+            }
+
+            node.htmlElement.parentElement?.appendChild(wrapperDiv);
+            node.htmlElement.parentElement?.removeChild(node.htmlElement);
+            wrapperDiv.appendChild(node.htmlElement);
+        }
+
+        function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
+
+            // NOTE: node should ALWAYS contain at least one child
+            if (!node.children || node.children.length === 0) return;
+
+            node.htmlElement.parentElement?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
         }
 
         function addEmptyContainerPlaceholder(node: ComponentNode<any>) {
 
-            // add a placeholder if the node is a container component
+            // only add a placeholder if there are no children
             if (!node.children || node.children.length > 0) return;
 
-            const placeholderAttr = "[data-editor-placeholder]";
-            if (node.htmlElement.querySelector(placeholderAttr)) return;
+            // TODO: maybe add an 'add' button if there are children?
+
+            const wrapperId = "wrapper-" + node.id;
+            const wrapperDiv = node.htmlElement.parentElement?.querySelector(`[data-wrapper-id="${wrapperId}"]`);
+
+            //// placeholder already present
+            //const placeholderAttr = "[data-editor-placeholder]";
+            //if (wrapperDiv?.querySelector(placeholderAttr)) return;
 
             function addChild(e: Event) {
                 e.stopPropagation();
@@ -86,43 +134,90 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             }
 
             const placeholder = createPlaceholder(node.componentName, addChild);
-            placeholder.dataset.editorPlaceholder = 'true';
+            placeholder.dataset.editorPlaceholder = node.id;
 
-            node.htmlElement.appendChild(placeholder);
+            wrapperDiv?.appendChild(placeholder);
         }
+
+        //function addEmptyContainerPlaceholder(node: ComponentNode<any>) {
+        //
+        //    // add a placeholder if the node is a container component
+        //    if (!node.children || node.children.length > 0) return;
+        //
+        //    const placeholderAttr = "[data-editor-placeholder]";
+        //    if (node.htmlElement.querySelector(placeholderAttr)) return;
+        //
+        //    function addChild(e: Event) {
+        //        e.stopPropagation();
+        //
+        //        // open the component selector modal
+        //        openComponentSelector((comp) => node.addChild(comp));
+        //        console.log("clicked", node);
+        //    }
+        //
+        //    const placeholder = createPlaceholder(node.componentName, addChild);
+        //    placeholder.dataset.editorPlaceholder = 'true';
+        //
+        //    node.htmlElement.appendChild(placeholder);
+        //}
+
+        //function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
+        //
+        //    // add a placeholder if the node is a container component
+        //    if (!node.children || node.children.length === 0) return;
+        //
+        //    // this relies on the fact that the placeholder will be added as 
+        //    // the first element of a container component (instead of a child element)
+        //    const placeholderAttr = "[data-editor-placeholder]";
+        //    if (node.htmlElement.firstElementChild?.matches(placeholderAttr)) {
+        //        node.htmlElement.firstElementChild?.remove();
+        //    }
+        //}
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
-            ({ component }: ComponentAddedEvent) => {
+            ({ parent, component }: ComponentTreeEvent) => {
                 component.htmlElement.dataset.id = component.id;
 
-                addHoverOutline(component);
+                addWrapperOverlay(component);
+
+                removeEmptyContainerPlaceholder(parent);
                 addEmptyContainerPlaceholder(component);
             },
         );
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_LOADED,
-            ({ component }: ComponentAddedEvent) => {
+            ({ component }: ComponentTreeEvent) => {
                 component.htmlElement.dataset.id = component.id;
 
-                addHoverOutline(component);
+                addWrapperOverlay(component);
                 addEmptyContainerPlaceholder(component);
             },
         );
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_UPDATED,
-            ({ component }: ComponentAddedEvent) => {
-                component.htmlElement.dataset.id = component.id;
+            ({ component }: ComponentTreeEvent) => {
 
-                addHoverOutline(component);
-                addEmptyContainerPlaceholder(component);
+                component.htmlElement.dataset.id = component.id;
+                //addEmptyContainerPlaceholder(component);
+            },
+        );
+
+        EventDispatcher.addHandler(
+            EventType.COMPONENT_REMOVED,
+            ({ parent }: ComponentTreeEvent) => {
+
+                // See if the placeholder needs to be added back to the parent container element.
+                // Don't let the Page to show the placeholder,
+                // only show it for components.
+                if (parent.type === "Page") return;
+                addEmptyContainerPlaceholder(parent as ComponentNode<any>);
             },
         );
 
         shadow.addEventListener('contextmenu', handleContextMenu);
-
 
         return () => {
             shadow.removeEventListener('contextmenu', handleContextMenu);
@@ -147,7 +242,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     };
 
     const handleInsertInto = (parent: ComponentNode<any>, newComponent: ComponentNode<any>) => {
-        parent.addChild(newComponent); 
+        parent.addChild(newComponent);
         console.log("add comp", newComponent);
         onChange();
     };
@@ -190,6 +285,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
 // Create a placeholder component
 function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => void): HTMLElement {
+
     const placeholder = document.createElement('div');
     placeholder.style.cssText = `
         display: flex;
@@ -223,6 +319,7 @@ function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => vo
     explanation.innerText = 'This component is empty. Click the button below to add a component.';
     explanation.style.cssText = `
         margin: 1rem 0; /* Add some margin */
+        color: hsl(0, 0%, 45.1%); /* Grey */
     `;
 
     const button = document.createElement('button');
@@ -235,16 +332,26 @@ function createPlaceholder(componentName: string, onClick: (e: MouseEvent) => vo
         cursor: pointer;
     `;
 
+    // button hover styles
+    const style = document.createElement("style");
+    style.innerHTML = `
+        button:hover { 
+            cursor: pointer;
+            background-color: hsl(0, 0%, 90%); /* Grey */
+        }
+    `;
+
     // Add click event listener
     button.addEventListener('click', (e) => {
         onClick(e);
-        placeholder.remove();
+        //placeholder.remove();
     });
 
     // Append elements to inner div
     innerDiv.appendChild(title);
     innerDiv.appendChild(explanation);
     innerDiv.appendChild(button);
+    placeholder.appendChild(style);
     placeholder.appendChild(innerDiv);
 
     return placeholder;

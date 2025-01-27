@@ -112,6 +112,8 @@ export class Page implements ChildrenContainer {
         // render the children
         if (this.children) {
             for (const child of this.children) {
+                console.log("about to add child html", child.htmlElement);
+
                 body.appendChild(child.htmlElement);
             }
         }
@@ -120,6 +122,7 @@ export class Page implements ChildrenContainer {
     }
 
     update(props: PageProps) {
+        // TODO: fix changing page props and calling update clears top-level editor wrapper divs
         this.props = props;
         const newNode = this.createHtml();
         this.htmlRoot.replaceWith(newNode);
@@ -147,7 +150,8 @@ export class Page implements ChildrenContainer {
 
     findChildById(id: string): ComponentNode<any> | null {
         for (const child of this.children) {
-            const node = findByIdInComp(child, id);
+            //const node = findByIdInComp(child, id);
+            const node = child.findChildById(id);
             if (node) return node;
         }
 
@@ -172,4 +176,52 @@ export interface SerializedPage {
     props: PageProps;
     children: SerializedComponentNode<any>[];
 }
+
+//export function getCleanHtml(page: Page) {
+//
+//    // must initialize the 'children' array of Page to have
+//    // the correct htmlElement nodes
+//
+//    function build(comp: ComponentNode<any>): HTMLElement { 
+//        const elem = comp.comp.createHtmlElement(
+//            comp.props,
+//            comp.children?.map(build),
+//        );
+//
+//        console.log("built", comp, elem);
+//        return elem;
+//    }
+//
+//    function buildComponent(comp: ComponentNode<any>) {
+//        const plugin = ComponentPluginManager.getPlugin(serializedComp.type);
+//
+//        const comp: ComponentNode<T> = new ComponentWrapper({
+//            id: serializedComp.id,
+//            type: serializedComp.type,
+//            componentName: plugin.name,
+//            comp: new plugin.constructorFunc(),
+//            props: serializedComp.props,
+//            children: serializedComp.children?.map(c => ComponentRepository.loadComponent(c)),
+//        });
+//
+//        // the parent needs to be set explicitly
+//        comp.children?.forEach(child => { child.parent = comp });
+//
+//        EventDispatcher.publish(EventType.COMPONENT_LOADED, { component: comp });
+//        return comp;
+//    }
+//
+//    const htmls = page.children.map(build);
+//    console.log(htmls);
+//    console.log(page.children);
+//
+//    page.children.map(c => console.log(c.htmlElement));
+//
+//    htmls.map(c => console.log(c));
+//
+//    const c = new Page({
+//        props: page.props,
+//        children: page.children,
+//    });
+//}
 

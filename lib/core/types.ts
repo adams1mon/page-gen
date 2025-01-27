@@ -8,6 +8,11 @@ export interface ChildrenContainer {
     findChildById: (id: string) => ComponentNode<any> | null;
 };
 
+
+// NOTE: The component MUST NOT make any assumptions about the children HTML
+// it gets passed in. It shouldn't really modify them, that will likely break
+// the editor because the editor adds wrapper div elements around the 
+// HTMLs of the components to provide additional editor functionalities.
 export interface IComponent<T> {
     propsDescriptor: PropsDesc;
     initialProps?: T;

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getCleanHtml } from "@/lib/core/page/Page";
 import { useSiteStore } from "@/lib/store/site-store";
 import { Download } from "lucide-react";
 import { useState } from "react";
@@ -16,25 +15,18 @@ export function GenerateSiteButton() {
         try {
             setIsGenerating(true);
 
-            const html = site.htmlRoot?.outerHTML;
+            const html = site.getClonedHtml();
 
-            //getCleanHtml(site); 
+            // Create a Blob containing the HTML
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
 
-        //    if (!html) {
-        //        console.warn("no site DOM node found when trying to get HTML");
-        //        return;
-        //    }
-        //
-        //    // Create a Blob containing the HTML
-        //    const blob = new Blob([html], { type: 'text/html' });
-        //    const url = URL.createObjectURL(blob);
-        //
-        //    // Create a download link and trigger it
-        //    const a = document.createElement('a');
-        //    a.href = url;
-        //    a.download = 'portfolio.html';
-        //    a.click();
-        //    URL.revokeObjectURL(url);
+            // Create a download link and trigger it
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'portfolio.html';
+            a.click();
+            URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error generating site:', error);
         } finally {

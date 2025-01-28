@@ -131,6 +131,7 @@ export class Page implements ChildrenContainer {
         return this.htmlRoot;
     }
 
+    // shallow clone, basically to satisfy setState
     clone(): Page {
         return new Page({
             props: this.props,
@@ -166,6 +167,18 @@ export class Page implements ChildrenContainer {
         }
     }
 
+    getClonedHtml(): string {
+        // clone doesn't clone the wrappers
+        const elems = this.children.map(c => c.clone());
+
+        const copy = new Page({
+            props: this.props,
+            children: elems,
+        });
+        
+        return copy.htmlRoot.outerHTML;
+    }
+
     toString(): string {
         return `Component: ${this.type}`;
     }
@@ -176,52 +189,3 @@ export interface SerializedPage {
     props: PageProps;
     children: SerializedComponentNode<any>[];
 }
-
-//export function getCleanHtml(page: Page) {
-//
-//    // must initialize the 'children' array of Page to have
-//    // the correct htmlElement nodes
-//
-//    function build(comp: ComponentNode<any>): HTMLElement { 
-//        const elem = comp.comp.createHtmlElement(
-//            comp.props,
-//            comp.children?.map(build),
-//        );
-//
-//        console.log("built", comp, elem);
-//        return elem;
-//    }
-//
-//    function buildComponent(comp: ComponentNode<any>) {
-//        const plugin = ComponentPluginManager.getPlugin(serializedComp.type);
-//
-//        const comp: ComponentNode<T> = new ComponentWrapper({
-//            id: serializedComp.id,
-//            type: serializedComp.type,
-//            componentName: plugin.name,
-//            comp: new plugin.constructorFunc(),
-//            props: serializedComp.props,
-//            children: serializedComp.children?.map(c => ComponentRepository.loadComponent(c)),
-//        });
-//
-//        // the parent needs to be set explicitly
-//        comp.children?.forEach(child => { child.parent = comp });
-//
-//        EventDispatcher.publish(EventType.COMPONENT_LOADED, { component: comp });
-//        return comp;
-//    }
-//
-//    const htmls = page.children.map(build);
-//    console.log(htmls);
-//    console.log(page.children);
-//
-//    page.children.map(c => console.log(c.htmlElement));
-//
-//    htmls.map(c => console.log(c));
-//
-//    const c = new Page({
-//        props: page.props,
-//        children: page.children,
-//    });
-//}
-

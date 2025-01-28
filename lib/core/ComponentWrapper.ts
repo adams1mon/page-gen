@@ -1,7 +1,7 @@
 import { ComponentTreeEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
-import { addChild, addSibling, createId, findByIdInComp, remove, removeChild } from "./tree-actions";
+import { createId } from "./tree-actions";
 import { IComponent } from "./types";
 
 export interface ComponentNode<T> {
@@ -17,6 +17,8 @@ export interface ComponentNode<T> {
     parent?: ComponentNode<T> | Page;
     children?: ComponentNode<any>[];
     childrenHtml?: HTMLElement[];
+
+    // editor augmentations
     wrapperDiv?: HTMLElement;
 
     createHtmlElementTree: () => HTMLElement;
@@ -37,7 +39,8 @@ export interface ComponentNode<T> {
 
     serialize(): SerializedComponentNode<T>
 
-    addWrapperOverlay(): HTMLElement;
+    // editor augmentations
+    addWrapperOverlay(overlay: HTMLElement): void;
     removeWrapperOverlay(): void;
 
     toString(): string;
@@ -77,6 +80,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     children?: ComponentNode<any>[];
     childrenHtml?: HTMLElement[];
 
+    // editor augmentations
     // wrapper to be used by the editor
     wrapperDiv?: HTMLElement;
 
@@ -108,21 +112,36 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     createHtmlElementTree(): HTMLElement {
-        this.childrenHtml = this.children?.map(c => c.htmlElement);
+        // TODO: have a single root html element which would always
+        // contain the root element of the component, be it the actual html or 
+        // the wrapper div.
+        
+        // be careful when getting the children's htmlElement, 
+        // they may have wrappers
+        this.childrenHtml = this.children?.map(c => c.wrapperDiv || c.htmlElement);
         const html = this.comp.createHtmlElement(this.props, this.childrenHtml);
         return html;
     }
 
+    // Shallow clone except for the name and props
+    // to satisfy the copy component functionality.
+    // Doesn't clone the wrappers so we get a clean copy.
     clone(): ComponentNode<T> {
-        // TODO: add children here too???
+
         const copy = new ComponentWrapper({
             comp: this.comp,
             type: this.type,
             componentName: this.componentName,
             props: structuredClone(this.props),
             parent: this.parent,
-            children: this.children,
+            children: this.children?.map(c => c.clone()),
         });
+        
+        // the parent must be set for the children after the object is created
+        copy.children?.forEach(c => {
+            c.parent = copy;
+        });
+
         return copy;
     }
 
@@ -140,12 +159,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     remove() {
-        //remove(this);
-
-        //if (this.wrapperDiv) {
-        //    this.removeWrapperOverlay();
-        //}
-
         this.htmlElement.remove();
         this.wrapperDiv?.remove();
         this.wrapperDiv = undefined;
@@ -161,8 +174,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     addSibling(sibling: ComponentWrapper<T>, position: 'before' | 'after') {
-        //addSibling(this, sibling, position);
-
         if (!this.parent || !this.parent.children) return;
 
         let refIndex = this.parent.children.findIndex(c => c.id === this.id);
@@ -170,6 +181,9 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
 
         const reference = this.wrapperDiv || this.htmlElement;
         const elemToInsert = sibling.wrapperDiv || sibling.htmlElement;
+
+        console.log("sibling insert", sibling, position);
+        console.log("reference", reference, elemToInsert);
 
         if (position == 'before') {
             reference.insertAdjacentElement('beforebegin', elemToInsert);
@@ -184,8 +198,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         // update parent
         sibling.parent = this.parent;
 
-        console.log("DOM: added sibling", sibling, " to reference", this, position);
-
         EventDispatcher.publish(
             EventType.COMPONENT_ADDED,
             { parent: this.parent, component: sibling, position } as ComponentTreeEvent,
@@ -193,8 +205,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     addChild(child: ComponentWrapper<T>, index?: number) {
-        //addChild(this, child, index);
-
         if (!this.children) return;
 
         // insert the wrapper directly if it's defined
@@ -230,8 +240,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     removeChild(child: ComponentWrapper<T>) {
-        //removeChild(this, child);
-
         child.remove();
 
         EventDispatcher.publish(
@@ -242,8 +250,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
 
     // NOTE: this returns the element itself if the id matches
     findChildById(id: string): ComponentWrapper<T> | null {
-        //return findByIdInComp(this, id);
-
         if (this.id == id) return this;
 
         if (!this.children) return null;
@@ -270,61 +276,21 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         return objectToSave;
     }
 
-    addWrapperOverlay(): HTMLElement {
+    addWrapperOverlay(overlay: HTMLElement) {
 
-        // DOM surgery here, this code will insert a wrapper div around the html of the 
-        // current component. If this is a container component, the html of the child
-        // elements should already have this wrapper around them, because their html must 
-        // be created before the container component's.
+        console.log("adding overlay for", this.htmlElement);
 
-        const wrapperId = createWrapperId(this.id);
-
-        if (this.wrapperDiv) {
-            console.log("wrapper already present, comp", this);
-            return this.wrapperDiv;
+        // TODO: see if this removes the children
+        if (this.wrapperDiv !== undefined) {
+            console.log("wrapper already exists, replacing it ", this.wrapperDiv, overlay);
+            this.wrapperDiv.remove();
         }
 
-        // add an overlay wrapper div, maybe could also contain the container empty placeholder?
-        const wrapperDiv = document.createElement("div");
-        wrapperDiv.dataset.wrapperId = wrapperId;
-        wrapperDiv.style.position = "relative";
+        // get the position of the child html, wrap it
+        this.wrapperDiv = overlay;
 
-        // add a floating tab in the top left with the name of the component
-        const nameTab = document.createElement("div");
-        nameTab.innerText = this.componentName;
-        nameTab.style.position = "fixed";
-        nameTab.style.position = "absolute";
-        nameTab.style.top = "0";
-        nameTab.style.left = "0";
-        nameTab.style.backgroundColor = "white";
-        nameTab.style.color = "black";
-        nameTab.style.zIndex = "999";
-        nameTab.style.padding = "0 0.2rem";
-        nameTab.style.borderBottomRightRadius = "0.3rem";
-        nameTab.style.opacity = "0.5";
-        nameTab.style.display = "none";
-
-        wrapperDiv.appendChild(nameTab);
-
-        wrapperDiv.onmouseenter = () => {
-            wrapperDiv.style.outline = "2px dashed hsl(0, 0%, 20%)";
-            wrapperDiv.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
-            nameTab.style.display = "block";
-        }
-
-        wrapperDiv.onmouseleave = () => {
-            wrapperDiv.style.outline = "";
-            wrapperDiv.style.backgroundColor = "";
-            nameTab.style.display = "none";
-        }
-
-        this.parent?.htmlElement.appendChild(wrapperDiv);
-
-        // this append detaches this.htmlElement from its previous position
-        wrapperDiv.appendChild(this.htmlElement);
-        this.wrapperDiv = wrapperDiv;
-
-        return this.wrapperDiv;
+        this.htmlElement.replaceWith(this.wrapperDiv);
+        this.wrapperDiv.appendChild(this.htmlElement);
     }
 
     // TODO: unused??
@@ -332,9 +298,10 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     removeWrapperOverlay() {
         console.log("removing overlay, adding", this.htmlElement, "to", this.parent?.htmlElement);
 
-        // this append removes the htmlElement from wrapperDiv
-        this.parent?.htmlElement.appendChild(this.htmlElement);
-        this.wrapperDiv?.remove();
+        if (this.wrapperDiv) {
+            this.wrapperDiv.replaceWith(this.htmlElement);
+            this.wrapperDiv = undefined;
+        }
     }
 
     toString(): string {
@@ -342,6 +309,3 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 }
 
-function createWrapperId(id: string): string {
-    return "wrapper-" + id;
-}

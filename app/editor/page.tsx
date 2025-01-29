@@ -32,15 +32,17 @@ export default function EditorPage() {
     const previewDebounceMillis = 100;
 
     const updatePage = () => {
-        setSite(site.clone());
-        console.log("update page");
+        // page.clone is not even needed
+        // this only saves the page 
+        setSite(site);
     };
 
     useEffect(() => {
         if (activeView != "preview") return;
 
         debounce(async () => {
-            const htmlStr = "<!DOCTYPE html>\n" + site.htmlRoot.outerHTML;
+            // getClonedHtml is pretty expensive
+            const htmlStr = "<!DOCTYPE html>\n" + site.getClonedHtml();
             setPreviewHtml(htmlStr);
         }, previewDebounceMillis);
 

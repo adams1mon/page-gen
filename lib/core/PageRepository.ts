@@ -26,9 +26,6 @@ export class PageRepository {
 
         // the parent needs to be set explicitly
         page.children.forEach(child => { child.parent = page });
-
-        console.log("load page - created elements");
-
         return page;
     }
 };

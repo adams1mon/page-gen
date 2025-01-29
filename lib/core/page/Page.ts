@@ -3,7 +3,7 @@
 import css from '!!raw-loader!./styles/generated/styles.css';
 import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
-import { DataType, ObjectDesc, PropsDesc } from '../props/PropsDescriptor';
+import { DataType, ObjectDesc, PropCategory, PropsDesc } from '../props/PropsDescriptor';
 import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
 import { addChild, createId, findByIdInComp, removeChild } from '../tree-actions';
 import { tag } from '../utils';
@@ -46,6 +46,7 @@ const propsDescriptor: ObjectDesc = {
             displayName: "Custom CSS styles",
             desc: "Custom CSS styles to include in a <style> in the website",
             default: css,
+            category: PropCategory.STYLE, 
         },
     }
 };
@@ -112,9 +113,8 @@ export class Page implements ChildrenContainer {
         // render the children
         if (this.children) {
             for (const child of this.children) {
-                console.log("about to add child html", child.htmlElement);
-
-                body.appendChild(child.htmlElement);
+                // be careful, don't accidentally only add the htmlElement of the child
+                body.appendChild(child.wrapperDiv || child.htmlElement);
             }
         }
 
@@ -122,7 +122,9 @@ export class Page implements ChildrenContainer {
     }
 
     update(props: PageProps) {
-        // TODO: fix changing page props and calling update clears top-level editor wrapper divs
+
+        console.log("update page called", props);
+        
         this.props = props;
         const newNode = this.createHtml();
         this.htmlRoot.replaceWith(newNode);
@@ -133,12 +135,16 @@ export class Page implements ChildrenContainer {
 
     // shallow clone, basically to satisfy setState
     clone(): Page {
-        return new Page({
+        const clone = new Page({
             props: this.props,
+            //props: structuredClone(this.props),
             htmlRoot: this.htmlRoot,
             bodyElement: this.htmlElement,
             children: this.children,
         });
+        console.log("page cloned, method", clone);
+
+        return clone;
     }
 
     addChild(child: ComponentNode<any>, index?: number) {
@@ -160,11 +166,13 @@ export class Page implements ChildrenContainer {
     }
 
     serialize(): SerializedPage {
-        return {
+        const s = {
             id: this.id,
             props: this.props,
             children: this.children.map(c => c.serialize()),
         }
+        console.log("serialized page", s);
+        return s;
     }
 
     getClonedHtml(): string {

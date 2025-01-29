@@ -1,10 +1,9 @@
-import { PictureInPicture2, X, Settings, Layout, Palette } from "lucide-react";
+import { PictureInPicture2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Page } from "@/lib/core/page/Page";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface EditorSidebarProps<T> {
     component: ComponentNode<T> | Page;
@@ -44,25 +43,25 @@ export function EditorSidebar<T>({
                             <X className="h-4 w-4" />
                         </Button>
                     </div>
-                </div>                   
+                </div>
 
-                    <div className="mt-4">
-                            <PropInputs
-                                propsDescriptor={component.propsDescriptor}
-                                props={component.props}
-                                onChange={(newProps) => {
-                                    component.update(newProps);
-                                    onChange();
-                                }}
-                            />
-                      
-                        {"children" in component && (
-                                <ComponentInput
-                                    parent={component}
-                                    onChange={onChange}
-                                />
-                        )}
-                    </div>
+                <div className="mt-4">
+                    <PropInputs
+                        propsDescriptor={component.propsDescriptor}
+                        props={component.props}
+                        onChange={(newProps) => {
+                            component.update(newProps);
+                            onChange();
+                        }}
+                    />
+
+                    {"children" in component && (
+                        <ComponentInput
+                            parent={component}
+                            onChange={onChange}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );

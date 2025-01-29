@@ -38,7 +38,7 @@ interface SaveableState {
 const storageKey = "page-storage";
 
 function saveState(state: SaveableState) {
-    console.log("save state to local storage");
+    console.log("save state to local storage", state);
     localStorage.setItem(storageKey, JSON.stringify(state));
 }
 
@@ -85,6 +85,8 @@ export const useSiteStore = create<SiteStore>()(
 
             setSite: (site) => {
                 set({ site });
+                console.log("setting site", site);
+                
                 if (get().autoSave) {
                     get().saveSite();
                 }
@@ -100,7 +102,7 @@ export const useSiteStore = create<SiteStore>()(
             saveSite: (name = 'default') => {
                 set((state) => {
 
-                    const serializedPage = PageRepository.serialize(state.site);
+                    const serializedPage = PageRepository.serialize(get().site);
 
                     const newState: Partial<SiteStore> = {
                         pageName: name,

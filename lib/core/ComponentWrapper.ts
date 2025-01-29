@@ -125,7 +125,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
 
     // Shallow clone except for the name and props
     // to satisfy the copy component functionality.
-    // Doesn't clone the wrappers so we get a clean copy.
+    // Doesn't clone the wrappers so we getta clean copy.
     clone(): ComponentNode<T> {
 
         const copy = new ComponentWrapper({
@@ -277,10 +277,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     addWrapperOverlay(overlay: HTMLElement) {
-
-        console.log("adding overlay for", this.htmlElement);
-
-        // TODO: see if this removes the children
         if (this.wrapperDiv !== undefined) {
             console.log("wrapper already exists, replacing it ", this.wrapperDiv, overlay);
             this.wrapperDiv.remove();
@@ -296,8 +292,6 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     // TODO: unused??
     // remove() also removes the wrapper
     removeWrapperOverlay() {
-        console.log("removing overlay, adding", this.htmlElement, "to", this.parent?.htmlElement);
-
         if (this.wrapperDiv) {
             this.wrapperDiv.replaceWith(this.htmlElement);
             this.wrapperDiv = undefined;

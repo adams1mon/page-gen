@@ -45,6 +45,7 @@ export function PropInputs(
     // Helper function to create input based on descriptor type
     const createInput = (descriptor: PropsDesc, props: any, onChange: (props: any) => void) => {
         switch (descriptor.type) {
+
             case DataType.STRING:
                 return <StringInput
                     propsDescriptor={descriptor as LeafDesc}
@@ -52,12 +53,14 @@ export function PropInputs(
                     onChange={onChange}
                     key={keyProp}
                 />
+
             case DataType.NUMBER:
                 return <NumberInput
                     num={props as number}
                     onChange={onChange}
                     key={keyProp}
                 />
+
             case DataType.ARRAY:
                 return <ArrayInput
                     propsDescriptor={descriptor as ArrayDesc}
@@ -66,6 +69,8 @@ export function PropInputs(
                     breadcrumbsPath={path}
                     key={keyProp}
                 />
+
+            // this is unused due to the if below
             case DataType.OBJECT:
                 return <ObjectInput
                     propsDescriptor={descriptor as ObjectDesc}
@@ -74,6 +79,7 @@ export function PropInputs(
                     breadcrumbsPath={path}
                     key={keyProp}
                 />
+
             default:
                 console.error(`PropsDesc type is undefined or not implemented, displayName: ${descriptor.displayName}, type: ${descriptor.type}`);
                 return null;

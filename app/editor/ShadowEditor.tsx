@@ -9,6 +9,7 @@ import { useComponentSelector } from "@/lib/store/component-selector-store";
 import { Page } from "@/lib/core/page/Page";
 
 
+// onChange only saves the site tbh
 interface ShadowEditorProps {
     onChange: () => void;
 }

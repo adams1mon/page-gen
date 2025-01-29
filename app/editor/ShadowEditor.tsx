@@ -9,7 +9,7 @@ import { useComponentSelector } from "@/lib/store/component-selector-store";
 import { Page } from "@/lib/core/page/Page";
 
 
-// onChange only saves the site tbh
+// onChange only saves the site to local stoarage tbh
 interface ShadowEditorProps {
     onChange: () => void;
 }
@@ -176,11 +176,14 @@ function createWrapperOverlay(component: ComponentNode<any>) {
     const wrapperDiv = document.createElement("div");
     wrapperDiv.style.position = "relative";
     wrapperDiv.dataset.wrapperId = component.id
+    
+    // TODO: fix wrapper not allowing elements to take up the entire width 
+    // of the container e.g Row
+    // it's not nice if the editor is off from the final page...
 
     // add a floating tab in the top left with the name of the component
     const nameTab = document.createElement("div");
     nameTab.innerText = component.componentName;
-    nameTab.style.position = "fixed";
     nameTab.style.position = "absolute";
     nameTab.style.top = "0";
     nameTab.style.left = "0";
@@ -247,8 +250,6 @@ function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
 
     if (!node.children || node.children.length === 0) return;
     (node as ComponentNode<any>).wrapperDiv?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
-    
-    //node.htmlElement.parentElement?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
 }
 
 // Create a placeholder component

@@ -1,4 +1,5 @@
 import { ComponentRepository } from "./ComponentRepository";
+import { EventDispatcher, EventType } from "./EventDispatcher";
 import { Page, SerializedPage } from "./page/Page";
 
 
@@ -26,6 +27,9 @@ export class PageRepository {
 
         // the parent needs to be set explicitly
         page.children.forEach(child => { child.parent = page });
+
+        EventDispatcher.publish(EventType.PAGE_LOADED, { page: page });
+
         return page;
     }
 };

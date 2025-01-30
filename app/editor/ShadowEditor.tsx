@@ -4,7 +4,7 @@ import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
-import { ComponentTreeEvent, EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
+import { ComponentTreeEvent, EventDispatcher, EventType, PageEvent } from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 import { Page } from "@/lib/core/page/Page";
 
@@ -20,11 +20,12 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     const { site } = useSiteStore();
     const { rClickedComponent, rClickComponent } = useRClickedComponent();
     const { openComponentSelector } = useComponentSelector();
-    
+
     // TODO: make site load work again, now it adds the loaded site to the shadow dom
     // and we'll have a bunch of them.
 
     useEffect(() => {
+        console.log("site effect called", site);
 
         if (!ref.current) return;
 
@@ -35,7 +36,13 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
         const shadow = ref.current.shadowRoot as ShadowRoot;
 
-        shadow.appendChild(site.htmlRoot);
+        if (shadow.firstChild) {
+            console.log("replacing site html root", site, ref.current);
+            shadow.replaceChild(site.htmlRoot, shadow.firstChild);
+        } else {
+            console.log("appending site html root", site, ref.current);
+            shadow.appendChild(site.htmlRoot);
+        }
 
         function wrapperContextMenuHandler(component: ComponentNode<any>, e: Event) {
             // select the first component that has the matching data-id
@@ -43,9 +50,9 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
                 // ugly haxxx
                 // clicking the placeholder should also select the component
-                
+
                 // @ts-ignore
-                if (e.dataset?.wrapperId !== undefined || 
+                if (e.dataset?.wrapperId !== undefined ||
 
                     // @ts-ignore
                     e.dataset?.editorPlaceholder !== undefined) {
@@ -58,6 +65,14 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 rClickComponent(component);
             }
         }
+
+        // TODO: remove this?
+        EventDispatcher.addHandler(
+            EventType.PAGE_LOADED,
+            ({ page }: PageEvent) => {
+                console.log("page loaded handler", page);
+            },
+        );
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
@@ -87,26 +102,21 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             },
         );
 
-        //EventDispatcher.addHandler(
-        //    EventType.COMPONENT_UPDATED,
-        //    ({ component }: ComponentTreeEvent) => {
-        //    },
-        //);
-        
         EventDispatcher.addHandler(
             EventType.COMPONENT_REMOVED,
-            ({ parent, component }: ComponentTreeEvent) => {
+            ({ parent }: ComponentTreeEvent) => {
 
                 // See if the placeholder needs to be added back to the parent container element.
                 // Don't let the Page show the placeholder,
                 // only show it for components.
                 if (parent.type === "Page") return;
-            
+
                 addEmptyContainerPlaceholder(parent as ComponentNode<any>, openComponentSelector);
             },
         );
 
-    }, [ref.current]);
+    }, [site, ref.current]);
+
 
     const handleRemove = (comp: ComponentNode<any>) => {
         comp.remove()
@@ -176,7 +186,7 @@ function createWrapperOverlay(component: ComponentNode<any>) {
     const wrapperDiv = document.createElement("div");
     wrapperDiv.style.position = "relative";
     wrapperDiv.dataset.wrapperId = component.id
-    
+
     // TODO: fix wrapper not allowing elements to take up the entire width 
     // of the container e.g Row
     // it's not nice if the editor is off from the final page...

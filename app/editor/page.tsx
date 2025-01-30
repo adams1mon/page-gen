@@ -35,8 +35,13 @@ export default function EditorPage() {
         // page.clone is not even needed
         // this only saves the page 
         setSite(site);
+        
     };
 
+    // TODO: change add something that makes the iframe preview change too
+    // it flashes like crazy if updated every time the site is changed, 
+    // epilepsy warning
+    // now it's not updated because the site doesn't change 
     useEffect(() => {
         if (activeView != "preview") return;
 

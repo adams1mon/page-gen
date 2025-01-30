@@ -95,11 +95,7 @@ class Row implements IComponent<RowProps> {
         // go with option 1 for now.
 
         // add the children
-        console.log("row props in create html", props);
-
         const nodeFromReact = createHtmlElementFromReact(Jsx, props);
-        console.log("from react", nodeFromReact);
-
         children?.map(c => nodeFromReact.appendChild(c));
 
         this.htmlElement = nodeFromReact;

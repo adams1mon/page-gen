@@ -45,12 +45,11 @@ export function EditorContextMenu({
         }
     }, [isOpen]);
 
-    // TODO: fix this, it only inserts 'after'!!
-    function pasteMenuItem() {
+    function pasteMenuItem(insert: (comp: ComponentNode<any>) => void) {
         return hasCopiedComponent() && (
             <ContextMenuItem onClick={() => {
                 const comp = paste();
-                if (comp) onInsertAfter(comp);
+                if (comp) insert(comp);
                 setIsOpen(false);
             }}>
                 <Clipboard className="h-4 w-4 mr-2" />
@@ -88,7 +87,7 @@ export function EditorContextMenu({
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Component
                             </ContextMenuItem>
-                            {pasteMenuItem()}
+                            {pasteMenuItem(onInsertBefore)}
                         </ContextMenuSubContent>
                     </ContextMenuSub>
 
@@ -109,7 +108,7 @@ export function EditorContextMenu({
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Component
                             </ContextMenuItem>
-                            {pasteMenuItem()}
+                            {pasteMenuItem(onInsertAfter)}
                         </ContextMenuSubContent>
                     </ContextMenuSub>
 
@@ -131,7 +130,7 @@ export function EditorContextMenu({
                                     <Plus className="h-4 w-4 mr-2" />
                                     Add Component
                                 </ContextMenuItem>
-                                {pasteMenuItem()}
+                                {pasteMenuItem(newComp => onInsertInto(rClickedComponent, newComp))}
                             </ContextMenuSubContent>
                         </ContextMenuSub>
                     )}

@@ -5,8 +5,8 @@ import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
 import { DataType, ObjectDesc, PropCategory, PropsDesc } from '../props/PropsDescriptor';
 import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
-import { addChild, createId, findByIdInComp, removeChild } from '../tree-actions';
-import { tag } from '../utils';
+import { tag, createId} from '../utils';
+import { ComponentTreeEvent, EventDispatcher, EventType } from '../EventDispatcher';
 
 // a single static webpage
 
@@ -148,16 +148,44 @@ export class Page implements ChildrenContainer {
     }
 
     addChild(child: ComponentNode<any>, index?: number) {
-        addChild(this, child, index);
+
+        if (!this.children) return;
+
+        if (index && index > -1 && index < this.children.length) {
+            this.children.splice(index, 0, child);
+            const node = this.htmlElement.childNodes.item(index);
+
+            // TODO: fix bug 
+            // Try to insert more elements into a Row and sometimes it happens.
+            // NotFoundError: Node.insertBefore: Child to insert before is not a child of this node
+            node.insertBefore(child.htmlElement, node);
+        } else {
+            this.children.push(child);
+            this.htmlElement.appendChild(child.htmlElement);
+        }
+
+        child.parent = this;
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_ADDED,
+            { parent: this, component: child } as ComponentTreeEvent,
+        );
     }
 
     removeChild(child: ComponentNode<any>) {
-        removeChild(this, child);
+        if (!this.children) return;
+
+        this.children = this.children.filter(c => c.id !== child.id);
+        child.htmlElement.remove();
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_REMOVED, 
+            { parent: child.parent, component: child }
+        );
     }
 
     findChildById(id: string): ComponentNode<any> | null {
         for (const child of this.children) {
-            //const node = findByIdInComp(child, id);
             const node = child.findChildById(id);
             if (node) return node;
         }

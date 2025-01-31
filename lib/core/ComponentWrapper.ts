@@ -1,7 +1,7 @@
 import { ComponentTreeEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
-import { createId } from "./tree-actions";
+import { createId } from "./utils";
 import { IComponent } from "./types";
 
 export interface ComponentNode<T> {
@@ -125,7 +125,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
 
     // Shallow clone except for the name and props
     // to satisfy the copy component functionality.
-    // Doesn't clone the wrappers so we getta clean copy.
+    // Doesn't clone the wrappers so we get a clean copy.
     clone(): ComponentNode<T> {
 
         const copy = new ComponentWrapper({

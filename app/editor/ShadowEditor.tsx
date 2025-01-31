@@ -66,25 +66,24 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             }
         }
 
-        // TODO: remove this?
-        EventDispatcher.addHandler(
-            EventType.PAGE_LOADED,
-            ({ page }: PageEvent) => {
-                console.log("page loaded handler", page);
-            },
-        );
+        // creates and adds an overlay div to provide some editor functionality
+        // like adding an outline on hover
+        function overlay(component: ComponentNode<any>) {
+            const wrapperDiv = createWrapperOverlay(component);
+            wrapperDiv.addEventListener("contextmenu", (e) => wrapperContextMenuHandler(component, e));
+            component.addWrapperOverlay(wrapperDiv);
+
+            // needs the wrapper div added
+            addEmptyContainerPlaceholder(component, openComponentSelector);
+        }
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
             ({ parent, component }: ComponentTreeEvent) => {
-
-                const wrapperDiv = createWrapperOverlay(component);
-                wrapperDiv.addEventListener("contextmenu", (e) => wrapperContextMenuHandler(component, e));
-                component.addWrapperOverlay(wrapperDiv);
-
-                // needs the wrapper div added
-                addEmptyContainerPlaceholder(component, openComponentSelector);
-
+                
+                component.children?.forEach(c => overlay(c));
+                overlay(component);
+                
                 // remove the parent's placeholder because it now has a child added
                 removeEmptyContainerPlaceholder(parent);
             },
@@ -92,13 +91,12 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_LOADED,
-            ({ component }: ComponentTreeEvent) => {
-
-                const wrapperDiv = createWrapperOverlay(component);
-                wrapperDiv.addEventListener("contextmenu", (e) => wrapperContextMenuHandler(component, e));
-                component.addWrapperOverlay(wrapperDiv);
-
-                addEmptyContainerPlaceholder(component, openComponentSelector);
+            ({ component }) => {
+                
+                // don't need to add it to the children, 
+                // because a "loaded" event is fired for every component 
+                // also don't need t remove any empty placeholder containers
+                overlay(component);
             },
         );
 

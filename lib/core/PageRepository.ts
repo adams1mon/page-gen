@@ -28,8 +28,6 @@ export class PageRepository {
         // the parent needs to be set explicitly
         page.children.forEach(child => { child.parent = page });
 
-        EventDispatcher.publish(EventType.PAGE_LOADED, { page: page });
-
         return page;
     }
 };

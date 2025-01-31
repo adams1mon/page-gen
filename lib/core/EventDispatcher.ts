@@ -96,7 +96,6 @@ export const EventType = {
     COMPONENT_LOADED: "COMPONENT_LOADED",
     COMPONENT_UPDATED: "COMPONENT_UPDATED",
     COMPONENT_REMOVED: "COMPONENT_REMOVED",
-    PAGE_LOADED: "PAGE_LOADED",
 }
 
 export interface ComponentTreeEvent {

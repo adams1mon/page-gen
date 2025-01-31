@@ -1,6 +1,11 @@
 import { FunctionComponent, createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+// mostly used for creating component IDs
+export function createId(type: string): string {
+    return `${type}-${crypto.randomUUID()}`;
+}
+
 export function tag(name: string, obj?: { [key: string]: string }) {
     const m = document.createElement(name);
     for (const key in obj) {

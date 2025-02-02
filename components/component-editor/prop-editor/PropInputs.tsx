@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsDesc, LeafDesc, ArrayDesc, ObjectDesc, DataType, PropCategory } from "@/lib/core/props/PropsDescriptor";
+import { PropCategory, PropContentType, PropType, PropsDescriptor } from "@/lib/core/props/PropsDescriptor";
 import { StringInput } from "./StringInput";
 import { NumberInput } from "./NumberInput";
 import { ArrayInput } from "./ArrayInput";
@@ -29,41 +29,52 @@ export function PropInputs(
         keyProp = '',
         breadcrumbsPath = [],
     }: {
-        propsDescriptor: PropsDesc,
+        propsDescriptor: PropsDescriptor,
         props: any,
         onChange: (props: any) => void,
         keyProp?: string,
         breadcrumbsPath?: string[],
     }
 ) {
-    if (propsDescriptor.type == DataType.EMPTY) {
-        return null;
-    }
+    // TODO: is this used?
+    //if (propsDescriptor.propType == PropType.EMPTY) {
+    //    return null;
+    //}
 
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
     // Helper function to create input based on descriptor type
-    const createInput = (descriptor: PropsDesc, props: any, onChange: (props: any) => void) => {
-        switch (descriptor.type) {
+    const createInput = (descriptor: PropsDescriptor, props: any, onChange: (props: any) => void) => {
+        console.log("createInput", descriptor.propType);
+        
+        switch (descriptor.propType) {
+            case PropType.LEAF:
+                console.log("createInput cont type", descriptor.contentType);
+                switch (descriptor.contentType) {
+                    case PropContentType.TEXT:
+                    case PropContentType.TEXTAREA:
+                    case PropContentType.URL:
+                        return <StringInput
+                            propsDescriptor={descriptor}
+                            text={props as string}
+                            onChange={onChange}
+                            key={keyProp}
+                        />
 
-            case DataType.STRING:
-                return <StringInput
-                    propsDescriptor={descriptor as LeafDesc}
-                    text={props as string}
-                    onChange={onChange}
-                    key={keyProp}
-                />
+                    case PropContentType.NUMBER:
+                        return <NumberInput
+                            num={props as number}
+                            onChange={onChange}
+                            key={keyProp}
+                        />
 
-            case DataType.NUMBER:
-                return <NumberInput
-                    num={props as number}
-                    onChange={onChange}
-                    key={keyProp}
-                />
+                    default:
+                        throw new Error("unknown prop content type" + descriptor.contentType);
+                }
 
-            case DataType.ARRAY:
+            case PropType.ARRAY:
                 return <ArrayInput
-                    propsDescriptor={descriptor as ArrayDesc}
+                    propsDescriptor={descriptor}
                     arr={props as any}
                     onChange={onChange}
                     breadcrumbsPath={path}
@@ -71,9 +82,9 @@ export function PropInputs(
                 />
 
             // this is unused due to the if below
-            case DataType.OBJECT:
+            case PropType.OBJECT:
                 return <ObjectInput
-                    propsDescriptor={descriptor as ObjectDesc}
+                    propsDescriptor={descriptor}
                     obj={props as { [key: string]: any }}
                     onChange={onChange}
                     breadcrumbsPath={path}
@@ -81,18 +92,17 @@ export function PropInputs(
                 />
 
             default:
-                console.error(`PropsDesc type is undefined or not implemented, displayName: ${descriptor.displayName}, type: ${descriptor.type}`);
+                console.error(`PropsDescriptor type is undefined or not implemented, displayName: ${descriptor.displayName}, type: ${descriptor.propType}`);
                 return null;
         }
     };
 
     // For object type descriptors, organize props by category
-    if (propsDescriptor.type === DataType.OBJECT) {
-        const objDesc = propsDescriptor as ObjectDesc;
-        const propsByCategory: Record<string, { key: string; desc: PropsDesc }[]> = {};
+    if (propsDescriptor.propType === PropType.OBJECT) {
+        const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
 
         // Group props by category
-        Object.entries(objDesc.child).forEach(([key, desc]) => {
+        Object.entries(propsDescriptor.child).forEach(([key, desc]) => {
             const category = desc.category || 'general';
             if (!propsByCategory[category]) {
                 propsByCategory[category] = [];

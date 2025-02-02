@@ -3,7 +3,7 @@
 import css from '!!raw-loader!./styles/generated/styles.css';
 import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
-import { DataType, ObjectDesc, PropCategory, PropsDesc } from '../props/PropsDescriptor';
+import { PropCategory, PropContentType, PropType, PropsDescriptor } from "../props/PropsDescriptor";
 import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
 import { tag, createId} from '../utils';
 import { ComponentTreeEvent, EventDispatcher, EventType } from '../EventDispatcher';
@@ -27,8 +27,8 @@ const defaultProps: PageProps = {
     styles: css,
 };
 
-const propsDescriptor: ObjectDesc = {
-    type: DataType.OBJECT,
+const propsDescriptor: PropsDescriptor = {
+    propType: PropType.OBJECT,
     displayName: "Page settings",
     child: {
         title: {
@@ -62,7 +62,7 @@ export interface PageArgs {
 export class Page implements ChildrenContainer {
 
     type: string = "Page";
-    propsDescriptor: PropsDesc = propsDescriptor;
+    propsDescriptor: PropsDescriptor = propsDescriptor;
 
     id: string;
     props: PageProps;
@@ -147,22 +147,12 @@ export class Page implements ChildrenContainer {
         return clone;
     }
 
-    addChild(child: ComponentNode<any>, index?: number) {
+    addChild(child: ComponentNode<any>) {
 
         if (!this.children) return;
 
-        if (index && index > -1 && index < this.children.length) {
-            this.children.splice(index, 0, child);
-            const node = this.htmlElement.childNodes.item(index);
-
-            // TODO: fix bug 
-            // Try to insert more elements into a Row and sometimes it happens.
-            // NotFoundError: Node.insertBefore: Child to insert before is not a child of this node
-            node.insertBefore(child.htmlElement, node);
-        } else {
-            this.children.push(child);
-            this.htmlElement.appendChild(child.htmlElement);
-        }
+        this.children.push(child);
+        this.htmlElement.appendChild(child.htmlElement);
 
         child.parent = this;
 

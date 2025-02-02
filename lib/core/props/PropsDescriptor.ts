@@ -1,22 +1,6 @@
 // ======================================
 // Prop descriptor types
 
-export enum DataType {
-    STRING = "string",
-    NUMBER = "number",
-    ARRAY = "array",
-    OBJECT = "object",
-
-    // empty props, don't render any inputs
-    EMPTY = "empty",
-}
-
-export enum InputType {
-    TEXT,
-    TEXTAREA,
-    URL,
-}
-
 // Categories for organizing props in the editor UI
 export enum PropCategory {
     GENERAL = "general",      // Unspecified settings go here
@@ -28,63 +12,88 @@ export enum PropCategory {
     METADATA = "metadata",    // SEO, ids, etc
 }
 
-export type PropsDesc = EmptyDesc | LeafDesc | ArrayDesc | ObjectDesc;
+export interface PropsDescriptorWrapper {
+    descriptor: PropsDescriptor;
+}
 
-export interface BaseDesc {
-    type: DataType;
-    displayName: string;
+export interface PropsDescriptorMeta {
+    // If the category is included in descriptor of type OBJECT,
+    // all the nested categories should be ignored when generating the UI.
+    category?: PropCategory;
     desc?: string;
-    category?: PropCategory; // Optional category - if not specified, will go under "General"
+    displayName: string;
+
+    propType: PropType;
 }
 
-// Signals emtpy props, e.g. props: {}
-export interface EmptyDesc extends Omit<BaseDesc, "displayName"> {
-    type: DataType.EMPTY
+// the below 3 interfaces are exclusive, hence the "never" declarations
+export interface PropsDescriptorObject extends PropsDescriptorMeta {
+    // override
+    propType: PropType.OBJECT;
+
+    // object attributes
+    child: { [propName: string]: PropsDescriptor };
 }
 
-export interface LeafDesc extends BaseDesc {
-    type: DataType.NUMBER | DataType.STRING;
-    input: InputType;
+export interface PropsDescriptorArray extends PropsDescriptorMeta {
+    // override
+    propType: PropType.ARRAY;
+
+    // array attributes
+    // homogenous array type
+    // NOTE: only the first key-value pair will be taken into consideration
+    //child: { [propName: string]: PropsDescriptor };
+    child: PropsDescriptor;
+}
+
+export interface PropsDescriptorLeaf extends PropsDescriptorMeta {
+    // override
+    propType: PropType.LEAF;
+
+    // leaf attributes
+    contentType: PropContentType;
     default: any;
 }
 
-export interface ArrayDesc extends BaseDesc {
-    type: DataType.ARRAY;
-    child: PropsDesc;
+export enum PropType {
+    ARRAY,
+    OBJECT,
+    LEAF,
 }
 
-export interface ObjectDesc extends BaseDesc {
-    type: DataType.OBJECT;
-    child: {
-        [key: string]: PropsDesc;
-    }
+export enum PropContentType {
+    TEXT,
+    TEXTAREA,
+    URL,
+    NUMBER,
 }
+
+
+export type PropsDescriptor = PropsDescriptorObject | PropsDescriptorArray | PropsDescriptorLeaf;
+
 
 // traverses the descriptor and creates an object based on the 'default' values
 // of the leaf nodes
-export function createDefaultProps(desc: PropsDesc): any {
-    switch (desc.type) {
-        case DataType.STRING || DataType.NUMBER:
-            return (desc as LeafDesc).default;
+export function createDefaultProps(desc: PropsDescriptor): any {
+    switch (desc.propType) {
+        case PropType.LEAF:
+            return desc.default;
 
-        case DataType.ARRAY:
-            return [createDefaultProps((desc as ArrayDesc).child)]
+        case PropType.ARRAY:
+            return [createDefaultProps(desc.child)]
 
-        case DataType.OBJECT:
+        case PropType.OBJECT:
             const obj: { [key: string]: any } = {};
-            const childDesc = (desc as ObjectDesc).child;
+            const childDesc = desc.child;
+
             for (const key in childDesc) {
                 obj[key] = createDefaultProps(childDesc[key]);
             }
             return obj;
-        case DataType.EMPTY:
-            return {};
+
         default:
-            console.log("unknown type: ", desc.type);
+            console.log("unknown prop descriptor", desc.propType);
             break;
     }
-}
-
-export const EMPTY_DESCRIPTOR: EmptyDesc = {
-    type: DataType.EMPTY,
 };
+

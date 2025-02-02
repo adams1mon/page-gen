@@ -1,4 +1,4 @@
-import { DataType, InputType, ObjectDesc, PropsDesc } from "../core/props/PropsDescriptor";
+import {  PropCategory, PropContentType, PropType, PropsDescriptor } from "../core/props/PropsDescriptor";
 import { cn } from "../utils";
 import { classNameDesc, alignItemsDesc, justifyContentDesc } from "../core/props/common";
 import { FunctionComponent } from "react";
@@ -22,27 +22,27 @@ const defaultProps: RowProps = {
     className: "",
 };
 
-const propsDescriptor: ObjectDesc = {
-    type: DataType.OBJECT,
+const propsDescriptor: PropsDescriptor = {
     displayName: "Row",
+    propType: PropType.OBJECT,
     child: {
         gap: {
-            type: DataType.STRING,
+            propType: PropType.LEAF,
             displayName: "Gap",
             desc: "Space between child elements",
-            input: InputType.TEXT,
+            contentType: PropContentType.TEXT,
             default: "1rem",
         },
         alignItems: alignItemsDesc,
         justifyContent: justifyContentDesc,
         className: classNameDesc,
-    }
+    },
 };
 
 
 class Row implements IComponent<RowProps> {
 
-    propsDescriptor: PropsDesc = propsDescriptor;
+    propsDescriptor: PropsDescriptor = propsDescriptor;
     acceptsChildren: boolean = true;
     initialProps?: RowProps = defaultProps;
 

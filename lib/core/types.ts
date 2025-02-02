@@ -3,7 +3,7 @@ import { PropsDesc } from "./props/PropsDescriptor";
 
 export interface ChildrenContainer {
     children?: ComponentNode<any>[];
-    addChild: (child: ComponentNode<any>, index?: number) => void;
+    addChild: (child: ComponentNode<any>) => void;
     removeChild: (child: ComponentNode<any>) => void;
     findChildById: (id: string) => ComponentNode<any> | null;
 };

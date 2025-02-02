@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useDebounce } from "@/hooks/use-debounce";
-import { InputType, LeafDesc } from "@/lib/core/props/PropsDescriptor";
+import { PropContentType, PropsDescriptorLeaf } from "@/lib/core/props/PropsDescriptor";
 import { useState } from "react";
 
 export function StringInput(
@@ -13,7 +13,7 @@ export function StringInput(
         onChange,
         debounceMillis = 50,
     }: {
-        propsDescriptor: LeafDesc,
+        propsDescriptor: PropsDescriptorLeaf,
         text: string,
         onChange: (str: string) => void,
         debounceMillis?: number,
@@ -36,7 +36,7 @@ export function StringInput(
 
     return (
         <>
-            {propsDescriptor.input == InputType.TEXTAREA &&
+            {propsDescriptor.contentType == PropContentType.TEXTAREA &&
                 <Textarea
                     className="text-sm font-normal"
                     value={inputValue}
@@ -45,7 +45,7 @@ export function StringInput(
                 />
             }
 
-            {propsDescriptor.input == InputType.TEXT &&
+            {propsDescriptor.contentType == PropContentType.TEXT &&
                 <Input
                     type="text"
                     value={inputValue}
@@ -54,7 +54,7 @@ export function StringInput(
                 />
             }
 
-            {propsDescriptor.input == InputType.URL &&
+            {propsDescriptor.contentType == PropContentType.URL &&
                 <Input
                     type="url"
                     value={inputValue}

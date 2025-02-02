@@ -4,7 +4,7 @@ import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
-import { ComponentTreeEvent, EventDispatcher, EventType, PageEvent } from "@/lib/core/EventDispatcher";
+import { ComponentTreeEvent, EventDispatcher, EventType} from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 import { Page } from "@/lib/core/page/Page";
 
@@ -20,9 +20,6 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     const { site } = useSiteStore();
     const { rClickedComponent, rClickComponent } = useRClickedComponent();
     const { openComponentSelector } = useComponentSelector();
-
-    // TODO: make site load work again, now it adds the loaded site to the shadow dom
-    // and we'll have a bunch of them.
 
     useEffect(() => {
         console.log("site effect called", site);
@@ -80,10 +77,10 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         EventDispatcher.addHandler(
             EventType.COMPONENT_ADDED,
             ({ parent, component }: ComponentTreeEvent) => {
-                
+
                 component.children?.forEach(c => overlay(c));
                 overlay(component);
-                
+
                 // remove the parent's placeholder because it now has a child added
                 removeEmptyContainerPlaceholder(parent);
             },
@@ -92,7 +89,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         EventDispatcher.addHandler(
             EventType.COMPONENT_LOADED,
             ({ component }) => {
-                
+
                 // don't need to add it to the children, 
                 // because a "loaded" event is fired for every component 
                 // also don't need t remove any empty placeholder containers
@@ -234,7 +231,6 @@ function addEmptyContainerPlaceholder(
 
     if (!node.children || node.children.length > 0) return;
 
-    // TODO: maybe add an 'add' button if there are children?
     function addChild(e: Event) {
         e.stopPropagation();
 
@@ -253,10 +249,13 @@ function addEmptyContainerPlaceholder(
     node.wrapperDiv.insertAdjacentElement("afterbegin", placeholder);
 }
 
+// TODO: maybe add an 'add' button if there are children?
 function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
     if (node.type === "Page") return;
 
     if (!node.children || node.children.length === 0) return;
+
+    // always remove the placeholder
     (node as ComponentNode<any>).wrapperDiv?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
 }
 

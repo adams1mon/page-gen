@@ -1,7 +1,6 @@
 import { ComponentPluginManager } from "./ComponentPluginManager";
-import { ComponentNode, ComponentWrapper, EventPublisherComponentProxy, SerializedComponentNode } from "./ComponentWrapper";
+import { ComponentNode, ComponentWrapper, SerializedComponentNode } from "./ComponentWrapper";
 import { EventDispatcher, EventType } from "./EventDispatcher";
-import { Page } from "./page/Page";
 
 
 export class ComponentRepository {

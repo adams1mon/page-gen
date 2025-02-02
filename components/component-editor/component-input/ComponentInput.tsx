@@ -29,8 +29,8 @@ export function ComponentInput(
 ) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const addComponent = (component: ComponentWrapper<any>, index?: number) => {
-        parent.addChild(component, index);
+    const addComponent = (component: ComponentWrapper<any>) => {
+        parent.addChild(component);
         onChange();
     };
 

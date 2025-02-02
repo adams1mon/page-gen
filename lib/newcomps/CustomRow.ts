@@ -1,4 +1,4 @@
-import { EMPTY_DESCRIPTOR, PropsDesc } from "../core/props/PropsDescriptor";
+import { PropCategory, PropContentType, PropType, PropsDescriptor } from "../core/props/PropsDescriptor";
 import { IComponent } from "../core/types";
 import { tag } from "../core/utils";
 import { ComponentPlugin } from "../core/ComponentPluginManager";

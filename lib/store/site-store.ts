@@ -3,7 +3,6 @@
 import { create } from 'zustand';
 import { PageRepository } from '../core/PageRepository';
 import { Page, SerializedPage } from '../core/page/Page';
-import { log } from 'console';
 
 // the chain should work like this:
 // 1. load a LoadedState into SiteStore
@@ -105,10 +104,7 @@ export const useSiteStore = create<SiteStore>()(
                 }
             },
 
-            // TODO: toggle autosave?
             setAutoSave: (enabled) => set(() => {
-                console.log("set autosave");
-
                 return { autoSave: enabled }
             }),
 

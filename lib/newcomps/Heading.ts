@@ -1,4 +1,4 @@
-import { DataType, InputType, ObjectDesc, PropsDesc } from "../core/props/PropsDescriptor";
+import { PropCategory, PropContentType, PropType, PropsDescriptor } from "../core/props/PropsDescriptor";
 import { classNameDesc } from "../core/props/common";
 import { tag } from "../core/utils";
 import { IComponent } from "../core/types";
@@ -20,29 +20,29 @@ const defaultProps: HeadingProps = {
     className: "",
 };
 
-const propsDescriptor: ObjectDesc = {
-    type: DataType.OBJECT,
+const propsDescriptor: PropsDescriptor = {
+    propType: PropType.OBJECT,
     displayName: "Heading",
     child: {
         content: {
-            type: DataType.STRING,
+            propType: PropType.LEAF,
             displayName: "Content",
             desc: "Heading text",
-            input: InputType.TEXT,
+            contentType: PropContentType.TEXT,
             default: "Heading",
         },
         level: {
-            type: DataType.STRING,
+            propType: PropType.LEAF,
             displayName: "Level",
             desc: "Heading level (1-6)",
-            input: InputType.TEXT,
+            contentType: PropContentType.TEXT,
             default: "1",
         },
         textAlign: {
-            type: DataType.STRING,
+            propType: PropType.LEAF,
             displayName: "Text Align",
             desc: "Text alignment (left, center, right)",
-            input: InputType.TEXT,
+            contentType: PropContentType.TEXT,
             default: "left",
         },
         className: classNameDesc,
@@ -51,7 +51,7 @@ const propsDescriptor: ObjectDesc = {
 
 class Heading implements IComponent<HeadingProps> {
 
-    propsDescriptor: PropsDesc = propsDescriptor;
+    propsDescriptor: PropsDescriptor = propsDescriptor;
     acceptsChildren: boolean = false;
     initialProps?: HeadingProps = defaultProps;
 

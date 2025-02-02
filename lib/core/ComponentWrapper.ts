@@ -31,7 +31,7 @@ export interface ComponentNode<T> {
 
     addSibling(child: ComponentNode<T>, position: 'before' | 'after'): void;
 
-    addChild(child: ComponentNode<T>, index?: number): void;
+    addChild(child: ComponentNode<T>): void;
 
     removeChild(child: ComponentNode<T>): void;
 
@@ -204,32 +204,14 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         );
     }
 
-    addChild(child: ComponentWrapper<T>, index?: number) {
+    addChild(child: ComponentWrapper<T>) {
         if (!this.children) return;
 
         // insert the wrapper directly if it's defined
         const elemToInsert = child.wrapperDiv || child.htmlElement;
 
-        if (index && index > -1 && index < this.children.length) {
-
-            const reference = this.children[index];
-
-            // insert the child at 'index'
-            this.children.splice(index, 0, child);
-
-            // TODO: fix bug 
-            // Try to insert more elements into a Row and sometimes it happens.
-            // NotFoundError: Node.insertBefore: Child to insert before is not a child of this node
-            //node.insertBefore(child.htmlElement, node);
-
-            // insert before the wrapper if it's defined
-            const elem = reference.wrapperDiv || reference.htmlElement;
-            elem.insertAdjacentElement("beforebegin", elemToInsert);
-
-        } else {
-            this.children.push(child);
-            this.htmlElement.appendChild(elemToInsert);
-        }
+        this.children.push(child);
+        this.htmlElement.appendChild(elemToInsert);
 
         child.parent = this;
 

@@ -1,4 +1,4 @@
-import { ObjectDesc } from "@/lib/core/props/PropsDescriptor";
+import { PropsDescriptorObject } from "@/lib/core/props/PropsDescriptor";
 import { PropInputs } from "./PropInputs";
 
 interface strKeyObj {
@@ -12,7 +12,7 @@ export function ObjectInput(
         onChange,
         breadcrumbsPath,
     }: {
-        propsDescriptor: ObjectDesc,
+        propsDescriptor: PropsDescriptorObject,
         obj: strKeyObj,
         onChange: (props: strKeyObj) => void,
         breadcrumbsPath: string[],

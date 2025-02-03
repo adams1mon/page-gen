@@ -12,10 +12,6 @@ export enum PropCategory {
     METADATA = "metadata",    // SEO, ids, etc
 }
 
-export interface PropsDescriptorWrapper {
-    descriptor: PropsDescriptor;
-}
-
 export interface PropsDescriptorMeta {
     // If the category is included in descriptor of type OBJECT,
     // all the nested categories should be ignored when generating the UI.

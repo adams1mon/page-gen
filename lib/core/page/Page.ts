@@ -3,7 +3,7 @@
 import css from '!!raw-loader!./styles/generated/styles.css';
 import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
-import { PropCategory, PropContentType, PropType, PropsDescriptor } from "../props/PropsDescriptor";
+import { PropCategory, PropType, PropsDescriptor } from "../props/PropsDescriptor";
 import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
 import { tag, createId} from '../utils';
 import { ComponentTreeEvent, EventDispatcher, EventType } from '../EventDispatcher';
@@ -147,12 +147,24 @@ export class Page implements ChildrenContainer {
         return clone;
     }
 
-    addChild(child: ComponentNode<any>) {
+    addChild(child: ComponentNode<any>, index?: number) {
 
         if (!this.children) return;
+        
+        // insert the wrapper directly if it's defined
+        const elemToInsert = child.wrapperDiv || child.htmlElement;
 
-        this.children.push(child);
-        this.htmlElement.appendChild(child.htmlElement);
+        if (index && index > 0 && index < this.children.length) {
+            console.log("inserting at index into page", index);
+            
+            let ref = this.children[index];
+            const refNode = ref.wrapperDiv || ref.htmlElement;
+            refNode.insertAdjacentElement("beforebegin", elemToInsert);
+            this.children.splice(index, 0, child);
+        } else {
+            this.children.push(child);
+            this.htmlElement.appendChild(elemToInsert);
+        }
 
         child.parent = this;
 

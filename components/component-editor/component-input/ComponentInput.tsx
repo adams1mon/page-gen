@@ -29,8 +29,8 @@ export function ComponentInput(
 ) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const addComponent = (component: ComponentWrapper<any>) => {
-        parent.addChild(component);
+    const addComponent = (component: ComponentWrapper<any>, index?: number) => {
+        parent.addChild(component, index);
         onChange();
     };
 
@@ -77,6 +77,7 @@ export function ComponentInput(
                                             onDelete={() => deleteComponent(component)}
                                         />
                                         {
+                                            // TODO: insert components at arbitrary index
                                             // children should be defined, assertion should be above
                                             index === parent.children!.length - 1 && (
                                                 <ComponentDivider

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { PropsDescriptorArray, createDefaultProps } from "@/lib/core/props/PropsDescriptor";
-import { PropInputs } from "./PropInputs";
+import { PropInputsSlot } from "./PropInputs";
 import { Plus, Trash2 } from "lucide-react";
 
 export function ArrayInput(
@@ -33,7 +33,7 @@ export function ArrayInput(
             <div className="space-y-4">
                 {arr.map((p: any, i: number) => (
                     <div key={i} className="relative">
-                        <PropInputs
+                        <PropInputsSlot
                             propsDescriptor={propsDescriptor.child}
                             props={p}
                             onChange={(partialProps) => onChange([

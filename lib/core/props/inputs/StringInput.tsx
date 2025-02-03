@@ -3,26 +3,22 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useDebounce } from "@/hooks/use-debounce";
-import { PropContentType, PropsDescriptorLeaf } from "@/lib/core/props/PropsDescriptor";
+import { PropContentType } from "@/lib/core/props/PropsDescriptor";
 import { useState } from "react";
+import { PropInputPlugin, PropInputProps } from "../PropInputPluginManager";
 
-export function StringInput(
+function PropInput(
     {
         propsDescriptor,
-        text,
+        prop,
         onChange,
         debounceMillis = 50,
-    }: {
-        propsDescriptor: PropsDescriptorLeaf,
-        text: string,
-        onChange: (str: string) => void,
-        debounceMillis?: number,
-    }
+    }: PropInputProps<string>
 ) {
     // Separate updating the internal text state from triggering an entire 
     // rerender when updating the props of the parent (the entire site props tree).
     // Use debouncing to delay the update of the parent.
-    const [inputValue, setInputValue] = useState(text);
+    const [inputValue, setInputValue] = useState(prop);
     const debounce = useDebounce();
 
     const updateParentDebounced = (text: string) => debounce(() => {
@@ -65,3 +61,10 @@ export function StringInput(
         </>
     );
 }
+
+const plugin: PropInputPlugin = {
+    contentTypes: [PropContentType.TEXT, PropContentType.TEXTAREA, PropContentType.URL],
+    jsxFunc: PropInput,
+};
+
+export default plugin;

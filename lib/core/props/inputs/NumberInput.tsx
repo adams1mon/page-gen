@@ -3,22 +3,20 @@
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useState } from "react";
+import { PropContentType } from "../PropsDescriptor";
+import { PropInputPlugin, PropInputProps } from "../PropInputPluginManager";
 
-export function NumberInput(
+function PropInput(
     {
-        num,
+        prop,
         onChange,
         debounceMillis = 100,
-    }: {
-        num: number,
-        onChange: (num: number) => void,
-        debounceMillis?: number,
-    },
+    }: PropInputProps<number>
 ) {
     // Separate updating the internal text state from triggering an entire 
     // rerender when updating the props of the parent (the entire site props tree).
     // Use debouncing to delay the update of the parent.
-    const [inputValue, setInputValue] = useState(num);
+    const [inputValue, setInputValue] = useState(prop);
     const debounce = useDebounce();
 
     const updateParentDebounced = (num: number) => debounce(() => {
@@ -39,3 +37,10 @@ export function NumberInput(
         />
     );
 }
+
+const plugin: PropInputPlugin = {
+    contentTypes: [PropContentType.NUMBER],
+    jsxFunc: PropInput,
+};
+
+export default plugin;

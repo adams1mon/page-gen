@@ -1,14 +1,14 @@
 "use client";
 
-import { PropCategory, PropContentType, PropType, PropsDescriptor } from "@/lib/core/props/PropsDescriptor";
-import { StringInput } from "./StringInput";
-import { NumberInput } from "./NumberInput";
+import { PropCategory, PropType, PropsDescriptor } from "@/lib/core/props/PropsDescriptor";
 import { ArrayInput } from "./ArrayInput";
 import { ObjectInput } from "./ObjectInput";
 import { PropInputHeader } from "./PropInputHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Type, Layout, Palette, Zap, Code, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PropInputFactory } from "@/lib/core/props/PropInputFactory";
+import { PropInputProps } from "@/lib/core/props/PropInputPluginManager";
 
 // Map categories to their icons and labels
 const categoryConfig = {
@@ -21,7 +21,8 @@ const categoryConfig = {
     general: { icon: <Settings className="h-3 w-3" />, label: "General" },
 };
 
-export function PropInputs(
+// only renders the prop inputs themselves recursively, doesn't add the category tabs 
+export function PropInputsSlot(
     {
         propsDescriptor,
         props,
@@ -36,41 +37,17 @@ export function PropInputs(
         breadcrumbsPath?: string[],
     }
 ) {
-    // TODO: is this used?
-    //if (propsDescriptor.propType == PropType.EMPTY) {
-    //    return null;
-    //}
-
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
-    // Helper function to create input based on descriptor type
     const createInput = (descriptor: PropsDescriptor, props: any, onChange: (props: any) => void) => {
-        console.log("createInput", descriptor.propType);
-        
         switch (descriptor.propType) {
             case PropType.LEAF:
-                console.log("createInput cont type", descriptor.contentType);
-                switch (descriptor.contentType) {
-                    case PropContentType.TEXT:
-                    case PropContentType.TEXTAREA:
-                    case PropContentType.URL:
-                        return <StringInput
-                            propsDescriptor={descriptor}
-                            text={props as string}
-                            onChange={onChange}
-                            key={keyProp}
-                        />
-
-                    case PropContentType.NUMBER:
-                        return <NumberInput
-                            num={props as number}
-                            onChange={onChange}
-                            key={keyProp}
-                        />
-
-                    default:
-                        throw new Error("unknown prop content type" + descriptor.contentType);
-                }
+                const propInputProps: PropInputProps<any> = {
+                    propsDescriptor: descriptor,
+                    prop: props,    
+                    onChange,
+                };
+                return PropInputFactory.createInput(descriptor.contentType, propInputProps);
 
             case PropType.ARRAY:
                 return <ArrayInput
@@ -81,7 +58,6 @@ export function PropInputs(
                     key={keyProp}
                 />
 
-            // this is unused due to the if below
             case PropType.OBJECT:
                 return <ObjectInput
                     propsDescriptor={descriptor}
@@ -97,8 +73,38 @@ export function PropInputs(
         }
     };
 
+    return (
+        <div className="w-full space-y-1.5">
+            <PropInputHeader
+                displayName={propsDescriptor.displayName}
+                description={propsDescriptor.desc}
+                breadcrumbsPath={breadcrumbsPath}
+            />
+            {createInput(propsDescriptor, props, onChange)}
+        </div>
+    );
+}
+
+// NOTE: prop inputs are only categorized according only to the top-level category value,
+// category values in nested prop descriptors are not taken into account
+export function PropInputs(
+    {
+        propsDescriptor,
+        props,
+        onChange,
+        breadcrumbsPath = [],
+    }: {
+        propsDescriptor: PropsDescriptor,
+        props: any,
+        onChange: (props: any) => void,
+        keyProp?: string,
+        breadcrumbsPath?: string[],
+    }
+) {
+
     // For object type descriptors, organize props by category
     if (propsDescriptor.propType === PropType.OBJECT) {
+
         const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
 
         // Group props by category
@@ -111,6 +117,8 @@ export function PropInputs(
         });
 
         const categories = Object.keys(propsByCategory);
+        console.log("prop input categories", categories);
+        
 
         return (
             <div className="w-full space-y-2">
@@ -143,7 +151,7 @@ export function PropInputs(
                         <TabsContent key={category} value={category} className="mt-2 space-y-3">
                             {propsByCategory[category].map(({ key, desc }) => (
                                 <div key={key} className="space-y-1.5">
-                                    <PropInputs
+                                    <PropInputsSlot
                                         propsDescriptor={desc}
                                         props={props[key]}
                                         onChange={(newValue) => onChange({
@@ -151,7 +159,7 @@ export function PropInputs(
                                             [key]: newValue,
                                         })}
                                         keyProp={key}
-                                        breadcrumbsPath={path}
+                                        breadcrumbsPath={['']}
                                     />
                                 </div>
                             ))}
@@ -170,7 +178,12 @@ export function PropInputs(
                 description={propsDescriptor.desc}
                 breadcrumbsPath={breadcrumbsPath}
             />
-            {createInput(propsDescriptor, props, onChange)}
+            <PropInputsSlot
+                propsDescriptor={propsDescriptor}
+                props={props}
+                onChange={onChange}
+                breadcrumbsPath={['']}
+            />
         </div>
     );
 }

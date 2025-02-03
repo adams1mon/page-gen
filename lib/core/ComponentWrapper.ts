@@ -1,14 +1,14 @@
 import { ComponentTreeEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
-import { PropsDesc, createDefaultProps } from "./props/PropsDescriptor";
+import { PropsDescriptor, createDefaultProps } from "./props/PropsDescriptor";
 import { createId } from "./utils";
-import { IComponent } from "./types";
+import { ChildrenContainer, IComponent } from "./types";
 
-export interface ComponentNode<T> {
+export interface ComponentNode<T> extends ChildrenContainer{
     comp: IComponent<T>;
     type: string;
     componentName: string;
-    propsDescriptor: PropsDesc;
+    propsDescriptor: PropsDescriptor;
 
     id: string;
     props: T;
@@ -31,7 +31,7 @@ export interface ComponentNode<T> {
 
     addSibling(child: ComponentNode<T>, position: 'before' | 'after'): void;
 
-    addChild(child: ComponentNode<T>): void;
+    addChild(child: ComponentNode<T>, index?: number): void;
 
     removeChild(child: ComponentNode<T>): void;
 
@@ -145,7 +145,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         return copy;
     }
 
-    get propsDescriptor(): PropsDesc {
+    get propsDescriptor(): PropsDescriptor {
         return this.comp.propsDescriptor;
     }
 
@@ -204,14 +204,24 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         );
     }
 
-    addChild(child: ComponentWrapper<T>) {
-        if (!this.children) return;
+    addChild(child: ComponentWrapper<T>, index?: number) {
 
+        if (!this.children) return;
+        
         // insert the wrapper directly if it's defined
         const elemToInsert = child.wrapperDiv || child.htmlElement;
 
-        this.children.push(child);
-        this.htmlElement.appendChild(elemToInsert);
+        if (index && index > 0 && index < this.children.length) {
+            console.log("inserting at index", index);
+            
+            let ref = this.children[index];
+            const refNode = ref.wrapperDiv || ref.htmlElement;
+            refNode.insertAdjacentElement("beforebegin", elemToInsert);
+            this.children.splice(index, 0, child);
+        } else {
+            this.children.push(child);
+            this.htmlElement.appendChild(elemToInsert);
+        }
 
         child.parent = this;
 

@@ -32,7 +32,7 @@ export class ComponentPluginManager {
 
     static getPlugin(type: string): ComponentPlugin {
         if (!(type in ComponentPluginManager.components)) {
-            throw new Error(`${type} component not found in registry`);
+            throw new Error(`${type} component not found in plugin registry`);
         }
         return ComponentPluginManager.components[type];
     }

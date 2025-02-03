@@ -1,5 +1,5 @@
 import { PropsDescriptorObject } from "@/lib/core/props/PropsDescriptor";
-import { PropInputs } from "./PropInputs";
+import { PropInputsSlot } from "./PropInputs";
 
 interface strKeyObj {
     [key: string]: any,
@@ -22,7 +22,7 @@ export function ObjectInput(
         <div className="w-full">
             <div className="space-y-4">
                 {Object.keys(propsDescriptor.child).map(k =>
-                    <PropInputs
+                    <PropInputsSlot
                         propsDescriptor={propsDescriptor.child[k]}
                         props={obj[k]}
                         onChange={(partialProps) => onChange({

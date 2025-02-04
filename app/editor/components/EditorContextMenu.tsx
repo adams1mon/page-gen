@@ -9,6 +9,7 @@ import { useComponentSelection } from "../hooks/useComponentSelection";
 import { useEffect, useState } from "react";
 import { useRClickedComponent } from "../hooks/useRClickComponent";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
+import { useEditorPreferences } from "@/lib/store/editor-preferences";
 
 type CompFunc = (comp: ComponentNode<any>) => void;
 
@@ -70,11 +71,11 @@ export function EditorContextMenu({
                         <hr className="w-full mt-2" />
                     </ContextMenuItem>
 
-                    {/* Insert Above */}
+                    {/* Insert Before */}
                     <ContextMenuSub>
                         <ContextMenuSubTrigger className="flex items-center">
                             <Plus className="h-4 w-4 mr-2" />
-                            Insert Above
+                            Insert Before
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent>
                             <ContextMenuItem 
@@ -91,11 +92,11 @@ export function EditorContextMenu({
                         </ContextMenuSubContent>
                     </ContextMenuSub>
 
-                    {/* Insert Below */}
+                    {/* Insert After */}
                     <ContextMenuSub>
                         <ContextMenuSubTrigger className="flex items-center">
                             <Plus className="h-4 w-4 mr-2" />
-                            Insert Below
+                            Insert After
                         </ContextMenuSubTrigger>
                         <ContextMenuSubContent>
                             <ContextMenuItem 

@@ -51,10 +51,17 @@ export interface PropsDescriptorLeaf extends PropsDescriptorMeta {
     default: any;
 }
 
+// NOTE: this only makes sense if this the a descriptor of a top-level prop
+export interface PropsDescriptorEmpty {
+    // override
+    propType: PropType.EMPTY;
+};
+
 export enum PropType {
     ARRAY,
     OBJECT,
     LEAF,
+    EMPTY,
 }
 
 export enum PropContentType {
@@ -65,7 +72,11 @@ export enum PropContentType {
 }
 
 
-export type PropsDescriptor = PropsDescriptorObject | PropsDescriptorArray | PropsDescriptorLeaf;
+export type PropsDescriptor = PropsDescriptorObject 
+    | PropsDescriptorArray
+    | PropsDescriptorLeaf
+    | PropsDescriptorEmpty;
+
 
 
 // traverses the descriptor and creates an object based on the 'default' values
@@ -86,6 +97,9 @@ export function createDefaultProps(desc: PropsDescriptor): any {
                 obj[key] = createDefaultProps(childDesc[key]);
             }
             return obj;
+
+        case PropType.EMPTY:
+            return {};
 
         default:
             console.log("unknown prop descriptor", desc.propType);

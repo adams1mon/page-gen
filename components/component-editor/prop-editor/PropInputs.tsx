@@ -37,6 +37,10 @@ export function PropInputsSlot(
         breadcrumbsPath?: string[],
     }
 ) {
+    if (propsDescriptor.propType === PropType.EMPTY) {
+        return null;
+    }
+
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
     const createInput = (descriptor: PropsDescriptor, props: any, onChange: (props: any) => void) => {
@@ -66,6 +70,9 @@ export function PropInputsSlot(
                     breadcrumbsPath={path}
                     key={keyProp}
                 />
+            
+            case PropType.EMPTY:
+                return null;
 
             default:
                 console.error(`PropsDescriptor type is undefined or not implemented, displayName: ${descriptor.displayName}, type: ${descriptor.propType}`);
@@ -101,6 +108,9 @@ export function PropInputs(
         breadcrumbsPath?: string[],
     }
 ) {
+    if (propsDescriptor.propType === PropType.EMPTY) {
+        return null;
+    }
 
     // For object type descriptors, organize props by category
     if (propsDescriptor.propType === PropType.OBJECT) {
@@ -117,18 +127,16 @@ export function PropInputs(
         });
 
         const categories = Object.keys(propsByCategory);
-        console.log("prop input categories", categories);
-        
 
+        // TODO: for some reason doesn't select the first category as default
+        
+        // TODO: editors rerender when a new component is selected
+        // if an element of the same type is selected (has same propDescriptors), 
+        // React doesn't render the changed inputs..
+        // it doesn't recognize that the prop descriptor changed
         return (
             <div className="w-full space-y-2">
-                <PropInputHeader
-                    displayName={propsDescriptor.displayName}
-                    description={propsDescriptor.desc}
-                    breadcrumbsPath={breadcrumbsPath}
-                />
-
-                <Tabs defaultValue={categories[0]} className="w-full">
+                <Tabs defaultValue={categories[0]}>
                     <TabsList className="w-full h-8 p-0.5">
                         {categories.map(category => (
                             <TabsTrigger

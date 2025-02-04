@@ -222,7 +222,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
             this.children.push(child);
             this.htmlElement.appendChild(elemToInsert);
         }
-
+        
         child.parent = this;
 
         EventDispatcher.publish(

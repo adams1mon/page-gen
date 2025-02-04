@@ -13,7 +13,10 @@ import { FloatingEditor } from "./components/FloatingEditor";
 import { ShadowEditor } from "./ShadowEditor";
 
 export default function EditorPage() {
-    const { site, setSite } = useSiteStore();
+    const { 
+        site, 
+        setSite,
+    } = useSiteStore();
     const {
         selectedComponent,
         selectComponent,
@@ -35,7 +38,6 @@ export default function EditorPage() {
         // page.clone is not even needed
         // this only saves the page 
         setSite(site);
-        
     };
 
     // TODO: change add something that makes the iframe preview change too

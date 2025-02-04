@@ -77,8 +77,6 @@ export function ComponentInput(
                                             onDelete={() => deleteComponent(component)}
                                         />
                                         {
-                                            // TODO: insert components at arbitrary index
-                                            // children should be defined, assertion should be above
                                             index === parent.children!.length - 1 && (
                                                 <ComponentDivider
                                                     onInsert={(comp) => addComponent(comp, index + 1)}

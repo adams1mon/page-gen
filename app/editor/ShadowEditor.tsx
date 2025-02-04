@@ -62,7 +62,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 rClickComponent(component);
             }
         }
-
+        
         // creates and adds an overlay div to provide some editor functionality
         // like adding an outline on hover
         function overlay(component: ComponentNode<any>) {
@@ -71,7 +71,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             component.addWrapperOverlay(wrapperDiv);
 
             // needs the wrapper div added
-            addEmptyContainerPlaceholder(component, openComponentSelector);
+            addEmptyContainerPlaceholder(component, openComponentSelector, onChange);
         }
 
         EventDispatcher.addHandler(
@@ -106,7 +106,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 // only show it for components.
                 if (parent.type === "Page") return;
 
-                addEmptyContainerPlaceholder(parent as ComponentNode<any>, openComponentSelector);
+                addEmptyContainerPlaceholder(parent as ComponentNode<any>, openComponentSelector, onChange);
             },
         );
 
@@ -142,7 +142,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     };
 
     return (
-        <div className="h-full overflow-auto">
+        <div className="h-full w-full overflow-y-auto">
             <EditorContextMenu
                 onInsertInto={handleInsertInto}
                 onInsertBefore={c => {
@@ -156,7 +156,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
 
                 {/* shadow host for the preview */}
                 <div
-                    className="m-4 border-2 border-red-500"
+                    className="border-2 border-red-500 md:w-[90%] md:m-auto w-full m-4 overflow-x-auto"
                     ref={ref}
                 ></div>
 
@@ -220,6 +220,7 @@ function createWrapperOverlay(component: ComponentNode<any>) {
 function addEmptyContainerPlaceholder(
     node: ComponentNode<any>,
     openComponentSelector: (onInsert: (comp: ComponentNode<any>) => void) => void,
+    onChange: () => void,
 ) {
     // DOM surgery here, this code will insert a placeholder div in the wrapper div 
     // of an empty container component, that has an 'add' button to add new components to it.
@@ -234,8 +235,11 @@ function addEmptyContainerPlaceholder(
     function addChild(e: Event) {
         e.stopPropagation();
 
-        // open the component selector modal
-        openComponentSelector((comp) => node.addChild(comp));
+        // open the component selector modal, add a component and update the page (onChange)
+        openComponentSelector(newComponent => {
+            node.addChild(newComponent);
+            onChange();
+        });
     }
 
     const placeholder = createPlaceholder(node.componentName, addChild);
@@ -245,8 +249,8 @@ function addEmptyContainerPlaceholder(
     const placeholderAttr = "[data-editor-placeholder]";
     if (node.wrapperDiv.querySelector(placeholderAttr)) return;
 
-    // insert the placeholder before the first element of the wrapper
-    node.wrapperDiv.insertAdjacentElement("afterbegin", placeholder);
+    // insert the placeholder as the last element of the wrapper
+    node.wrapperDiv.insertAdjacentElement("beforeend", placeholder);
 }
 
 // TODO: maybe add an 'add' button if there are children?

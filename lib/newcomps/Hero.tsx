@@ -1,4 +1,4 @@
-import { PropCategory, PropContentType, PropType, PropsDescriptor } from "../core/props/PropsDescriptor";
+import { PropCategory, PropContentType, PropType, PropsDescriptorRoot } from "../core/props/PropsDescriptor";
 import { createHtmlElementFromReact } from "../core/utils";
 import { htmlIdDesc } from "../core/props/common";
 import { IComponent } from "../core/types";
@@ -22,10 +22,8 @@ const defaultProps: HeroProps = {
     htmlId: "hero"
 };
 
-const propsDescriptor: PropsDescriptor = {
-    displayName: "Hero section",
-    propType: PropType.OBJECT,
-    child: {
+const propsDescriptor: PropsDescriptorRoot = {
+    descriptors: {
         title: {
             category: PropCategory.CONTENT,
             propType: PropType.LEAF,
@@ -68,7 +66,7 @@ const propsDescriptor: PropsDescriptor = {
 
 class Hero implements IComponent<HeroProps> {
 
-    propsDescriptor: PropsDescriptor = propsDescriptor;
+    propsDescriptor: PropsDescriptorRoot = propsDescriptor;
     acceptsChildren: boolean = false;
     initialProps = defaultProps;
 

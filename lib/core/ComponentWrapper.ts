@@ -1,6 +1,6 @@
 import { ComponentTreeEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
-import { PropsDescriptor, createDefaultProps } from "./props/PropsDescriptor";
+import { PropsDescriptorRoot, createDefaultProps } from "./props/PropsDescriptor";
 import { createId } from "./utils";
 import { ChildrenContainer, IComponent } from "./types";
 
@@ -8,7 +8,7 @@ export interface ComponentNode<T> extends ChildrenContainer{
     comp: IComponent<T>;
     type: string;
     componentName: string;
-    propsDescriptor: PropsDescriptor;
+    propsDescriptorRoot: PropsDescriptorRoot;
 
     id: string;
     props: T;
@@ -145,7 +145,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         return copy;
     }
 
-    get propsDescriptor(): PropsDescriptor {
+    get propsDescriptorRoot(): PropsDescriptorRoot {
         return this.comp.propsDescriptor;
     }
 

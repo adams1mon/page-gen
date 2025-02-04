@@ -6,7 +6,7 @@ export enum PropCategory {
     GENERAL = "general",      // Unspecified settings go here
     CONTENT = "content",      // Text, images, etc
     LAYOUT = "layout",        // Spacing, alignment, etc
-    STYLE = "style",         // Visual styling
+    STYLE = "style",          // Visual styling
     BEHAVIOR = "behavior",    // Interactions, animations
     ADVANCED = "advanced",    // Technical/developer settings
     METADATA = "metadata",    // SEO, ids, etc
@@ -20,7 +20,11 @@ export interface PropsDescriptorMeta {
     displayName: string;
 
     propType: PropType;
-}
+};
+
+export interface PropsDescriptorRoot {
+    descriptors: { [key: string]: PropsDescriptor };
+};
 
 // the below 3 interfaces are exclusive, hence the "never" declarations
 export interface PropsDescriptorObject extends PropsDescriptorMeta {
@@ -37,8 +41,6 @@ export interface PropsDescriptorArray extends PropsDescriptorMeta {
 
     // array attributes
     // homogenous array type
-    // NOTE: only the first key-value pair will be taken into consideration
-    //child: { [propName: string]: PropsDescriptor };
     child: PropsDescriptor;
 }
 
@@ -51,17 +53,10 @@ export interface PropsDescriptorLeaf extends PropsDescriptorMeta {
     default: any;
 }
 
-// NOTE: this only makes sense if this the a descriptor of a top-level prop
-export interface PropsDescriptorEmpty {
-    // override
-    propType: PropType.EMPTY;
-};
-
 export enum PropType {
     ARRAY,
     OBJECT,
     LEAF,
-    EMPTY,
 }
 
 export enum PropContentType {
@@ -71,35 +66,40 @@ export enum PropContentType {
     NUMBER,
 }
 
-
-export type PropsDescriptor = PropsDescriptorObject 
+export type PropsDescriptor = PropsDescriptorObject
     | PropsDescriptorArray
-    | PropsDescriptorLeaf
-    | PropsDescriptorEmpty;
-
+    | PropsDescriptorLeaf;
 
 
 // traverses the descriptor and creates an object based on the 'default' values
 // of the leaf nodes
-export function createDefaultProps(desc: PropsDescriptor): any {
+export function createDefaultProps(root: PropsDescriptorRoot): any {
+
+    const obj: { [key: string]: any } = {};
+    for (const key in root.descriptors) {
+        const desc = root.descriptors[key];
+        obj[key] = createDefaultPropsForDescriptor(desc);
+    }
+
+    return obj;
+}
+
+export function createDefaultPropsForDescriptor(desc: PropsDescriptor): any {
     switch (desc.propType) {
         case PropType.LEAF:
             return desc.default;
 
         case PropType.ARRAY:
-            return [createDefaultProps(desc.child)]
+            return [createDefaultPropsForDescriptor(desc.child)]
 
         case PropType.OBJECT:
             const obj: { [key: string]: any } = {};
             const childDesc = desc.child;
 
             for (const key in childDesc) {
-                obj[key] = createDefaultProps(childDesc[key]);
+                obj[key] = createDefaultPropsForDescriptor(childDesc[key]);
             }
             return obj;
-
-        case PropType.EMPTY:
-            return {};
 
         default:
             console.log("unknown prop descriptor", desc.propType);

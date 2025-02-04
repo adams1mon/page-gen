@@ -3,6 +3,7 @@ import { PropContentType, PropsDescriptorLeaf } from "./PropsDescriptor";
 import NumberInput from "./inputs/NumberInput";
 import StringInput from "./inputs/StringInput";
 
+// an input should only deal with leaf prop descriptors, not with composite ones
 export interface PropInputProps<T> {
     propsDescriptor: PropsDescriptorLeaf,
     prop: T,

@@ -1,5 +1,5 @@
 import { ComponentNode } from "./ComponentWrapper";
-import { PropsDescriptor } from "./props/PropsDescriptor";
+import { PropsDescriptorRoot } from "./props/PropsDescriptor";
 
 export interface ChildrenContainer {
     children?: ComponentNode<any>[];
@@ -14,7 +14,7 @@ export interface ChildrenContainer {
 // the editor because the editor adds wrapper div elements around the 
 // HTMLs of the components to provide additional editor functionalities.
 export interface IComponent<T> {
-    propsDescriptor: PropsDescriptor;
+    propsDescriptor: PropsDescriptorRoot;
     initialProps?: T;
     acceptsChildren: boolean;
     createHtmlElement: (props: T, children?: HTMLElement[]) => HTMLElement;

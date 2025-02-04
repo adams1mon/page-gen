@@ -78,7 +78,7 @@ export function ComponentEditor({
                     {/* prop inputs */}
                     <div className="p-4">
                         <PropInputs
-                            propsDescriptor={component.propsDescriptor}
+                            propsDescriptorRoot={component.propsDescriptorRoot}
                             props={component.props}
                             onChange={(newProps) => {
                                 component.update(newProps);

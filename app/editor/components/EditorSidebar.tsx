@@ -18,6 +18,9 @@ export function EditorSidebar<T>({
     onPopOut,
     onClose,
 }: EditorSidebarProps<T>) {
+
+    console.log("using selected component", component);
+    
     return (
         <div className="h-full overflow-y-auto border-l bg-background">
             <div className="p-4 border-b sticky top-0 bg-background z-10">
@@ -47,7 +50,7 @@ export function EditorSidebar<T>({
 
                 <div className="mt-4">
                     <PropInputs
-                        propsDescriptor={component.propsDescriptor}
+                        propsDescriptorRoot={component.propsDescriptorRoot}
                         props={component.props}
                         onChange={(newProps) => {
                             component.update(newProps);

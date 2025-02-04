@@ -3,7 +3,7 @@
 import css from '!!raw-loader!./styles/generated/styles.css';
 import { titleDesc, textDesc, longTextDesc } from '../props/common';
 import { ChildrenContainer } from '../types';
-import { PropCategory, PropType, PropsDescriptor } from "../props/PropsDescriptor";
+import { PropCategory, PropsDescriptorRoot } from "../props/PropsDescriptor";
 import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
 import { tag, createId} from '../utils';
 import { ComponentTreeEvent, EventDispatcher, EventType } from '../EventDispatcher';
@@ -27,10 +27,8 @@ const defaultProps: PageProps = {
     styles: css,
 };
 
-const propsDescriptor: PropsDescriptor = {
-    propType: PropType.OBJECT,
-    displayName: "Page settings",
-    child: {
+const propsDescriptor: PropsDescriptorRoot = {
+    descriptors: {
         title: {
             ...titleDesc,
             desc: "Title of the website, displayed in the browser window.",
@@ -62,7 +60,7 @@ export interface PageArgs {
 export class Page implements ChildrenContainer {
 
     type: string = "Page";
-    propsDescriptor: PropsDescriptor = propsDescriptor;
+    propsDescriptorRoot: PropsDescriptorRoot = propsDescriptor;
 
     id: string;
     props: PageProps;

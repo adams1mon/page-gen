@@ -1,17 +1,15 @@
-import { PropType, PropsDescriptor } from "../core/props/PropsDescriptor";
+import { PropsDescriptorRoot } from "../core/props/PropsDescriptor";
 import { IComponent } from "../core/types";
 import { tag } from "../core/utils";
 import { ComponentPlugin } from "../core/ComponentPluginManager";
 
 
-const propsDescriptor: PropsDescriptor = {
-   propType: PropType.EMPTY, 
-};
+const propsDescriptor: PropsDescriptorRoot = {descriptors: {}};
 
 class CustomRow implements IComponent<any> {
 
     componentName: string = "customrow";
-    propsDescriptor: PropsDescriptor = propsDescriptor;
+    propsDescriptor: PropsDescriptorRoot = propsDescriptor;
     acceptsChildren: boolean = true;
 
     createHtmlElement(props: any, children?: HTMLElement[]): HTMLElement {

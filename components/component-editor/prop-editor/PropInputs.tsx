@@ -1,6 +1,6 @@
 "use client";
 
-import { PropCategory, PropType, PropsDescriptor } from "@/lib/core/props/PropsDescriptor";
+import { PropCategory, PropType, PropsDescriptor, PropsDescriptorRoot } from "@/lib/core/props/PropsDescriptor";
 import { ArrayInput } from "./ArrayInput";
 import { ObjectInput } from "./ObjectInput";
 import { PropInputHeader } from "./PropInputHeader";
@@ -37,9 +37,7 @@ export function PropInputsSlot(
         breadcrumbsPath?: string[],
     }
 ) {
-    if (propsDescriptor.propType === PropType.EMPTY) {
-        return null;
-    }
+    console.log("prop inputs slot", "propsDescriptor", propsDescriptor, "props", props);
 
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
@@ -48,7 +46,7 @@ export function PropInputsSlot(
             case PropType.LEAF:
                 const propInputProps: PropInputProps<any> = {
                     propsDescriptor: descriptor,
-                    prop: props,    
+                    prop: props,
                     onChange,
                 };
                 return PropInputFactory.createInput(descriptor.contentType, propInputProps);
@@ -70,9 +68,6 @@ export function PropInputsSlot(
                     breadcrumbsPath={path}
                     key={keyProp}
                 />
-            
-            case PropType.EMPTY:
-                return null;
 
             default:
                 console.error(`PropsDescriptor type is undefined or not implemented, displayName: ${descriptor.displayName}, type: ${descriptor.propType}`);
@@ -96,102 +91,89 @@ export function PropInputsSlot(
 // category values in nested prop descriptors are not taken into account
 export function PropInputs(
     {
-        propsDescriptor,
+        propsDescriptorRoot,
         props,
         onChange,
         breadcrumbsPath = [],
     }: {
-        propsDescriptor: PropsDescriptor,
+        propsDescriptorRoot: PropsDescriptorRoot,
         props: any,
         onChange: (props: any) => void,
         keyProp?: string,
         breadcrumbsPath?: string[],
     }
 ) {
-    if (propsDescriptor.propType === PropType.EMPTY) {
-        return null;
-    }
+    console.log("prop inputs", "propsDescriptorRoot", propsDescriptorRoot, "props", props);
 
-    // For object type descriptors, organize props by category
-    if (propsDescriptor.propType === PropType.OBJECT) {
+    const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
 
-        const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
+    // Group props by top level category, only process the root descriptors,
+    // not the nested ones.
+    Object.entries(propsDescriptorRoot.descriptors).forEach(([key, desc]) => {
+        const category = desc.category || 'general';
+        if (!propsByCategory[category]) {
+            propsByCategory[category] = [];
+        }
+        propsByCategory[category].push({ key, desc });
+    });
 
-        // Group props by category
-        Object.entries(propsDescriptor.child).forEach(([key, desc]) => {
-            const category = desc.category || 'general';
-            if (!propsByCategory[category]) {
-                propsByCategory[category] = [];
-            }
-            propsByCategory[category].push({ key, desc });
-        });
+    const categories = Object.keys(propsByCategory);
 
-        const categories = Object.keys(propsByCategory);
-
-        // TODO: for some reason doesn't select the first category as default
-        
-        // TODO: editors rerender when a new component is selected
-        // if an element of the same type is selected (has same propDescriptors), 
-        // React doesn't render the changed inputs..
-        // it doesn't recognize that the prop descriptor changed
+    if (categories.length === 0) {
         return (
             <div className="w-full space-y-2">
-                <Tabs defaultValue={categories[0]}>
-                    <TabsList className="w-full h-8 p-0.5">
-                        {categories.map(category => (
-                            <TabsTrigger
-                                key={category}
-                                value={category}
-                                className={cn(
-                                    "h-7 px-2 text-xs flex items-center gap-1.5",
-                                    "data-[state=active]:shadow-none"
-                                )}
-                            >
-                                {categoryConfig[category]?.icon}
-                                <span className="truncate">
-                                    {categoryConfig[category]?.label}
-                                </span>
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-
-                    {categories.map(category => (
-                        <TabsContent key={category} value={category} className="mt-2 space-y-3">
-                            {propsByCategory[category].map(({ key, desc }) => (
-                                <div key={key} className="space-y-1.5">
-                                    <PropInputsSlot
-                                        propsDescriptor={desc}
-                                        props={props[key]}
-                                        onChange={(newValue) => onChange({
-                                            ...props,
-                                            [key]: newValue,
-                                        })}
-                                        keyProp={key}
-                                        breadcrumbsPath={['']}
-                                    />
-                                </div>
-                            ))}
-                        </TabsContent>
-                    ))}
-                </Tabs>
+                <p className="text-sm text-muted-foreground my-0">This component has no settings.</p>
             </div>
         );
-    }
+    };
 
-    // For non-object types, render the input directly
+    // TODO: for some reason doesn't select the first category as default
+
+    // TODO: editors rerender when a new component is selected
+    // if an element of the same type is selected (has same propDescriptors), 
+    // React doesn't render the changed inputs..
+    // it doesn't recognize that the prop descriptor changed
     return (
-        <div className="w-full space-y-1.5">
-            <PropInputHeader
-                displayName={propsDescriptor.displayName}
-                description={propsDescriptor.desc}
-                breadcrumbsPath={breadcrumbsPath}
-            />
-            <PropInputsSlot
-                propsDescriptor={propsDescriptor}
-                props={props}
-                onChange={onChange}
-                breadcrumbsPath={['']}
-            />
+        <div className="w-full space-y-2">
+            <Tabs defaultValue={categories[0]}>
+                <TabsList className="w-full h-8 p-0.5">
+                    {categories.map(category => (
+                        <TabsTrigger
+                            key={category}
+                            value={category}
+                            className={cn(
+                                "h-7 px-2 text-xs flex items-center gap-1.5",
+                                "data-[state=active]:shadow-none"
+                            )}
+                        >
+                            {categoryConfig[category]?.icon}
+                            <span className="truncate">
+                                {categoryConfig[category]?.label}
+                            </span>
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+
+                {categories.map(category => (
+                    <TabsContent key={category} value={category} className="mt-2 space-y-3">
+                        {propsByCategory[category].map(({ key, desc }) => (
+                            <div key={key} className="space-y-1.5">
+                                <PropInputsSlot
+                                    propsDescriptor={desc}
+                                    props={props[key]}
+                                    onChange={(newValue) => onChange({
+                                        ...props,
+                                        [key]: newValue,
+                                    })}
+                                    keyProp={key}
+                                    breadcrumbsPath={['']}
+                                />
+                            </div>
+                        ))}
+                    </TabsContent>
+                ))}
+            </Tabs>
         </div>
     );
 }
+

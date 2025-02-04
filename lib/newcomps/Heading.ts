@@ -1,4 +1,4 @@
-import { PropCategory, PropContentType, PropType, PropsDescriptor } from "../core/props/PropsDescriptor";
+import { PropContentType, PropType, PropsDescriptorRoot } from "../core/props/PropsDescriptor";
 import { classNameDesc } from "../core/props/common";
 import { tag } from "../core/utils";
 import { IComponent } from "../core/types";
@@ -20,10 +20,8 @@ const defaultProps: HeadingProps = {
     className: "",
 };
 
-const propsDescriptor: PropsDescriptor = {
-    propType: PropType.OBJECT,
-    displayName: "Heading",
-    child: {
+const propsDescriptor: PropsDescriptorRoot = {
+    descriptors: {
         content: {
             propType: PropType.LEAF,
             displayName: "Content",
@@ -46,12 +44,12 @@ const propsDescriptor: PropsDescriptor = {
             default: "left",
         },
         className: classNameDesc,
-    }
+    },
 };
 
 class Heading implements IComponent<HeadingProps> {
 
-    propsDescriptor: PropsDescriptor = propsDescriptor;
+    propsDescriptor: PropsDescriptorRoot = propsDescriptor;
     acceptsChildren: boolean = false;
     initialProps?: HeadingProps = defaultProps;
 

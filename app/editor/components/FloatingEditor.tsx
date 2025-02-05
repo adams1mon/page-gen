@@ -1,13 +1,14 @@
 "use client";
 
 import { X, PictureInPicture } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
 import { Page } from "@/lib/core/page/Page";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface FloatingEditorProps {
     component: Page | ComponentNode<any>;
@@ -16,6 +17,7 @@ interface FloatingEditorProps {
     onDock: () => void;
 }
 
+const POSITION_SIZE_DEBOUNCE_MS = 500;
 const MIN_WIDTH = 400;
 const MIN_HEIGHT = 300;
 const HEADER_HEIGHT = 48;
@@ -49,10 +51,8 @@ export function FloatingEditor({
 }: FloatingEditorProps) {
     const editorRef = useRef<HTMLDivElement>(null);
     const { position, size, setPosition, setSize } = useEditorPreferences();
-    const [isDragging, setIsDragging] = useState(false);
-    const [isResizing, setIsResizing] = useState(false);
-    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-    const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+
+    const debounce = useDebounce();
 
     // Ensure initial position and size are within bounds
     useEffect(() => {
@@ -64,111 +64,148 @@ export function FloatingEditor({
             constrainedSize.height
         );
 
-        if (constrainedSize.width !== size.width ||
-            constrainedSize.height !== size.height) {
-            setSize(constrainedSize);
-        }
-        if (constrainedPosition.x !== position.x ||
-            constrainedPosition.y !== position.y) {
-            setPosition(constrainedPosition);
-        }
+        setPosSize({
+            pos: constrainedPosition, 
+            size: constrainedSize,
+        });
     }, []);
 
+
+    // Close the editor on click outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (editorRef.current &&
-                !editorRef.current.contains(event.target as Node) &&
-                !isDragging &&
-                !isResizing) {
+            if (editorRef.current && !editorRef.current.contains(event.target as Node)) {
                 onClose();
             }
         }
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [onClose, isDragging, isResizing]);
+    }, [onClose]);
 
-    const handleMouseDown = (e: React.MouseEvent) => {
+    const handleDragMouseDown = (e: React.MouseEvent) => {
+        console.log("mouse drag mouse down");
+
         e.preventDefault();
         e.stopPropagation();
-        setIsDragging(true);
-        setDragOffset({
-            x: e.clientX - position.x,
-            y: e.clientY - position.y
-        });
-    };
 
-    const handleResizeMouseDown = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsResizing(true);
-        setResizeStart({
+        const moveStart = {
             x: e.clientX,
             y: e.clientY,
-            width: size.width,
-            height: size.height
+        };
+
+        // this rect better exist
+        const rect = editorRef.current!.getBoundingClientRect();
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const newPosition = constrainPosition(
+                rect.x + (e.clientX - moveStart.x),
+                rect.y + (e.clientY - moveStart.y),
+                rect.width,
+                rect.height
+            );
+            setPosSize({ pos: newPosition, dragging: true });
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+
+        document.addEventListener("mouseup", () => {
+            setPosSize({ dragging: false });
+            document.removeEventListener("mousemove", handleMouseMove);
+        });
+    }
+
+    const handleResizeMouseDown = (e: React.MouseEvent) => {
+        console.log("resize mouse down");
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        // this rect better exist
+        const rect = editorRef.current!.getBoundingClientRect();
+
+        const resizeStart = {
+            x: e.clientX,
+            y: e.clientY,
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            console.log("move resize", resizeStart, size, position);
+            const newSize = constrainSize(
+                rect.width + (e.clientX - resizeStart.x),
+                rect.height + (e.clientY - resizeStart.y),
+                rect.x,
+                rect.y,
+            );
+            setPosSize({ size: newSize });
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+
+        document.addEventListener("mouseup", () => {
+            document.removeEventListener("mousemove", handleMouseMove);
         });
     };
 
-    // TODO: REFACTOR THIS...
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (isDragging) {
-                const newPosition = {
-                    x: e.clientX - dragOffset.x,
-                    y: e.clientY - dragOffset.y
-                };
-                const constrained = constrainPosition(
-                    newPosition.x,
-                    newPosition.y,
-                    size.width,
-                    size.height
-                );
-                setPosition(constrained);
-            }
+    interface EditorSettings {
+        pos?: {
+            x: number,
+            y: number,
+        },
+        size?: {
+            width: number,
+            height: number,
+        },
+        dragging?: boolean,
+    };
 
-            if (isResizing) {
-                const newSize = constrainSize(
-                    resizeStart.width + (e.clientX - resizeStart.x),
-                    resizeStart.height + (e.clientY - resizeStart.y),
-                    position.x,
-                    position.y
-                );
-                setSize(newSize);
-            }
-        };
+    function setPosSize({
+        pos,
+        size,
+        dragging = false,
+    }: EditorSettings) {
 
-        const handleMouseUp = () => {
-            setIsDragging(false);
-            setIsResizing(false);
-        };
-
-        if (isDragging || isResizing) {
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+        if (!editorRef.current) {
+            return;
         }
 
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [isDragging, isResizing, dragOffset, resizeStart, position, size, setPosition, setSize]);
+        const elem = editorRef.current;
+        if (pos) {
+            elem.style.left = `${pos.x}px`;
+            elem.style.top = `${pos.y}px`;
+
+            debounce(() => {
+                setPosition({
+                    x: pos.x,
+                    y: pos.y,
+                })
+            }, POSITION_SIZE_DEBOUNCE_MS);
+        }
+
+        if (size) {
+            elem.style.width = `${size.width}px`;
+            elem.style.height = `${size.height}px`;
+
+            // set debounced limits
+            debounce(() => {
+                setSize({
+                    width: size.width,
+                    height: size.width,
+                })
+            }, POSITION_SIZE_DEBOUNCE_MS);
+        }
+
+        elem.style.cursor = dragging ? 'grabbing' : 'default';
+    }
 
     return (
         <div
             ref={editorRef}
-            className="fixed z-50 bg-background border rounded-lg shadow-lg overflow-hidden"
-            style={{
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-                width: `${size.width}px`,
-                height: `${size.height}px`,
-                cursor: isDragging ? 'grabbing' : 'default',
-            }}
+            className="fixed z-[1000] bg-background border rounded-lg shadow-lg overflow-hidden"
         >
             <div
                 className="flex items-center justify-between p-2 border-b sticky top-0 bg-background cursor-grab"
-                onMouseDown={handleMouseDown}
+                onMouseDown={handleDragMouseDown}
             >
                 <span className="font-medium capitalize text-sm my-0 px-2">{component.type} Settings</span>
                 <div className="flex items-center gap-1">

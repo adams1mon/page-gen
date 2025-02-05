@@ -1,7 +1,6 @@
-import { useState } from "react";
-
+// without using setState, only closures 
 export function useDebounce(): (func: any, debounceMillis: number) => void {
-    const [timeoutObj, setTimeoutObj] = useState<NodeJS.Timeout | null>(null);
+    let timeoutObj: NodeJS.Timeout | null = null;
 
     const debounce = (func: any, debounceMillis: number) => {
         if (timeoutObj) {
@@ -14,11 +13,12 @@ export function useDebounce(): (func: any, debounceMillis: number) => void {
             func();
 
             clearTimeout(id);
-            setTimeoutObj(null);
+            timeoutObj = null;
         }, debounceMillis);
-
-        setTimeoutObj(id);
+        
+        timeoutObj = id;
     }
 
     return debounce
 }
+

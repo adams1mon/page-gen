@@ -31,9 +31,6 @@ export function ObjectInput(
                         })}
                         breadcrumbsPath={breadcrumbsPath}
 
-                        // key for the child components
-                        keyProp={k}
-
                         // key for React
                         key={k}
                     />

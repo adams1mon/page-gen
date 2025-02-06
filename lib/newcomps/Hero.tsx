@@ -37,7 +37,7 @@ const propsDescriptor: PropsDescriptorRoot = {
             category: PropCategory.CONTENT,
             propType: PropType.LEAF,
 
-            contentType: PropContentType.TEXT,
+            contentType: PropContentType.TEXTAREA,
             displayName: "Subtitle",
             desc: "Subtitle to display in the Hero section.",
             default: "I'm a passionate creator building amazing digital experiences. Explore my work and let's create something amazing together.",

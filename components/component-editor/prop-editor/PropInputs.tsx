@@ -1,5 +1,3 @@
-"use client";
-
 import { PropCategory, PropType, PropsDescriptor, PropsDescriptorRoot } from "@/lib/core/props/PropsDescriptor";
 import { ArrayInput } from "./ArrayInput";
 import { ObjectInput } from "./ObjectInput";
@@ -27,7 +25,6 @@ export function PropInputsSlot(
         propsDescriptor,
         props,
         onChange,
-        keyProp = '',
         breadcrumbsPath = [],
     }: {
         propsDescriptor: PropsDescriptor,
@@ -57,7 +54,6 @@ export function PropInputsSlot(
                     arr={props as any}
                     onChange={onChange}
                     breadcrumbsPath={path}
-                    key={keyProp}
                 />
 
             case PropType.OBJECT:
@@ -66,7 +62,6 @@ export function PropInputsSlot(
                     obj={props as { [key: string]: any }}
                     onChange={onChange}
                     breadcrumbsPath={path}
-                    key={keyProp}
                 />
 
             default:
@@ -94,7 +89,6 @@ export function PropInputs(
         propsDescriptorRoot,
         props,
         onChange,
-        breadcrumbsPath = [],
     }: {
         propsDescriptorRoot: PropsDescriptorRoot,
         props: any,
@@ -105,7 +99,9 @@ export function PropInputs(
 ) {
     console.log("prop inputs", "propsDescriptorRoot", propsDescriptorRoot, "props", props);
 
+
     const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
+
 
     // Group props by top level category, only process the root descriptors,
     // not the nested ones.
@@ -126,7 +122,6 @@ export function PropInputs(
             </div>
         );
     };
-
     // TODO: for some reason doesn't select the first category as default
 
     // TODO: editors rerender when a new component is selected

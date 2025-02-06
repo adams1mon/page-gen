@@ -42,7 +42,6 @@ export function ArrayInput(
                                 ...arr.slice(i + 1)
                             ])}
                             breadcrumbsPath={breadcrumbsPath}
-                            keyProp={i.toString()}
                         />
                         <Button
                             variant="ghost"

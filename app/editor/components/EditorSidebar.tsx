@@ -18,8 +18,6 @@ export function EditorSidebar<T>({
     onPopOut,
     onClose,
 }: EditorSidebarProps<T>) {
-
-    console.log("using selected component", component);
     
     return (
         <div className="h-full overflow-y-auto border-l bg-background">

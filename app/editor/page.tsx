@@ -11,10 +11,12 @@ import { useSiteStore } from "@/lib/store/site-store";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
 import { FloatingEditor } from "./components/FloatingEditor";
 import { ShadowEditor } from "./ShadowEditor";
+import { EditorTabs } from "./components/EditorTabs";
+import { useEditorTabs } from "@/lib/store/editor-tabs-store";
 
 export default function EditorPage() {
-    const { 
-        site, 
+    const {
+        site,
         setSite,
     } = useSiteStore();
     const {
@@ -29,26 +31,21 @@ export default function EditorPage() {
         switchToDocked,
     } = useEditorPreferences();
 
+    const { addTab } = useEditorTabs();
+
     const [activeView, setActiveView] = useState<"editor" | "preview">("editor");
     const [previewHtml, setPreviewHtml] = useState("");
     const debounce = useDebounce();
     const previewDebounceMillis = 100;
 
     const updatePage = () => {
-        // page.clone is not even needed
-        // this only saves the page 
         setSite(site);
     };
 
-    // TODO: change add something that makes the iframe preview change too
-    // it flashes like crazy if updated every time the site is changed, 
-    // epilepsy warning
-    // now it's not updated because the site doesn't change 
     useEffect(() => {
         if (activeView != "preview") return;
 
         debounce(async () => {
-            // getClonedHtml is pretty expensive
             const htmlStr = "<!DOCTYPE html>\n" + site.getClonedHtml();
             setPreviewHtml(htmlStr);
         }, previewDebounceMillis);
@@ -99,6 +96,8 @@ export default function EditorPage() {
                     onDock={switchToDocked}
                 />
             )}
+
+            <EditorTabs />
         </div>
     );
 }

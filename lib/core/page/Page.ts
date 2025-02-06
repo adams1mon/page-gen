@@ -60,6 +60,10 @@ export interface PageArgs {
 export class Page implements ChildrenContainer {
 
     type: string = "Page";
+    
+    // TODO: can this be removed? it feels redundant, it's to 
+    // have the same API as a ComponentNode
+    componentName: string = "Page";
     propsDescriptorRoot: PropsDescriptorRoot = propsDescriptor;
 
     id: string;

@@ -9,7 +9,7 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChildrenContainer } from "@/lib/core/types";
-import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
 
 
 interface ComponentInputProps {
@@ -29,12 +29,12 @@ export function ComponentInput(
 ) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const addComponent = (component: ComponentWrapper<any>, index?: number) => {
+    const addComponent = (component: ComponentNode<any>, index?: number) => {
         parent.addChild(component, index);
         onChange();
     };
 
-    const deleteComponent = (component: ComponentWrapper<any>) => {
+    const deleteComponent = (component: ComponentNode<any>) => {
         parent.removeChild(component);
         onChange();
     };

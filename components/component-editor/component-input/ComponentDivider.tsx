@@ -3,11 +3,11 @@ import { Plus } from "lucide-react";
 import { Clipboard } from "lucide-react";
 import { ComponentSelector } from "./ComponentSelector";
 import { useComponentClipboard } from "@/app/editor/hooks/useComponentClipboard";
-import { ComponentWrapper } from "@/lib/core/ComponentWrapper";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 
 interface ComponentDividerProps {
-    onInsert: (component: ComponentWrapper<any>) => void;
+    onInsert: (component: ComponentNode<any>) => void;
 }
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {

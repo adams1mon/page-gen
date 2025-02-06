@@ -1,6 +1,6 @@
 "use client";
 
-import { X, PictureInPicture } from "lucide-react";
+import { X, PictureInPicture, Minimize2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useEditorPreferences } from "@/lib/store/editor-preferences";
 import { Page } from "@/lib/core/page/Page";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PropInputs } from "@/components/component-editor/prop-editor/PropInputs";
 import { ComponentInput } from "@/components/component-editor/component-input/ComponentInput";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useEditorTabs } from "@/lib/store/editor-tabs-store";
 
 interface FloatingEditorProps {
     component: Page | ComponentNode<any>;
@@ -51,6 +52,7 @@ export function FloatingEditor({
 }: FloatingEditorProps) {
     const editorRef = useRef<HTMLDivElement>(null);
     const { position, size, setPosition, setSize } = useEditorPreferences();
+    const { addTab } = useEditorTabs();
 
     const debounce = useDebounce();
 
@@ -65,11 +67,10 @@ export function FloatingEditor({
         );
 
         setPosSize({
-            pos: constrainedPosition, 
+            pos: constrainedPosition,
             size: constrainedSize,
         });
     }, []);
-
 
     // Close the editor on click outside
     useEffect(() => {
@@ -84,8 +85,6 @@ export function FloatingEditor({
     }, [onClose]);
 
     const handleDragMouseDown = (e: React.MouseEvent) => {
-        console.log("mouse drag mouse down");
-
         e.preventDefault();
         e.stopPropagation();
 
@@ -116,8 +115,6 @@ export function FloatingEditor({
     }
 
     const handleResizeMouseDown = (e: React.MouseEvent) => {
-        console.log("resize mouse down");
-
         e.preventDefault();
         e.stopPropagation();
 
@@ -130,7 +127,6 @@ export function FloatingEditor({
         };
 
         const handleMouseMove = (e: MouseEvent) => {
-            console.log("move resize", resizeStart, size, position);
             const newSize = constrainSize(
                 rect.width + (e.clientX - resizeStart.x),
                 rect.height + (e.clientY - resizeStart.y),
@@ -164,7 +160,6 @@ export function FloatingEditor({
         size,
         dragging = false,
     }: EditorSettings) {
-
         if (!editorRef.current) {
             return;
         }
@@ -209,10 +204,35 @@ export function FloatingEditor({
             >
                 <span className="font-medium capitalize text-sm my-0 px-2">{component.type} Settings</span>
                 <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={onDock} className="h-8 w-8">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+
+                            // add a minimized tab
+                            addTab(component)
+
+                            // close the editor
+                            onClose();
+                        }}
+                        className="h-8 w-8"
+                    >
+                        <Minimize2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onDock}
+                        className="h-8 w-8"
+                    >
                         <PictureInPicture className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onClose}
+                        className="h-8 w-8"
+                    >
                         <X className="h-4 w-4" />
                     </Button>
                 </div>

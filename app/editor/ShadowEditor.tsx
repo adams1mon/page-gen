@@ -201,18 +201,27 @@ function createWrapperOverlay(component: ComponentNode<any>) {
     nameTab.style.display = "none";
 
     wrapperDiv.appendChild(nameTab);
-
-    wrapperDiv.onmouseenter = () => {
+    
+    function onMouseOver() {
         wrapperDiv.style.outline = "2px dashed hsl(0, 0%, 20%)";
         wrapperDiv.style.backgroundColor = "hsl(0, 0%, 80%, 0.3)";
         nameTab.style.display = "block";
     }
 
-    wrapperDiv.onmouseleave = () => {
+    function onMouseLeave() {
         wrapperDiv.style.outline = "";
         wrapperDiv.style.backgroundColor = "";
         nameTab.style.display = "none";
     }
+
+    // TODO: this is not good, creates too many 'dangling' events
+    // event leaks lol;
+    // instead find the component by id and invoke onMouseOver like that
+    EventDispatcher.addHandler(`tabover-${component.id}`, () => onMouseOver());
+    EventDispatcher.addHandler(`tableave-${component.id}`, () => onMouseLeave());
+
+    wrapperDiv.onmouseenter = onMouseOver;
+    wrapperDiv.onmouseleave = onMouseLeave;
 
     return wrapperDiv;
 }

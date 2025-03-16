@@ -1,5 +1,4 @@
 import { ComponentRepository } from "./ComponentRepository";
-import { EventDispatcher, EventType } from "./EventDispatcher";
 import { Page, SerializedPage } from "./page/Page";
 
 

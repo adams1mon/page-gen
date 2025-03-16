@@ -149,7 +149,7 @@ export class ComponentWrapper implements ComponentNode {
         return this.comp.propsDescriptor;
     }
 
-    update(props: T) {
+    update(props: any) {
         this.props = props;
         const newElement = this.comp.update?.(this.props) || this.createHtmlElementTree();
         this.htmlElement.replaceWith(newElement);

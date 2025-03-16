@@ -12,7 +12,6 @@ import { useEditorPreferences } from "@/lib/store/editor-preferences";
 import { FloatingEditor } from "./components/FloatingEditor";
 import { ShadowEditor } from "./ShadowEditor";
 import { EditorTabs } from "./components/EditorTabs";
-import { useEditorTabs } from "@/lib/store/editor-tabs-store";
 
 export default function EditorPage() {
     const {
@@ -30,8 +29,6 @@ export default function EditorPage() {
         switchToFloating,
         switchToDocked,
     } = useEditorPreferences();
-
-    const { addTab } = useEditorTabs();
 
     const [activeView, setActiveView] = useState<"editor" | "preview">("editor");
     const [previewHtml, setPreviewHtml] = useState("");

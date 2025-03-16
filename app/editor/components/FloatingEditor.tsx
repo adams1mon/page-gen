@@ -240,8 +240,7 @@ export function FloatingEditor({
 
             <div className="p-4 overflow-auto" style={{ height: `calc(100% - ${HEADER_HEIGHT}px)` }}>
                 <PropInputs
-                    propsDescriptorRoot={component.propsDescriptorRoot}
-                    props={component.props}
+                    component={component}
                     onChange={(newProps) => {
                         component.update(newProps);
                         onChange();

@@ -65,8 +65,7 @@ export function EditorSidebar({
 
                 <div className="mt-4">
                     <PropInputs
-                        propsDescriptorRoot={component.propsDescriptorRoot}
-                        props={component.props}
+                        component={component}
                         onChange={(newProps) => {
                             component.update(newProps);
                             onChange();

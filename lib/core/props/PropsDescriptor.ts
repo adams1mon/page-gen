@@ -13,12 +13,12 @@ export enum PropCategory {
 }
 
 export interface PropsDescriptorMeta {
+    // TODO: think of a better way
     // If the category is included in descriptor of type OBJECT,
     // all the nested categories should be ignored when generating the UI.
     category?: PropCategory;
     desc?: string;
     displayName: string;
-
     propType: PropType;
 };
 
@@ -26,7 +26,6 @@ export interface PropsDescriptorRoot {
     descriptors: { [key: string]: PropsDescriptor };
 };
 
-// the below 3 interfaces are exclusive, hence the "never" declarations
 export interface PropsDescriptorObject extends PropsDescriptorMeta {
     // override
     propType: PropType.OBJECT;

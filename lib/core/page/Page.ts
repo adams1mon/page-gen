@@ -139,7 +139,6 @@ export class Page implements ChildrenContainer {
     clone(): Page {
         const clone = new Page({
             props: this.props,
-            //props: structuredClone(this.props),
             htmlRoot: this.htmlRoot,
             bodyElement: this.htmlElement,
             children: this.children,

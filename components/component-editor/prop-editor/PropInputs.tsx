@@ -7,6 +7,8 @@ import { Settings, Type, Layout, Palette, Zap, Code, FileText } from "lucide-rea
 import { cn } from "@/lib/utils";
 import { PropInputFactory } from "@/lib/core/props/PropInputFactory";
 import { PropInputProps } from "@/lib/core/props/PropInputPluginManager";
+import { ComponentNode } from "@/lib/core/ComponentWrapper";
+import { Page } from "@/lib/core/page/Page";
 
 // Map categories to their icons and labels
 const categoryConfig = {
@@ -34,13 +36,15 @@ export function PropInputsSlot(
         breadcrumbsPath?: string[],
     }
 ) {
-    console.log("prop inputs slot", "propsDescriptor", propsDescriptor, "props", props);
+    console.log("====================== prop inputs slot", "propsDescriptor", propsDescriptor, "props", props);
 
     const path = [...breadcrumbsPath, propsDescriptor.displayName];
 
     const createInput = (descriptor: PropsDescriptor, props: any, onChange: (props: any) => void) => {
         switch (descriptor.propType) {
             case PropType.LEAF:
+                console.log("creating prop input leaf", descriptor.displayName);
+
                 const propInputProps: PropInputProps<any> = {
                     propsDescriptor: descriptor,
                     prop: props,
@@ -86,26 +90,21 @@ export function PropInputsSlot(
 // category values in nested prop descriptors are not taken into account
 export function PropInputs(
     {
-        propsDescriptorRoot,
-        props,
+        component,
         onChange,
     }: {
-        propsDescriptorRoot: PropsDescriptorRoot,
-        props: any,
+        component: ComponentNode | Page,
         onChange: (props: any) => void,
         keyProp?: string,
         breadcrumbsPath?: string[],
     }
 ) {
-    console.log("prop inputs", "propsDescriptorRoot", propsDescriptorRoot, "props", props);
-
 
     const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
 
-
     // Group props by top level category, only process the root descriptors,
     // not the nested ones.
-    Object.entries(propsDescriptorRoot.descriptors).forEach(([key, desc]) => {
+    Object.entries(component.propsDescriptorRoot.descriptors).forEach(([key, desc]) => {
         const category = desc.category || 'general';
         if (!propsByCategory[category]) {
             propsByCategory[category] = [];
@@ -124,12 +123,12 @@ export function PropInputs(
     };
     // TODO: for some reason doesn't select the first category as default
 
-    // TODO: editors rerender when a new component is selected
-    // if an element of the same type is selected (has same propDescriptors), 
-    // React doesn't render the changed inputs..
-    // it doesn't recognize that the prop descriptor changed
+    // NOTE: the component id is used as a "key" in the div, 
+    // this is what rerenders the inputs when the selected component changes.
+    // Otherwise React doesn't rerender anything below.
+
     return (
-        <div className="w-full space-y-2">
+        <div className="w-full space-y-2" key={component.id}>
             <Tabs defaultValue={categories[0]}>
                 <TabsList className="w-full h-8 p-0.5">
                     {categories.map(category => (
@@ -155,9 +154,9 @@ export function PropInputs(
                             <div key={key} className="space-y-1.5">
                                 <PropInputsSlot
                                     propsDescriptor={desc}
-                                    props={props[key]}
+                                    props={component.props[key]}
                                     onChange={(newValue) => onChange({
-                                        ...props,
+                                        ...component.props,
                                         [key]: newValue,
                                     })}
                                     keyProp={key}

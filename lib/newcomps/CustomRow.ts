@@ -6,7 +6,7 @@ import { ComponentPlugin } from "../core/ComponentPluginManager";
 
 const propsDescriptor: PropsDescriptorRoot = {descriptors: {}};
 
-class CustomRow implements IComponent<any> {
+class CustomRow implements IComponent {
 
     componentName: string = "customrow";
     propsDescriptor: PropsDescriptorRoot = propsDescriptor;

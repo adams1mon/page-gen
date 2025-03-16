@@ -4,7 +4,7 @@ import Hero from "../newcomps/Hero";
 import Row from "../newcomps/Row";
 import { IComponent } from "./types";
 
-type ICompConstructor = new () => IComponent<any>;
+type ICompConstructor = new () => IComponent;
 
 export interface ComponentPlugin {
     type: string,

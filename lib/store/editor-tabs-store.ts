@@ -6,12 +6,12 @@ import { create } from "zustand";
 
 export interface EditorTab {
     id: string,
-    component: ComponentNode<any> | Page;
+    component: ComponentNode | Page;
 };
 
 interface EditorTabsStore {
     tabs: Record<string, EditorTab>;
-    addTab: (component: ComponentNode<any> | Page) => void;
+    addTab: (component: ComponentNode | Page) => void;
     removeTab: (id: string) => void;
 }
 

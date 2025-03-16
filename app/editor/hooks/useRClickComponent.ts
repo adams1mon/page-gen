@@ -1,12 +1,12 @@
 import { ComponentNode } from '@/lib/core/ComponentWrapper';
 import { create } from 'zustand';
 
-interface RClickedComponent<T> {
-    rClickedComponent: ComponentNode<T> | null;
-    rClickComponent: (comp: ComponentNode<T>) => void;
+interface RClickedComponent {
+    rClickedComponent: ComponentNode | null;
+    rClickComponent: (comp: ComponentNode) => void;
 }
 
-export const useRClickedComponent = create<RClickedComponent<any>>(
+export const useRClickedComponent = create<RClickedComponent>(
     (set) => {
         return {
             rClickedComponent: null,

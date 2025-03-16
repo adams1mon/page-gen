@@ -5,24 +5,24 @@ import { EventDispatcher, EventType } from "./EventDispatcher";
 
 export class ComponentRepository {
 
-    static createComponent<T>(type: string): ComponentNode<T> {
+    static createComponent(type: string): ComponentNode {
         const plugin = ComponentPluginManager.getPlugin(type);
 
-        return new ComponentWrapper<T>({
+        return new ComponentWrapper({
             type,
             componentName: plugin.name,
             comp: new plugin.constructorFunc(),
         });
     }
 
-    static saveComponent(comp: ComponentNode<any>): SerializedComponentNode<any> {
+    static saveComponent(comp: ComponentNode): SerializedComponentNode {
         return comp.serialize();
     }
 
-    static loadComponent<T>(serializedComp: SerializedComponentNode<T>): ComponentNode<T> {
+    static loadComponent(serializedComp: SerializedComponentNode): ComponentNode {
         const plugin = ComponentPluginManager.getPlugin(serializedComp.type);
 
-        const comp: ComponentNode<T> = new ComponentWrapper({
+        const comp: ComponentNode = new ComponentWrapper({
             id: serializedComp.id,
             type: serializedComp.type,
             componentName: plugin.name,

@@ -9,12 +9,11 @@ import { useComponentSelection } from "../hooks/useComponentSelection";
 import { useEffect, useState } from "react";
 import { useRClickedComponent } from "../hooks/useRClickComponent";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
-import { useEditorPreferences } from "@/lib/store/editor-preferences";
 
-type CompFunc = (comp: ComponentNode<any>) => void;
+type CompFunc = (comp: ComponentNode) => void;
 
 interface ComponentContextMenuProps extends React.PropsWithChildren {
-    onInsertInto: (parent: ComponentNode<any>, compToAdd: ComponentNode<any>) => void;
+    onInsertInto: (parent: ComponentNode, compToAdd: ComponentNode) => void;
     onInsertBefore: CompFunc;
     onInsertAfter: CompFunc;
     onRemove: CompFunc;
@@ -46,7 +45,7 @@ export function EditorContextMenu({
         }
     }, [isOpen]);
 
-    function pasteMenuItem(insert: (comp: ComponentNode<any>) => void) {
+    function pasteMenuItem(insert: (comp: ComponentNode) => void) {
         return hasCopiedComponent() && (
             <ContextMenuItem onClick={() => {
                 const comp = paste();

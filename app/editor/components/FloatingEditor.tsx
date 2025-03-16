@@ -12,7 +12,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useEditorTabs } from "@/lib/store/editor-tabs-store";
 
 interface FloatingEditorProps {
-    component: Page | ComponentNode<any>;
+    component: Page | ComponentNode;
     onClose: () => void;
     onChange: () => void;
     onDock: () => void;

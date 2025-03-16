@@ -6,19 +6,19 @@ import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Page } from "@/lib/core/page/Page";
 import { useEditorTabs } from "@/lib/store/editor-tabs-store";
 
-interface EditorSidebarProps<T> {
-    component: ComponentNode<T> | Page;
+interface EditorSidebarProps {
+    component: ComponentNode | Page;
     onChange: () => void;
     onPopOut: () => void;
     onClose: () => void;
 }
 
-export function EditorSidebar<T>({
+export function EditorSidebar({
     component,
     onChange,
     onPopOut,
     onClose,
-}: EditorSidebarProps<T>) {
+}: EditorSidebarProps) {
     const { addTab } = useEditorTabs();
 
     return (

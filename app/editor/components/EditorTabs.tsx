@@ -39,7 +39,7 @@ function TabButton({
     onClose
 }: {
     tab: EditorTab;
-    selectedComponent: ComponentNode<any> | Page | null,
+    selectedComponent: ComponentNode | Page | null,
     onRestore: () => void;
     onClose: () => void;
 }) {

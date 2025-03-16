@@ -4,18 +4,18 @@ import { PropsDescriptorRoot, createDefaultProps } from "./props/PropsDescriptor
 import { createId } from "./utils";
 import { ChildrenContainer, IComponent } from "./types";
 
-export interface ComponentNode<T> extends ChildrenContainer{
-    comp: IComponent<T>;
+export interface ComponentNode extends ChildrenContainer{
+    comp: IComponent;
     type: string;
     componentName: string;
     propsDescriptorRoot: PropsDescriptorRoot;
 
     id: string;
-    props: T;
+    props: any;
     htmlElement: HTMLElement;
 
-    parent?: ComponentNode<T> | Page;
-    children?: ComponentNode<any>[];
+    parent?: ComponentNode | Page;
+    children?: ComponentNode[];
     childrenHtml?: HTMLElement[];
 
     // editor augmentations
@@ -23,21 +23,21 @@ export interface ComponentNode<T> extends ChildrenContainer{
 
     createHtmlElementTree: () => HTMLElement;
 
-    clone: () => ComponentNode<T>;
+    clone: () => ComponentNode;
 
-    update(props: T): void;
+    update(props: any): void;
 
     remove(): void;
 
-    addSibling(child: ComponentNode<T>, position: 'before' | 'after'): void;
+    addSibling(child: ComponentNode, position: 'before' | 'after'): void;
 
-    addChild(child: ComponentNode<T>, index?: number): void;
+    addChild(child: ComponentNode, index?: number): void;
 
-    removeChild(child: ComponentNode<T>): void;
+    removeChild(child: ComponentNode): void;
 
-    findChildById(id: string): ComponentNode<T> | null;
+    findChildById(id: string): ComponentNode | null;
 
-    serialize(): SerializedComponentNode<T>
+    serialize(): SerializedComponentNode
 
     // editor augmentations
     addWrapperOverlay(overlay: HTMLElement): void;
@@ -46,38 +46,38 @@ export interface ComponentNode<T> extends ChildrenContainer{
     toString(): string;
 }
 
-export interface SerializedComponentNode<T> {
+export interface SerializedComponentNode {
     type: string;
 
     id: string;
-    props: T;
+    props: any;
 
-    children?: SerializedComponentNode<any>[];
+    children?: SerializedComponentNode[];
 }
 
-export interface ComponentWrapperArgs<T> {
-    comp: IComponent<T>;
+export interface ComponentWrapperArgs {
+    comp: IComponent;
     type: string;
     componentName: string;
     id?: string;
-    props?: T;
-    children?: ComponentNode<any>[];
-    parent?: ComponentNode<any> | Page;
+    props?: any;
+    children?: ComponentNode[];
+    parent?: ComponentNode | Page;
 }
 
-export class ComponentWrapper<T> implements ComponentNode<T> {
+export class ComponentWrapper implements ComponentNode {
 
-    comp: IComponent<T>;
+    comp: IComponent;
     type: string;
     componentName: string;
 
     id: string;
-    props: T;
+    props: any;
     htmlElement: HTMLElement;
 
     // set by the parent when this element is added
-    parent?: ComponentNode<any> | Page;
-    children?: ComponentNode<any>[];
+    parent?: ComponentNode | Page;
+    children?: ComponentNode[];
     childrenHtml?: HTMLElement[];
 
     // editor augmentations
@@ -92,7 +92,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         props,
         children,
         parent,
-    }: ComponentWrapperArgs<T>) {
+    }: ComponentWrapperArgs) {
         this.comp = comp;
         this.type = type;
         this.componentName = componentName;
@@ -126,7 +126,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     // Shallow clone except for the name and props
     // to satisfy the copy component functionality.
     // Doesn't clone the wrappers so we get a clean copy.
-    clone(): ComponentNode<T> {
+    clone(): ComponentNode {
 
         const copy = new ComponentWrapper({
             comp: this.comp,
@@ -173,7 +173,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         );
     }
 
-    addSibling(sibling: ComponentWrapper<T>, position: 'before' | 'after') {
+    addSibling(sibling: ComponentWrapper, position: 'before' | 'after') {
         if (!this.parent || !this.parent.children) return;
 
         let refIndex = this.parent.children.findIndex(c => c.id === this.id);
@@ -204,7 +204,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         );
     }
 
-    addChild(child: ComponentWrapper<T>, index?: number) {
+    addChild(child: ComponentWrapper, index?: number) {
 
         if (!this.children) return;
         
@@ -231,7 +231,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         );
     }
 
-    removeChild(child: ComponentWrapper<T>) {
+    removeChild(child: ComponentWrapper) {
         child.remove();
 
         EventDispatcher.publish(
@@ -241,7 +241,7 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
     }
 
     // NOTE: this returns the element itself if the id matches
-    findChildById(id: string): ComponentWrapper<T> | null {
+    findChildById(id: string): ComponentWrapper | null {
         if (this.id == id) return this;
 
         if (!this.children) return null;
@@ -254,8 +254,8 @@ export class ComponentWrapper<T> implements ComponentNode<T> {
         return null;
     }
 
-    serialize(): SerializedComponentNode<T> {
-        const objectToSave: SerializedComponentNode<T> = {
+    serialize(): SerializedComponentNode {
+        const objectToSave: SerializedComponentNode = {
             type: this.type,
             id: this.id,
             props: this.props,

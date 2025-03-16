@@ -5,8 +5,8 @@ import { create } from "zustand";
 
 interface ComponentSelectorStore {
     isOpen: boolean;
-    onInsert?: (component: ComponentNode<any>) => void;
-    openComponentSelector: (onInsert: (component: ComponentNode<any>) => void) => void;
+    onInsert?: (component: ComponentNode) => void;
+    openComponentSelector: (onInsert: (component: ComponentNode) => void) => void;
     close: () => void;
 }
 

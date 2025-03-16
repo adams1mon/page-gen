@@ -29,12 +29,12 @@ export function ComponentInput(
 ) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const addComponent = (component: ComponentNode<any>, index?: number) => {
+    const addComponent = (component: ComponentNode, index?: number) => {
         parent.addChild(component, index);
         onChange();
     };
 
-    const deleteComponent = (component: ComponentNode<any>) => {
+    const deleteComponent = (component: ComponentNode) => {
         parent.removeChild(component);
         onChange();
     };

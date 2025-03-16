@@ -7,7 +7,7 @@ import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 
 interface ComponentDividerProps {
-    onInsert: (component: ComponentNode<any>) => void;
+    onInsert: (component: ComponentNode) => void;
 }
 
 export function ComponentDivider({ onInsert }: ComponentDividerProps) {

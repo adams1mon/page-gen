@@ -41,7 +41,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             shadow.appendChild(site.htmlRoot);
         }
 
-        function wrapperContextMenuHandler(component: ComponentNode<any>, e: Event) {
+        function wrapperContextMenuHandler(component: ComponentNode, e: Event) {
             // select the first component that has the matching data-id
             const elem = e.composedPath().find((e) => {
 
@@ -63,9 +63,9 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             }
         }
         
-        // creates and adds an overlay div to provide some editor functionality
+        // creates and adds an overlay div to provide some editor functionality,
         // like adding an outline on hover
-        function overlay(component: ComponentNode<any>) {
+        function overlay(component: ComponentNode) {
             const wrapperDiv = createWrapperOverlay(component);
             wrapperDiv.addEventListener("contextmenu", (e) => wrapperContextMenuHandler(component, e));
             component.addWrapperOverlay(wrapperDiv);
@@ -90,9 +90,9 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             EventType.COMPONENT_LOADED,
             ({ component }) => {
 
-                // don't need to add it to the children, 
-                // because a "loaded" event is fired for every component 
-                // also don't need t remove any empty placeholder containers
+                // don't need to add the overlay to the children, 
+                // because a "loaded" event is fired for every component;
+                // also don't need to remove any empty placeholder containers
                 overlay(component);
             },
         );
@@ -106,21 +106,21 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
                 // only show it for components.
                 if (parent.type === "Page") return;
 
-                addEmptyContainerPlaceholder(parent as ComponentNode<any>, openComponentSelector, onChange);
+                addEmptyContainerPlaceholder(parent as ComponentNode, openComponentSelector, onChange);
             },
         );
 
     }, [site, ref.current]);
 
 
-    const handleRemove = (comp: ComponentNode<any>) => {
+    const handleRemove = (comp: ComponentNode) => {
         comp.remove()
         onChange();
     };
 
     const handleSiblingInsert = (
-        reference: ComponentNode<any> | null,
-        newComponent: ComponentNode<any>,
+        reference: ComponentNode | null,
+        newComponent: ComponentNode,
         position: 'before' | 'after',
     ) => {
         console.log("sibling insert", position, reference, newComponent);
@@ -129,13 +129,13 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         onChange();
     };
 
-    const handleInsertInto = (parent: ComponentNode<any>, newComponent: ComponentNode<any>) => {
+    const handleInsertInto = (parent: ComponentNode, newComponent: ComponentNode) => {
         parent.addChild(newComponent);
         console.log("add comp", newComponent);
         onChange();
     };
 
-    const handleInsert = (newComponent: ComponentNode<any>) => {
+    const handleInsert = (newComponent: ComponentNode) => {
         site.addChild(newComponent);
         console.log("add comp", newComponent);
         onChange();
@@ -171,7 +171,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     );
 }
 
-function createWrapperOverlay(component: ComponentNode<any>) {
+function createWrapperOverlay(component: ComponentNode) {
     // DOM surgery here, this code will insert a wrapper div around the html of the 
     // current component. If this is a container component, the html of the child
     // elements should already have this wrapper around them, because their html must 
@@ -227,8 +227,8 @@ function createWrapperOverlay(component: ComponentNode<any>) {
 }
 
 function addEmptyContainerPlaceholder(
-    node: ComponentNode<any>,
-    openComponentSelector: (onInsert: (comp: ComponentNode<any>) => void) => void,
+    node: ComponentNode,
+    openComponentSelector: (onInsert: (comp: ComponentNode) => void) => void,
     onChange: () => void,
 ) {
     // DOM surgery here, this code will insert a placeholder div in the wrapper div 
@@ -263,13 +263,13 @@ function addEmptyContainerPlaceholder(
 }
 
 // TODO: maybe add an 'add' button if there are children?
-function removeEmptyContainerPlaceholder(node: ComponentNode<any> | Page) {
+function removeEmptyContainerPlaceholder(node: ComponentNode | Page) {
     if (node.type === "Page") return;
 
     if (!node.children || node.children.length === 0) return;
 
     // always remove the placeholder
-    (node as ComponentNode<any>).wrapperDiv?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
+    (node as ComponentNode).wrapperDiv?.querySelector(`[data-editor-placeholder="${node.id}"]`)?.remove();
 }
 
 // Create a placeholder component

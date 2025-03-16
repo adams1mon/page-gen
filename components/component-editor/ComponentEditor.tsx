@@ -12,7 +12,7 @@ import { ComponentInput } from "./component-input/ComponentInput";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 
 interface ComponentEditorProps {
-    component: ComponentNode<any>;
+    component: ComponentNode;
     onChange: () => void;
     onDelete: () => void | null;
 }

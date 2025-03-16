@@ -54,7 +54,7 @@ export interface PageArgs {
     props?: PageProps,
     htmlRoot?: HTMLElement,
     bodyElement?: HTMLElement,
-    children?: ComponentNode<any>[],
+    children?: ComponentNode[],
 }
 
 export class Page implements ChildrenContainer {
@@ -72,7 +72,7 @@ export class Page implements ChildrenContainer {
     htmlRoot: HTMLElement;
     htmlElement: HTMLElement;
 
-    children: ComponentNode<any>[] = [];
+    children: ComponentNode[] = [];
 
     constructor({
         id,
@@ -149,7 +149,7 @@ export class Page implements ChildrenContainer {
         return clone;
     }
 
-    addChild(child: ComponentNode<any>, index?: number) {
+    addChild(child: ComponentNode, index?: number) {
 
         if (!this.children) return;
         
@@ -176,7 +176,7 @@ export class Page implements ChildrenContainer {
         );
     }
 
-    removeChild(child: ComponentNode<any>) {
+    removeChild(child: ComponentNode) {
         if (!this.children) return;
 
         this.children = this.children.filter(c => c.id !== child.id);
@@ -188,7 +188,7 @@ export class Page implements ChildrenContainer {
         );
     }
 
-    findChildById(id: string): ComponentNode<any> | null {
+    findChildById(id: string): ComponentNode | null {
         for (const child of this.children) {
             const node = child.findChildById(id);
             if (node) return node;
@@ -227,5 +227,5 @@ export class Page implements ChildrenContainer {
 export interface SerializedPage {
     id: string;
     props: PageProps;
-    children: SerializedComponentNode<any>[];
+    children: SerializedComponentNode[];
 }

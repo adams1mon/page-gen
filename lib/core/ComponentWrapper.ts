@@ -1,10 +1,11 @@
-import { ComponentTreeEvent, EventDispatcher, EventType } from "./EventDispatcher";
+import { ComponentAddedEvent, ComponentCreatedEvent, ComponentRemovedEvent, ComponentUpdatedEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDescriptorRoot, createDefaultProps } from "./props/PropsDescriptor";
 import { createId } from "./utils";
 import { ChildrenContainer, IComponent } from "./types";
 
-export interface ComponentNode extends ChildrenContainer{
+
+export interface ComponentNode extends ChildrenContainer {
     comp: IComponent;
     type: string;
     componentName: string;
@@ -35,6 +36,7 @@ export interface ComponentNode extends ChildrenContainer{
 
     removeChild(child: ComponentNode): void;
 
+    // TODO: unused?
     findChildById(id: string): ComponentNode | null;
 
     serialize(): SerializedComponentNode
@@ -109,6 +111,11 @@ export class ComponentWrapper implements ComponentNode {
 
         this.parent = parent;
         this.htmlElement = this.createHtmlElementTree();
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_CREATED, 
+            { component: this } as ComponentCreatedEvent,
+        );
     }
 
     createHtmlElementTree(): HTMLElement {
@@ -154,8 +161,6 @@ export class ComponentWrapper implements ComponentNode {
         const newElement = this.comp.update?.(this.props) || this.createHtmlElementTree();
         this.htmlElement.replaceWith(newElement);
         this.htmlElement = newElement;
-
-        EventDispatcher.publish(EventType.COMPONENT_UPDATED, { component: this });
     }
 
     remove() {
@@ -163,13 +168,13 @@ export class ComponentWrapper implements ComponentNode {
         this.wrapperDiv?.remove();
         this.wrapperDiv = undefined;
 
-        if (this.parent && this.parent.children) {
+        if (this.parent?.children) {
             this.parent.children = this.parent.children.filter(c => c.id !== this.id);
         }
 
         EventDispatcher.publish(
             EventType.COMPONENT_REMOVED,
-            { parent: this.parent, component: this },
+            { parent: this.parent, component: this } as ComponentRemovedEvent,
         );
     }
 
@@ -200,7 +205,7 @@ export class ComponentWrapper implements ComponentNode {
 
         EventDispatcher.publish(
             EventType.COMPONENT_ADDED,
-            { parent: this.parent, component: sibling, position } as ComponentTreeEvent,
+            { parent: this.parent, component: sibling, position } as ComponentAddedEvent,
         );
     }
 
@@ -227,7 +232,7 @@ export class ComponentWrapper implements ComponentNode {
 
         EventDispatcher.publish(
             EventType.COMPONENT_ADDED,
-            { parent: this, component: child } as ComponentTreeEvent,
+            { parent: this, component: child } as ComponentAddedEvent,
         );
     }
 
@@ -236,7 +241,7 @@ export class ComponentWrapper implements ComponentNode {
 
         EventDispatcher.publish(
             EventType.COMPONENT_REMOVED,
-            { parent: child.parent, component: child }
+            { parent: child.parent, component: child } as ComponentRemovedEvent,
         );
     }
 

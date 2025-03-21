@@ -6,7 +6,7 @@ import { ChildrenContainer } from '../types';
 import { PropCategory, PropsDescriptorRoot } from "../props/PropsDescriptor";
 import { ComponentNode, SerializedComponentNode } from '../ComponentWrapper';
 import { tag, createId} from '../utils';
-import { ComponentTreeEvent, EventDispatcher, EventType } from '../EventDispatcher';
+import { ComponentAddedEvent, ComponentRemovedEvent, EventDispatcher, EventType } from '../EventDispatcher';
 
 // a single static webpage
 
@@ -171,7 +171,7 @@ export class Page implements ChildrenContainer {
 
         EventDispatcher.publish(
             EventType.COMPONENT_ADDED,
-            { parent: this, component: child } as ComponentTreeEvent,
+            { parent: this, component: child } as ComponentAddedEvent,
         );
     }
 
@@ -183,7 +183,7 @@ export class Page implements ChildrenContainer {
 
         EventDispatcher.publish(
             EventType.COMPONENT_REMOVED, 
-            { parent: child.parent, component: child }
+            { parent: child.parent, component: child } as ComponentRemovedEvent,
         );
     }
 

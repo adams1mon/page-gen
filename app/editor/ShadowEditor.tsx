@@ -4,7 +4,7 @@ import { useSiteStore } from "@/lib/store/site-store";
 import { useRClickedComponent } from "./hooks/useRClickComponent";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { EditorContextMenu } from "./components/EditorContextMenu";
-import { ComponentTreeEvent, EventDispatcher, EventType} from "@/lib/core/EventDispatcher";
+import { ComponentAddedEvent, ComponentCreatedEvent, ComponentRemovedEvent, EventDispatcher, EventType} from "@/lib/core/EventDispatcher";
 import { useComponentSelector } from "@/lib/store/component-selector-store";
 import { Page } from "@/lib/core/page/Page";
 
@@ -42,7 +42,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         }
 
         function wrapperContextMenuHandler(component: ComponentNode, e: Event) {
-            // select the first component that has the matching data-id
+            // select the first (deepest) component that has the matching data-id
             const elem = e.composedPath().find((e) => {
 
                 // ugly haxxx
@@ -75,39 +75,39 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
         }
 
         EventDispatcher.addHandler(
-            EventType.COMPONENT_ADDED,
-            ({ parent, component }: ComponentTreeEvent) => {
+            EventType.COMPONENT_CREATED,
+            ({ component }: ComponentCreatedEvent) => {
 
-                component.children?.forEach(c => overlay(c));
+                console.log("Component created", component);
+
                 overlay(component);
+            },
+            // Add a handler key to distinguish this handler from other anonymous handlers.
+            // Otherwise it could overwrite another anonymous function (they have the same names).
+            "editor-comp-created-handler",
+        );
+
+        EventDispatcher.addHandler(
+            EventType.COMPONENT_ADDED,
+            ({ parent }: ComponentAddedEvent) => {
 
                 // remove the parent's placeholder because it now has a child added
                 removeEmptyContainerPlaceholder(parent);
             },
-        );
-
-        EventDispatcher.addHandler(
-            EventType.COMPONENT_LOADED,
-            ({ component }) => {
-
-                // don't need to add the overlay to the children, 
-                // because a "loaded" event is fired for every component;
-                // also don't need to remove any empty placeholder containers
-                overlay(component);
-            },
+            "editor-comp-added-handler",
         );
 
         EventDispatcher.addHandler(
             EventType.COMPONENT_REMOVED,
-            ({ parent }: ComponentTreeEvent) => {
+            ({ parent }: ComponentRemovedEvent) => {
 
                 // See if the placeholder needs to be added back to the parent container element.
-                // Don't let the Page show the placeholder,
-                // only show it for components.
+                // Don't show the placeholder for top-level elements in the Page.
                 if (parent.type === "Page") return;
 
                 addEmptyContainerPlaceholder(parent as ComponentNode, openComponentSelector, onChange);
             },
+            "editor-comp-removed-handler",
         );
 
     }, [site, ref.current]);

@@ -59,10 +59,11 @@ export class EventDispatcher {
             this.listeners[eventType] = [];
         }
 
-        // if this handler already exists, skip it
-        // to avoid registering the same handler for the same event
-        // multiple times
-        const key = eventType + handlerKey || handler.name; 
+        // If this handler already exists, 
+        // skip it to avoid registering the same handler for the same event
+        // multiple times.
+        const key = eventType + handlerKey || handler.name;
+        
         if (this.handlerSet.has(key)) return;
 
         this.handlerSet.add(key);
@@ -90,16 +91,27 @@ export class EventDispatcher {
 
 // event types
 export const EventType = {
+    COMPONENT_CREATED: "COMPONENT_CREATED",
     COMPONENT_ADDED: "COMPONENT_ADDED",
     COMPONENT_LOADED: "COMPONENT_LOADED",
-    COMPONENT_UPDATED: "COMPONENT_UPDATED",
     COMPONENT_REMOVED: "COMPONENT_REMOVED",
 }
 
-export interface ComponentTreeEvent {
+export interface ComponentCreatedEvent {
+    component: ComponentNode;
+}
+
+export type ComponentLoadedEvent = ComponentCreatedEvent;
+
+export interface ComponentAddedEvent {
     parent: ComponentNode | Page;
     component: ComponentNode;
     position?: "before" | "after";
+}
+
+export interface ComponentRemovedEvent {
+    parent: ComponentNode | Page;
+    component: ComponentNode;
 }
 
 export interface PageEvent {

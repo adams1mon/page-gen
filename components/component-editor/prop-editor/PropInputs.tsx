@@ -99,7 +99,6 @@ export function PropInputs(
         breadcrumbsPath?: string[],
     }
 ) {
-
     const propsByCategory: Record<string, { key: string; desc: PropsDescriptor }[]> = {};
 
     // Group props by top level category, only process the root descriptors,

@@ -1,4 +1,6 @@
-import { ComponentAddedEvent, ComponentCreatedEvent, ComponentRemovedEvent, ComponentUpdatedEvent, EventDispatcher, EventType } from "./EventDispatcher";
+"use client"; 
+
+import { ComponentAddedEvent, ComponentCreatedEvent, ComponentRemovedEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
 import { PropsDescriptorRoot, createDefaultProps } from "./props/PropsDescriptor";
 import { createId } from "./utils";
@@ -35,9 +37,6 @@ export interface ComponentNode extends ChildrenContainer {
     addChild(child: ComponentNode, index?: number): void;
 
     removeChild(child: ComponentNode): void;
-
-    // TODO: unused?
-    findChildById(id: string): ComponentNode | null;
 
     serialize(): SerializedComponentNode
 
@@ -243,20 +242,6 @@ export class ComponentWrapper implements ComponentNode {
             EventType.COMPONENT_REMOVED,
             { parent: child.parent, component: child } as ComponentRemovedEvent,
         );
-    }
-
-    // NOTE: this returns the element itself if the id matches
-    findChildById(id: string): ComponentWrapper | null {
-        if (this.id == id) return this;
-
-        if (!this.children) return null;
-
-        for (const child of this.children) {
-            const node = child.findChildById(id);
-            if (node) return node;
-        }
-
-        return null;
     }
 
     serialize(): SerializedComponentNode {

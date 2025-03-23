@@ -11,7 +11,7 @@ import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Page } from "@/lib/core/page/Page";
 
 // Map categories to their icons and labels
-const categoryConfig = {
+const categoryConfig: Record<string, { icon: React.ReactNode; label: string }> = {
     [PropCategory.CONTENT]: { icon: <Type className="h-3 w-3" />, label: "Content" },
     [PropCategory.LAYOUT]: { icon: <Layout className="h-3 w-3" />, label: "Layout" },
     [PropCategory.STYLE]: { icon: <Palette className="h-3 w-3" />, label: "Style" },
@@ -67,10 +67,6 @@ export function PropInputsSlot(
                     onChange={onChange}
                     breadcrumbsPath={path}
                 />
-
-            default:
-                console.error(`PropsDescriptor type is undefined or not implemented, displayName: ${descriptor.displayName}, type: ${descriptor.propType}`);
-                return null;
         }
     };
 

@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 import { PageRepository } from '../core/PageRepository';
 import { Page, SerializedPage } from '../core/page/Page';
+import { StateCreator } from 'zustand';
 
 // the chain should work like this:
 // 1. load a LoadedState into SiteStore
@@ -38,14 +39,22 @@ interface SaveableState {
 const storageKey = "page-storage";
 
 function saveState(state: SaveableState) {
+    if (typeof window === 'undefined') return;
     console.log("save state to local storage", state);
     localStorage.setItem(storageKey, JSON.stringify(state));
 }
 
-
 // this should always return sensible defaults, even if there is no saved page
 type LoadedState = SaveableState & { site: Page };
 function loadStateOrDefault(): LoadedState {
+    if (typeof window === 'undefined') {
+        return {
+            site: defaultPage(),
+            currentPage: defaultPageName(),
+            autoSave: true,
+            savedPages: {},
+        };
+    }
 
     // load from the store
     const stateJson = localStorage.getItem(storageKey);
@@ -72,7 +81,6 @@ function loadStateOrDefault(): LoadedState {
     } as LoadedState;
 }
 
-// TODO: add better default page name
 function defaultPageName(): string {
     return `page-${Math.floor(Date.now() / 1000)}`
 }
@@ -81,106 +89,112 @@ function defaultPage(): Page {
     return PageRepository.createPage();
 }
 
+const defaultStoreState: SiteStore = {
+    site: defaultPage(),
+    currentPage: '',
+    autoSave: true,
+    savedPages: {},
+    setSite: () => {},
+    setAutoSave: () => {},
+    saveSite: () => {},
+    loadSite: () => {},
+    resetSite: () => {},
+    deleteSavedSite: () => {},
+};
 
-const loaded = loadStateOrDefault();
+const createStore: StateCreator<SiteStore> = (set, get, store) => {
+    const prevState = get();
+    const loaded = loadStateOrDefault();
 
-export const useSiteStore = create<SiteStore>()(
-    (set, get) => {
+    return {
+        site: prevState?.site || loaded.site,
+        currentPage: prevState?.currentPage || loaded.currentPage,
+        autoSave: prevState?.autoSave || loaded.autoSave,
+        savedPages: prevState?.savedPages || loaded.savedPages,
 
-        const prevState = get();
+        setSite: (site) => {
+            set({ site });
+            console.log("setting site", site);
 
-        return {
-            site: prevState?.site || loaded.site,
-            currentPage: prevState?.currentPage || loaded.currentPage,
-            autoSave: prevState?.autoSave || loaded.autoSave,
-            savedPages: prevState?.savedPages || loaded.savedPages,
+            if (get().autoSave) {
+                get().saveSite();
+            }
+        },
 
-            setSite: (site) => {
-                set({ site });
-                console.log("setting site", site);
+        setAutoSave: (enabled) => set(() => {
+            return { autoSave: enabled }
+        }),
 
-                if (get().autoSave) {
-                    get().saveSite();
-                }
-            },
+        saveSite: (name?) => {
+            set((state) => {
+                const serializedPage = PageRepository.serialize(get().site);
+                name = name || state.currentPage;
 
-            setAutoSave: (enabled) => set(() => {
-                return { autoSave: enabled }
-            }),
-
-            saveSite: (name?) => {
-                set((state) => {
-
-                    const serializedPage = PageRepository.serialize(get().site);
-
-                    // if the name is undefined, it uses the currently edited page
-                    // if a name is given, create a new saved page entry
-                    name = name || state.currentPage;
-
-                    const newState: Partial<SiteStore> = {
-                        currentPage: name,
-                        savedPages: {
-                            ...state.savedPages,
-                            [name]: serializedPage,
-                        },
+                const newState: Partial<SiteStore> = {
+                    currentPage: name,
+                    savedPages: {
+                        ...state.savedPages,
+                        [name]: serializedPage,
                     }
+                }
 
-                    saveState({
-                        currentPage: newState.currentPage!,
-                        savedPages: newState.savedPages!,
-                        autoSave: state.autoSave,
-                    });
-
-                    return newState;
+                saveState({
+                    currentPage: newState.currentPage!,
+                    savedPages: newState.savedPages!,
+                    autoSave: state.autoSave,
                 });
-            },
 
-            loadSite: (name) => {
-                // this only loads the site from memory, not from any kind of 
-                // persistent storage 
+                return newState;
+            });
+        },
 
-                // the page just needs to be created
-                // (the DOM elements created and rendered, running any handlers on the way)
-                const { savedPages } = get();
-                console.log(savedPages);
+        loadSite: (name) => {
+            const { savedPages } = get();
+            console.log(savedPages);
 
-                if (savedPages[name]) {
-                    const loaded = PageRepository.load(savedPages[name]);
+            if (savedPages[name]) {
+                const loaded = PageRepository.load(savedPages[name]);
 
-                    set({
-                        site: loaded,
-                        currentPage: name,
-                    });
-                }
-            },
-
-            resetSite: () => set({ site: PageRepository.createPage() }),
-
-            deleteSavedSite: (name) => {
-                set((state) => {
-                    const { [name]: _, ...rest } = state.savedPages;
-
-                    const newState: Partial<SiteStore> = {
-                        currentPage: state.currentPage,
-                        savedPages: rest,
-                    }
-
-                    // create a new page if the current site is deleted
-                    if (name === state.currentPage) {
-                        newState.currentPage = defaultPageName();
-                        newState.site = defaultPage();
-                    }
-
-                    saveState({
-                        currentPage: newState.currentPage!,
-                        savedPages: newState.savedPages!,
-                        autoSave: state.autoSave,
-                    });
-
-                    return { savedPages: rest };
+                set({
+                    site: loaded,
+                    currentPage: name,
                 });
             }
+        },
+
+        resetSite: () => set({ site: PageRepository.createPage() }),
+
+        deleteSavedSite: (name) => {
+            set((state) => {
+                const { [name]: _, ...rest } = state.savedPages;
+
+                const newState: Partial<SiteStore> = {
+                    currentPage: state.currentPage,
+                    savedPages: rest,
+                }
+
+                if (name === state.currentPage) {
+                    newState.currentPage = defaultPageName();
+                    newState.site = defaultPage();
+                }
+
+                saveState({
+                    currentPage: newState.currentPage!,
+                    savedPages: newState.savedPages!,
+                    autoSave: state.autoSave,
+                });
+
+                return { savedPages: rest };
+            });
         }
-    },
-);
+    }
+};
+
+// Export a dynamic version of the store that only runs on client
+export const useSiteStore = create<SiteStore>()((set, get, store) => {
+    if (typeof window === 'undefined') {
+        return defaultStoreState;
+    }
+    return createStore(set, get, store);
+});
 

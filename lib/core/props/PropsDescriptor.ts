@@ -99,10 +99,6 @@ export function createDefaultPropsForDescriptor(desc: PropsDescriptor): any {
                 obj[key] = createDefaultPropsForDescriptor(childDesc[key]);
             }
             return obj;
-
-        default:
-            console.log("unknown prop descriptor", desc.propType);
-            break;
     }
 };
 

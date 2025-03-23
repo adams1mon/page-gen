@@ -1,6 +1,6 @@
 // adds all the text and background colors to the safelist
 
-import tailwindColors from "tailwindcss/colors"
+import tailwindColors from "tailwindcss/colors" 
 
 const colorSafeList: string[] = []
 
@@ -15,7 +15,7 @@ for (const colorName in tailwindColors) {
     // Define all of your desired shades
     const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]
 
-    const pallette = tailwindColors[colorName]
+    const pallette = (tailwindColors as any)[colorName]
 
     if (typeof pallette === "object") {
         shades.forEach((shade) => {

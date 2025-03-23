@@ -7,6 +7,8 @@ export function createId(type: string): string {
 }
 
 export function tag(name: string, obj?: { [key: string]: string }) {
+
+    // TODO: make this build, enforce client side rendering somehow
     const m = document.createElement(name);
     for (const key in obj) {
         m.setAttribute(key, obj[key]);

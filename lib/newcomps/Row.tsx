@@ -38,7 +38,7 @@ const propsDescriptor: PropsDescriptorRoot = {
 };
 
 
-class Row implements IComponent<RowProps> {
+class Row implements IComponent {
 
     propsDescriptor: PropsDescriptorRoot = propsDescriptor;
     acceptsChildren: boolean = true;

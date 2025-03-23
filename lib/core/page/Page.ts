@@ -1,3 +1,5 @@
+"use client";
+
 // Import the Tailwind generated styles
 // @ts-ignore
 import css from '!!raw-loader!./styles/generated/styles.css';
@@ -185,15 +187,6 @@ export class Page implements ChildrenContainer {
             EventType.COMPONENT_REMOVED, 
             { parent: child.parent, component: child } as ComponentRemovedEvent,
         );
-    }
-
-    findChildById(id: string): ComponentNode | null {
-        for (const child of this.children) {
-            const node = child.findChildById(id);
-            if (node) return node;
-        }
-
-        return null;
     }
 
     serialize(): SerializedPage {

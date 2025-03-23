@@ -64,7 +64,7 @@ const propsDescriptor: PropsDescriptorRoot = {
     },
 };
 
-class Hero implements IComponent<HeroProps> {
+class Hero implements IComponent {
 
     propsDescriptor: PropsDescriptorRoot = propsDescriptor;
     acceptsChildren: boolean = false;

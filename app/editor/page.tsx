@@ -13,7 +13,11 @@ import { FloatingEditor } from "./components/FloatingEditor";
 import { ShadowEditor } from "./ShadowEditor";
 import { EditorTabs } from "./components/EditorTabs";
 
+export const dynamic = 'force-dynamic';
+//export const runtime = 'edge';
+
 export default function EditorPage() {
+
     const {
         site,
         setSite,

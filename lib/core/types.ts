@@ -5,7 +5,6 @@ export interface ChildrenContainer {
     children?: ComponentNode[];
     addChild: (child: ComponentNode, index?: number) => void;
     removeChild: (child: ComponentNode) => void;
-    findChildById: (id: string) => ComponentNode | null;
 };
 
 

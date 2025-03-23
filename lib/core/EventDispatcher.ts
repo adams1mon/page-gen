@@ -1,3 +1,5 @@
+"use client"; 
+
 import { ComponentNode } from "./ComponentWrapper";
 import { Page } from "./page/Page";
 

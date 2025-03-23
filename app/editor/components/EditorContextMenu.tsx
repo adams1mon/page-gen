@@ -59,7 +59,7 @@ export function EditorContextMenu({
     }
 
     return (
-        <ContextMenu open={isOpen} onOpenChange={setIsOpen}>
+        <ContextMenu onOpenChange={setIsOpen}>
             <ContextMenuTrigger>
                 {children}
             </ContextMenuTrigger>

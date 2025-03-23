@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { PropsDescriptorArray, createDefaultProps } from "@/lib/core/props/PropsDescriptor";
+import { PropsDescriptorArray, createDefaultPropsForDescriptor } from "@/lib/core/props/PropsDescriptor";
 import { PropInputsSlot } from "./PropInputs";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -20,7 +20,7 @@ export function ArrayInput(
         <div className="w-full">
             <div className="flex items-center justify-between mb-4">
                 <Button
-                    onClick={() => onChange([...arr, createDefaultProps(propsDescriptor)])}
+                    onClick={() => onChange([...arr, createDefaultPropsForDescriptor(propsDescriptor)])}
                     variant="outline"
                     size="sm"
                     className="gap-2"

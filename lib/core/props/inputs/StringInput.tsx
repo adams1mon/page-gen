@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PropContentType } from "@/lib/core/props/PropsDescriptor";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { PropInputPlugin, PropInputProps } from "../PropInputPluginManager";
 
 function PropInput(
@@ -25,7 +25,7 @@ function PropInput(
         onChange(text);
     }, debounceMillis);
 
-    const updateInputValue = (e) => {
+    const updateInputValue = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setInputValue(e.target.value);
         updateParentDebounced(e.target.value);
     };

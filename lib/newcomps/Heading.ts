@@ -47,7 +47,7 @@ const propsDescriptor: PropsDescriptorRoot = {
     },
 };
 
-class Heading implements IComponent<HeadingProps> {
+class Heading implements IComponent {
 
     propsDescriptor: PropsDescriptorRoot = propsDescriptor;
     acceptsChildren: boolean = false;

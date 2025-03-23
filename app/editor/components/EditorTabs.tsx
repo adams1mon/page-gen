@@ -7,7 +7,7 @@ import { EditorTab, useEditorTabs } from "@/lib/store/editor-tabs-store";
 import { useComponentSelection } from "../hooks/useComponentSelection";
 import { ComponentNode } from "@/lib/core/ComponentWrapper";
 import { Page } from "@/lib/core/page/Page";
-import { EventDispatcher } from "@/lib/core/EventDispatcher";
+import { EventDispatcher, EventType } from "@/lib/core/EventDispatcher";
 
 export function EditorTabs() {
     const { tabs, removeTab } = useEditorTabs();
@@ -54,12 +54,11 @@ function TabButton({
             )}
             onClick={onRestore}
 
-            // TODO: very hacky
             onMouseEnter={() => {
-                EventDispatcher.publish(`tabover-${tab.component.id}`, null);
+                EventDispatcher.publish(EventType.EDITOR_TABOVER, { component: tab.component });
             }}
             onMouseLeave={() => {
-                EventDispatcher.publish(`tableave-${tab.component.id}`, null);
+                EventDispatcher.publish(EventType.EDITOR_TABLEAVE, { component: tab.component });
             }}
         >
             <span className="text-sm truncate max-w-[150px]">

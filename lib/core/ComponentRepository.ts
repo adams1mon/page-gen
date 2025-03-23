@@ -1,6 +1,6 @@
 import { ComponentPluginManager } from "./ComponentPluginManager";
 import { ComponentNode, ComponentWrapper, SerializedComponentNode } from "./ComponentWrapper";
-import { ComponentLoadedEvent, EventDispatcher, EventType } from "./EventDispatcher";
+import { EventDispatcher, EventType } from "./EventDispatcher";
 
 type SearchMapHandlerParams = {
     component: ComponentNode

@@ -3,6 +3,11 @@ import { Page } from "./page/Page";
 
 type EventHandler = (event: any) => void;
 
+type EventListener = {
+    handler: EventHandler;
+    nextIndex: number;
+}
+
 export class EventDispatcher {
 
     static maxSize = 100;
@@ -12,10 +17,7 @@ export class EventDispatcher {
     } = {};
 
     static listeners: {
-        [eventName: string]: {
-            handler: EventHandler;
-            nextIndex: number;
-        }[]
+        [eventName: string]: EventListener[]
     } = {};
 
     static handlerSet: Set<string> = new Set();
@@ -25,7 +27,9 @@ export class EventDispatcher {
 
         if (!this.queues[eventType]) {
             this.queues[eventType] = [];
-        } else if (this.queues[eventType] && this.queues[eventType].length >= this.maxSize) {
+        } 
+
+        if (this.queues[eventType] && this.queues[eventType].length >= this.maxSize) {
             console.warn("queue max size reached, purging oldest ones");
 
             // Every old event should already be consumed due to
@@ -40,17 +44,8 @@ export class EventDispatcher {
         // run the handlers for the current event
         if (this.listeners[eventType]) {
 
-            // run the handlers for the last event
-            this.listeners[eventType].forEach(listener => {
-
-                // catch up with all listeners
-                while (listener.nextIndex < this.queues[eventType].length) {
-                    listener.handler(this.queues[eventType][listener.nextIndex]);
-                    listener.nextIndex += 1;
-
-                    console.log("consumed index", listener.nextIndex - 1, "from event", eventType, " -- len", this.queues[eventType].length);
-                }
-            });
+            // run the handlers for the last event, catch up with all listeners
+            this.listeners[eventType].forEach(listener => this.consumeEvents(eventType, listener));
         }
     }
 
@@ -77,15 +72,19 @@ export class EventDispatcher {
 
         // consume all events from the beginning
         if (startFrom === "beginning" && this.queues[eventType]) {
-            while (listener.nextIndex < this.queues[eventType].length) {
-                listener.handler(this.queues[eventType][listener.nextIndex]);
-                listener.nextIndex += 1;
-
-                console.log("consumed index", listener.nextIndex - 1, "from event", eventType, " -- len", this.queues[eventType].length);
-            }
+            this.consumeEvents(eventType, listener);
         }
 
         console.log(this.listeners);
+    }
+
+    static consumeEvents(eventType: string, listener: EventListener) {
+        while (listener.nextIndex < this.queues[eventType].length) {
+            listener.handler(this.queues[eventType][listener.nextIndex]);
+            listener.nextIndex += 1;
+
+            console.log("consumed index", listener.nextIndex - 1, "from event", eventType, " -- len", this.queues[eventType].length);
+        }
     }
 }
 
@@ -95,6 +94,8 @@ export const EventType = {
     COMPONENT_ADDED: "COMPONENT_ADDED",
     COMPONENT_LOADED: "COMPONENT_LOADED",
     COMPONENT_REMOVED: "COMPONENT_REMOVED",
+    EDITOR_TABOVER: "EDITOR_TABOVER",
+    EDITOR_TABLEAVE: "EDITOR_TABLEAVE",
 }
 
 export interface ComponentCreatedEvent {

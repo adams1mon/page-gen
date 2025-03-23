@@ -110,6 +110,22 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
             "editor-comp-removed-handler",
         );
 
+        EventDispatcher.addHandler(
+            EventType.EDITOR_TABOVER, 
+            ({ component }: {component: ComponentNode}) => {
+                globalTabOverHandlers[component.id]?.();
+            },
+            "editor-tabover-handler",
+        );
+
+        EventDispatcher.addHandler(
+            EventType.EDITOR_TABLEAVE, 
+            ({ component }: {component: ComponentNode}) => {
+                globalTabLeaveHandlers[component.id]?.();
+            },
+            "editor-tableave-handler",
+        );
+
     }, [site, ref.current]);
 
 
@@ -171,6 +187,13 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     );
 }
 
+// Global map to retrieve onMouseOver/Leave handlers of wrapper divs on
+// the tabover and tableave events that are triggered by the minimized editor tabs.
+// Useful to highlight the wrapper div when the event is fired.
+// We need a way to access the handlers of the wrapper divs...
+const globalTabOverHandlers: { [key: string]: () => void } = {};
+const globalTabLeaveHandlers: { [key: string]: () => void } = {};
+
 function createWrapperOverlay(component: ComponentNode) {
     // DOM surgery here, this code will insert a wrapper div around the html of the 
     // current component. If this is a container component, the html of the child
@@ -214,11 +237,8 @@ function createWrapperOverlay(component: ComponentNode) {
         nameTab.style.display = "none";
     }
 
-    // TODO: this is not good, creates too many 'dangling' events
-    // event leaks lol;
-    // instead find the component by id and invoke onMouseOver like that
-    EventDispatcher.addHandler(`tabover-${component.id}`, () => onMouseOver());
-    EventDispatcher.addHandler(`tableave-${component.id}`, () => onMouseLeave());
+    globalTabOverHandlers[component.id] = onMouseOver;
+    globalTabLeaveHandlers[component.id] = onMouseLeave;
 
     wrapperDiv.onmouseenter = onMouseOver;
     wrapperDiv.onmouseleave = onMouseLeave;

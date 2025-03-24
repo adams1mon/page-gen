@@ -25,9 +25,11 @@ export function FileMenu() {
     const [showSaveDialog, setShowSaveDialog] = useState(false);
     const [saveName, setSaveName] = useState("");
     const {
+        site,
         currentPage,
         autoSave,
         savedPages,
+        setSite,
         setAutoSave,
         saveSite,
         loadSite,
@@ -53,7 +55,7 @@ export function FileMenu() {
 
     const handleExport = () => {
         try {
-            const siteData = JSON.stringify(useSiteStore.getState().site);
+            const siteData = JSON.stringify(site);
             const blob = new Blob([siteData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -81,7 +83,7 @@ export function FileMenu() {
 
                 const text = await file.text();
                 const siteData = JSON.parse(text);
-                useSiteStore.setState({ site: siteData });
+                setSite(siteData);
 
                 toast({
                     title: "Site imported successfully",

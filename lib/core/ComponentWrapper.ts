@@ -131,7 +131,9 @@ export class ComponentWrapper implements ComponentNode {
 
     // Shallow clone except for the name and props
     // to satisfy the copy component functionality.
-    // Doesn't clone the wrappers so we get a clean copy.
+    // Doesn't clone the wrappers so we get a clean copy,
+    // but any events are still fired by the constructor, which means that 
+    // the wrappers will be added by the editor page
     clone(): ComponentNode {
 
         const copy = new ComponentWrapper({

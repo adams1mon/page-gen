@@ -198,17 +198,22 @@ export class Page implements ChildrenContainer {
         console.log("serialized page", s);
         return s;
     }
+    
+    deepClone(): Page {
+        const children = this.children.map(c => c.clone());
 
-    getClonedHtml(): string {
-        // clone doesn't clone the wrappers
-        const elems = this.children.map(c => c.clone());
-
-        const copy = new Page({
+        return new Page({
             props: this.props,
-            children: elems,
+            children,
         });
-        
-        return copy.htmlRoot.outerHTML;
+    }
+
+    removeWrapperOverlays() {
+        this.children.forEach(c => c.removeWrapperOverlay());
+    }
+
+    getHtml(): string {
+        return this.htmlRoot.outerHTML;
     }
 
     toString(): string {

@@ -10,12 +10,24 @@ export function GenerateSiteButton() {
 
     const { site } = useSiteStore();
 
+    // TODO: fix
+    if (!site) {
+        return;
+    }
+
     const generateSite = async () => {
 
         try {
             setIsGenerating(true);
 
-            const html = site.getClonedHtml();
+            // TODO: clean up the generated cloned site, remove wrappers and all that.
+            // The CREATED events are fired for the clone too so the wrappers get added.
+            //const html = site.getClonedHtml();
+            // TODO: maybe add a constructor param that doesn't fire events - avoid any side effects??
+            const cloned = site.deepClone();
+            cloned.removeWrapperOverlays();
+
+            const html = cloned.getHtml();
 
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });

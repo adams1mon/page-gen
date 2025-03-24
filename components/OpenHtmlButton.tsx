@@ -8,6 +8,11 @@ export function OpenHtmlButton() {
 
     const { site } = useSiteStore();
 
+    // TODO: fix
+    if (!site) {
+        return;
+    }
+
     const handleOpenInNewTab = async () => {
 
         const html = site.htmlRoot?.outerHTML;

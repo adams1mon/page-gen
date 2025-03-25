@@ -35,7 +35,7 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     useEffect(() => {
         console.log("site effect called", site);
 
-        if (!site || !ref.current) return;
+        if (!ref.current) return;
 
         if (!ref.current.shadowRoot) {
             ref.current.attachShadow({ mode: "open" });
@@ -163,7 +163,6 @@ export function ShadowEditor({ onChange }: ShadowEditorProps) {
     };
 
     const handleInsert = (newComponent: ComponentNode) => {
-        if (!site) return;
         site.addChild(newComponent);
         console.log("add comp", newComponent);
         onChange();

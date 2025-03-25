@@ -42,8 +42,6 @@ export default function EditorPage() {
     };
 
     useEffect(() => {
-        if (!site) return;
-
         if (activeView != "preview") return;
 
         debounce(async () => {

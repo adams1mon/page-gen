@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { ComponentAddedEvent, ComponentCreatedEvent, ComponentRemovedEvent, EventDispatcher, EventType } from "./EventDispatcher";
 import { Page } from "./page/Page";
@@ -106,22 +106,21 @@ export class ComponentWrapper implements ComponentNode {
         // initialize children so 'if (children)' checks return true
         if (comp.acceptsChildren) {
             this.children = children || [];
+
+            this.children.forEach(c => {
+                c.parent = this;
+            });
         }
 
         this.parent = parent;
         this.htmlElement = this.createHtmlElementTree();
-
-        EventDispatcher.publish(
-            EventType.COMPONENT_CREATED, 
-            { component: this } as ComponentCreatedEvent,
-        );
     }
 
     createHtmlElementTree(): HTMLElement {
         // TODO: have a single root html element which would always
         // contain the root element of the component, be it the actual html or 
         // the wrapper div.
-        
+
         // be careful when getting the children's htmlElement, 
         // they may have wrappers
         this.childrenHtml = this.children?.map(c => c.wrapperDiv || c.htmlElement);
@@ -131,10 +130,9 @@ export class ComponentWrapper implements ComponentNode {
 
     // Shallow clone except for the name and props
     // to satisfy the copy component functionality.
-    // Doesn't clone the wrappers so we get a clean copy,
-    // but any events are still fired by the constructor, which means that 
-    // the wrappers will be added by the editor page
+    // Doesn't clone the wrappers so we get a clean copy.
     clone(): ComponentNode {
+        const children = this.children?.map(c => c.clone());
 
         const copy = new ComponentWrapper({
             comp: this.comp,
@@ -142,13 +140,15 @@ export class ComponentWrapper implements ComponentNode {
             componentName: this.componentName,
             props: structuredClone(this.props),
             parent: this.parent,
-            children: this.children?.map(c => c.clone()),
+            children,
         });
-        
+
         // the parent must be set for the children after the object is created
-        copy.children?.forEach(c => {
-            c.parent = copy;
-        });
+
+        // TODO: remove
+        // copy.children?.forEach(c => {
+        //     c.parent = copy;
+        // });
 
         return copy;
     }
@@ -172,11 +172,6 @@ export class ComponentWrapper implements ComponentNode {
         if (this.parent?.children) {
             this.parent.children = this.parent.children.filter(c => c.id !== this.id);
         }
-
-        EventDispatcher.publish(
-            EventType.COMPONENT_REMOVED,
-            { parent: this.parent, component: this } as ComponentRemovedEvent,
-        );
     }
 
     addSibling(sibling: ComponentWrapper, position: 'before' | 'after') {
@@ -203,23 +198,18 @@ export class ComponentWrapper implements ComponentNode {
 
         // update parent
         sibling.parent = this.parent;
-
-        EventDispatcher.publish(
-            EventType.COMPONENT_ADDED,
-            { parent: this.parent, component: sibling, position } as ComponentAddedEvent,
-        );
     }
 
     addChild(child: ComponentWrapper, index?: number) {
 
         if (!this.children) return;
-        
+
         // insert the wrapper directly if it's defined
         const elemToInsert = child.wrapperDiv || child.htmlElement;
 
         if (index && index > 0 && index < this.children.length) {
             console.log("inserting at index", index);
-            
+
             let ref = this.children[index];
             const refNode = ref.wrapperDiv || ref.htmlElement;
             refNode.insertAdjacentElement("beforebegin", elemToInsert);
@@ -228,22 +218,12 @@ export class ComponentWrapper implements ComponentNode {
             this.children.push(child);
             this.htmlElement.appendChild(elemToInsert);
         }
-        
-        child.parent = this;
 
-        EventDispatcher.publish(
-            EventType.COMPONENT_ADDED,
-            { parent: this, component: child } as ComponentAddedEvent,
-        );
+        child.parent = this;
     }
 
     removeChild(child: ComponentWrapper) {
         child.remove();
-
-        EventDispatcher.publish(
-            EventType.COMPONENT_REMOVED,
-            { parent: child.parent, component: child } as ComponentRemovedEvent,
-        );
     }
 
     serialize(): SerializedComponentNode {
@@ -287,3 +267,76 @@ export class ComponentWrapper implements ComponentNode {
     }
 }
 
+
+export class ComponentWrapperWithEvents extends ComponentWrapper {
+
+    constructor(args: ComponentWrapperArgs) {
+        super(args);
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_CREATED,
+            { component: this } as ComponentCreatedEvent,
+        );
+    }
+
+    remove() {
+        super.remove();
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_REMOVED,
+            { parent: this.parent, component: this } as ComponentRemovedEvent,
+        );
+    }
+
+    addSibling(sibling: ComponentWrapper, position: 'before' | 'after') {
+        super.addSibling(sibling, position);
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_ADDED,
+            { parent: this.parent, component: sibling, position } as ComponentAddedEvent,
+        );
+    }
+
+    addChild(child: ComponentWrapper, index?: number) {
+        super.addChild(child, index);
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_ADDED,
+            { parent: this, component: child } as ComponentAddedEvent,
+        );
+    }
+
+    removeChild(child: ComponentWrapper) {
+        super.removeChild(child);
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_REMOVED,
+            { parent: child.parent, component: child } as ComponentRemovedEvent,
+        );
+    }
+    
+    // Shallow clone except for the name and props
+    // to satisfy the copy component functionality.
+    // Doesn't clone the wrappers so we get a clean copy,
+    // but any events are still fired by the constructor, which means that 
+    // the wrappers will be added by the editor page.
+    clone(): ComponentWrapperWithEvents {
+        const children = this.children?.map(c => c.clone());
+
+        const copy = new ComponentWrapperWithEvents({
+            comp: this.comp,
+            type: this.type,
+            componentName: this.componentName,
+            props: structuredClone(this.props),
+            parent: this.parent,
+            children,
+        });
+
+        return copy;
+    }
+
+    toString(): string {
+        return `ComponentWrapperWithEvents: ${this.id}\n` + this.comp.toString();
+    }
+
+}

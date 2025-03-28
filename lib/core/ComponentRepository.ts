@@ -1,5 +1,5 @@
 import { ComponentPluginManager } from "./ComponentPluginManager";
-import { ComponentNode, ComponentWrapper, SerializedComponentNode } from "./ComponentWrapper";
+import { ComponentNode, ComponentWrapperWithEvents, SerializedComponentNode } from "./ComponentWrapper";
 import { EventDispatcher, EventType } from "./EventDispatcher";
 
 type SearchMapHandlerParams = {
@@ -14,18 +14,14 @@ export class ComponentRepository {
     // from another location.
     static _components: { [key: string]: ComponentNode } = {};
 
-    static createComponent(type: string): ComponentNode {
+    static createComponentWithEvents(type: string): ComponentWrapperWithEvents {
         const plugin = ComponentPluginManager.getPlugin(type);
 
-        return new ComponentWrapper({
+        return new ComponentWrapperWithEvents({
             type,
             componentName: plugin.name,
             comp: new plugin.constructorFunc(),
         });
-    }
-
-    static saveComponent(comp: ComponentNode): SerializedComponentNode {
-        return comp.serialize();
     }
 
     static loadComponent(serializedComp: SerializedComponentNode): ComponentNode {
@@ -33,7 +29,7 @@ export class ComponentRepository {
 
         const plugin = ComponentPluginManager.getPlugin(serializedComp.type);
 
-        const comp: ComponentNode = new ComponentWrapper({
+        const comp: ComponentNode = new ComponentWrapperWithEvents({
             id: serializedComp.id,
             type: serializedComp.type,
             componentName: plugin.name,

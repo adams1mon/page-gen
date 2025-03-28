@@ -47,7 +47,7 @@ export function ComponentSelector() {
                                         key={index}
                                         onClick={() => {
                                             if (onInsert) {
-                                                onInsert(ComponentRepository.createComponent(comp.type));
+                                                onInsert(ComponentRepository.createComponentWithEvents(comp.type));
                                                 close();
                                             }
                                         }}

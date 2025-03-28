@@ -18,10 +18,7 @@ export function GenerateSiteButton() {
             // TODO: clean up the generated cloned site, remove wrappers and all that, very janky.
             // The CREATED events are fired for the clone too so the wrappers get added.
             // TODO: maybe add a constructor param that doesn't fire events - avoid any side effects??
-            const cloned = site.deepClone();
-            cloned.removeWrapperOverlays();
-
-            const html = cloned.getHtml();
+            const html = site.getHtmlFromClonedPage();
 
             // Create a Blob containing the HTML
             const blob = new Blob([html], { type: 'text/html' });

@@ -89,6 +89,10 @@ export class Page implements ChildrenContainer {
         // children has to be set before calling the createHtml
         this.children = children || [];
 
+        this.children.forEach(c => {
+            c.parent = this;
+        });
+
         this.htmlRoot = htmlRoot || this.createHtml();
         this.htmlElement = bodyElement || this.htmlRoot.querySelector("body")!;
     }
@@ -137,18 +141,6 @@ export class Page implements ChildrenContainer {
         return this.htmlRoot;
     }
 
-    // shallow clone, basically to satisfy setState
-    clone(): Page {
-        const clone = new Page({
-            props: this.props,
-            htmlRoot: this.htmlRoot,
-            bodyElement: this.htmlElement,
-            children: this.children,
-        });
-        console.log("page cloned, method", clone);
-
-        return clone;
-    }
 
     addChild(child: ComponentNode, index?: number) {
 
@@ -170,11 +162,6 @@ export class Page implements ChildrenContainer {
         }
 
         child.parent = this;
-
-        EventDispatcher.publish(
-            EventType.COMPONENT_ADDED,
-            { parent: this, component: child } as ComponentAddedEvent,
-        );
     }
 
     removeChild(child: ComponentNode) {
@@ -182,11 +169,6 @@ export class Page implements ChildrenContainer {
 
         this.children = this.children.filter(c => c.id !== child.id);
         child.htmlElement.remove();
-
-        EventDispatcher.publish(
-            EventType.COMPONENT_REMOVED, 
-            { parent: child.parent, component: child } as ComponentRemovedEvent,
-        );
     }
 
     serialize(): SerializedPage {
@@ -199,7 +181,9 @@ export class Page implements ChildrenContainer {
         return s;
     }
     
-    deepClone(): Page {
+    _deepClone(): Page {
+
+        // clone the children without firing events
         const children = this.children.map(c => c.clone());
 
         return new Page({
@@ -208,16 +192,14 @@ export class Page implements ChildrenContainer {
         });
     }
 
-    removeWrapperOverlays() {
-        this.children.forEach(c => c.removeWrapperOverlay());
-    }
-
-    getHtml(): string {
+    getHtmlFromClonedPage(): string {
+        const cloned = this._deepClone();
+        cloned.children.forEach(c => c.removeWrapperOverlay());
         return this.htmlRoot.outerHTML;
     }
 
     toString(): string {
-        return `Component: ${this.type}`;
+        return `Page: ${this.id}`;
     }
 }
 
@@ -225,4 +207,34 @@ export interface SerializedPage {
     id: string;
     props: PageProps;
     children: SerializedComponentNode[];
+}
+
+
+export class PageWithEvents extends Page {
+
+    constructor(args: PageArgs) {
+        super(args);
+    }
+
+    addChild(child: ComponentNode, index?: number) {
+        super.addChild(child, index);
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_ADDED,
+            { parent: this, component: child } as ComponentAddedEvent,
+        );
+    }
+
+    removeChild(child: ComponentNode) {
+        super.removeChild(child);
+
+        EventDispatcher.publish(
+            EventType.COMPONENT_REMOVED,
+            { parent: child.parent, component: child } as ComponentRemovedEvent,
+        );
+    }
+
+    toString(): string {
+        return `PageWithEvents: ${this.id}`;
+    }
 }

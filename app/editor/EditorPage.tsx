@@ -46,10 +46,7 @@ export default function EditorPage() {
 
         debounce(async () => {
 
-            const cloned = site.deepClone();
-            cloned.removeWrapperOverlays();
-            const html = cloned.getHtml();
-
+            const html = site.getHtmlFromClonedPage();
             const htmlStr = "<!DOCTYPE html>\n" + html;
 
             setPreviewHtml(htmlStr);

@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { PageRepository } from '../core/PageRepository';
-import { Page, SerializedPage } from '../core/page/Page';
+import { Page, PageWithEvents, SerializedPage } from '../core/page/Page';
 
 // TODO: any component that uses this can't be statically rendered
 // due to local storage only being available on the client side 
@@ -79,8 +79,8 @@ function defaultPageName(): string {
     return `page-${Math.floor(Date.now() / 1000)}`
 }
 
-function defaultPage(): Page {
-    return PageRepository.createPage();
+function defaultPage(): PageWithEvents {
+    return PageRepository.createPageWithEvents();
 }
 
 
@@ -150,7 +150,7 @@ export const useSiteStore = create<SiteStore>()((set, get) => {
             }
         },
 
-        resetSite: () => set({ site: PageRepository.createPage() }),
+        resetSite: () => set({ site: PageRepository.createPageWithEvents() }),
 
         deleteSavedSite: (name) => {
             set((state) => {

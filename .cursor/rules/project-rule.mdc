@@ -1,0 +1,55 @@
+---
+description: Description of the project, high-level overview of how it is supposed to work.
+globs: 
+alwaysApply: false
+---
+# The project
+
+This project is a web application where users can create
+static HTML pages using predefined components. 
+Users can preview the generated page in real time, without downloading the HTML.
+
+
+## Predefined components that can be used for building the static web page
+
+### Location of the components
+
+The predefined components that can be used are in the `lib/newcomps`
+directory. This is only for testing out the components. 
+
+The final components will be in the `lib/components` directory.
+For now, the `lib/components` directory contains older commented out older components, ignore those for now. 
+
+### Loading components at runtime
+
+The components use a plugin system, they implement the `IComponent` interface from the [types.ts](mdc:lib/core/types.ts) file.
+The components are registered by the `ComponentRepository`, that found in the [ComponentRepository.ts](mdc:lib/core/ComponentRepository.ts) file. This acts like a plugin manager for the
+components. 
+
+The `ComponentWrapper` ([ComponentWrapper.ts](mdc:lib/core/ComponentWrapper.ts)) is the glue that creates the actual HTML page. It wraps the `IComponent` components, provides the functionality to manage the component nodes and their DOM nodes. The `ComponentWrapper` also fires some lifecycle events, which other parts of the application can react to.
+It also knows about a wrapper DOM node that is added by the editor ([ShadowEditor.tsx](mdc:app/editor/components/ShadowEditor.tsx)) once a component is created. 
+
+Explanation about the wrapper in `ComponentWrapper`: the wrapper is needed because we have to provide a way to the user to edit them. The wrapper is a DOM node that wraps a component (`IComponent` implementation), adding visual feedback when interacting with it. 
+Adding/removing components needs to be accounted for, the visual feedback needs to be preserved. 
+That's the role of the wrapper in the `ComponentWrapper`.
+
+The components (`IComponent` implementations) have a `PropsDescriptorRoot` (prop descriptor) object nested inside, which describes what the `props` attribute of the component will look like. This attribute contains specific settings for a component.
+Based on the `PropsDescriptor`, the necessary inputs will be created for a component to set its `props`.
+
+The prop inputs also use a plugin system similar to the `ComponentRepository`, where an input will be created based
+on the `PropContentType` of a prop descriptor. 
+Prop input plugins are defined for the prop content types, and their JSX function will create an input that can set a prop of the given content type.
+ 
+The UI renders the necessary component inputs recursively (in [PropInputs.tsx](mdc:components/component-editor/prop-editor/PropInputs.tsx)), based on the prop descriptors of the input plugins. 
+When the user edits an input field, it sets the value on the actual `props` attribute of the actual component through the `ComponentWrapper`. 
+
+
+## The editor page
+
+The editor page ([page.tsx](mdc:app/editor/page.tsx))is the top level UI component responsible for providing a UI for adding/removing/modifying/selecting components.
+It makes use of the events published by the `ComponentWrapper` and creates wrapper DOM nodes that have event listeners to provide the functionalities mentioned above.
+
+The editor itself ([ShadowEditor.tsx](mdc:app/editor/components/ShadowEditor.tsx))is rendered into a shadow DOM to provide style and JavaScript isolation.
+
+
+
